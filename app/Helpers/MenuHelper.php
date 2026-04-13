@@ -25,7 +25,7 @@ class MenuHelper
                     [
                         'name' => 'Users',
                         'path' => route('users.index', absolute: false),
-                        'pro' => false
+                        'pro' => false,
                     ],
                 ],
             ],
@@ -37,12 +37,12 @@ class MenuHelper
         return [
             [
                 'title' => 'Menu',
-                'items' => self::getMainNavItems()
+                'items' => self::getMainNavItems(),
             ],
             [
                 'title' => 'Administration',
-                'items' => self::getAdministrationItems()
-            ]
+                'items' => self::getAdministrationItems(),
+            ],
         ];
     }
 

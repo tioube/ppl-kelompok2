@@ -4,7 +4,7 @@ This starter kit is based on [TailAdmin Laravel - Free Laravel Dashboard](https:
 
 We decided to merge our [LaravelDaily/starter-kit](https://github.com/LaravelDaily/starter-kit) with TailAdmin components.
 
-As a result, you get full **simple** Laravel Auth (*login, register, forget password, profile*), styled as TailAdmin.
+As a result, you get full **simple** Laravel Auth (_login, register, forget password, profile_), styled as TailAdmin.
 
 ![](https://laraveldaily.com/uploads/2025/11/tailadmin-starter-kit-profile.png)
 
@@ -30,4 +30,4 @@ laravel new --using=laraveldaily/tailadmin-starter-kit
 
 From there, you can modify the kit to your needs and add more pages.
 
-For more components, TailAdmin theme also has a [Pro version](https://checkout.tailadmin.com/buy/ed68b4bb-f0c6-4d20-a241-d3a5a81b0f25?aff=EEK4LN) (*affiliate link to support my work*) with 500+ components and dashboard variants.
+For more components, TailAdmin theme also has a [Pro version](https://checkout.tailadmin.com/buy/ed68b4bb-f0c6-4d20-a241-d3a5a81b0f25?aff=EEK4LN) (_affiliate link to support my work_) with 500+ components and dashboard variants.

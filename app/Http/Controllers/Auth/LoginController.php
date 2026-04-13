@@ -77,4 +77,3 @@ class LoginController extends Controller
         return Str::transliterate(Str::lower($request->string('email')).'|'.$request->ip());
     }
 }
-

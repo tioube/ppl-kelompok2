@@ -2,9 +2,9 @@ name: Laravel CI Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   workflow_dispatch:
 
 permissions:
@@ -15,7 +15,7 @@ jobs:
   # 🎨 STAGE 1: CODE QUALITY
   # ========================
   lint:
-    name: 🎨 Code Quality
+    name: 🎨 Setup
     runs-on: ubuntu-latest
 
     steps:
@@ -25,14 +25,14 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: "8.4"
           extensions: mbstring, dom, fileinfo, xml
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: "22"
+          cache: "npm"
 
       - name: Install Composer Dependencies
         run: composer install --prefer-dist --no-interaction --no-progress --no-scripts
@@ -61,8 +61,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: "22"
+          cache: "npm"
 
       - name: Install NPM Dependencies
         run: npm ci
@@ -102,7 +102,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: "8.4"
           extensions: mbstring, dom, fileinfo, mysql, xml
           tools: composer:v2
           coverage: xdebug
@@ -110,8 +110,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: "22"
+          cache: "npm"
 
       - name: Install Composer Dependencies
         run: composer install --prefer-dist --no-interaction --no-progress --optimize-autoloader
