@@ -1,44 +1,15 @@
+name: Laravel CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
 jobs:
-  prepare-build:
+  pipeline:
     runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-          extensions: mbstring, dom, fileinfo, mysql, xml
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-
-      - name: Install Composer Dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress
-
-      - name: Install NPM Dependencies
-        run: npm ci
-
-      - name: Build Assets
-        run: npm run build
-
-      # Save vendor + build as artifact
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-build
-          path: |
-            vendor
-            node_modules
-            public/build
-
-  laravel-tests:
-    runs-on: ubuntu-latest
-    needs: prepare-build   # 🔥 this creates the pipeline flow
 
     services:
       mysql:
@@ -51,28 +22,71 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      # Download artifacts from previous job
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: app-build
+    # ========================
+    # 🧱 PREPARATION STAGE
+    # ========================
+    - name: 🧱 Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'
+        extensions: mbstring, dom, fileinfo, mysql, xml
 
-      - name: Copy Environment File
-        run: cp .env.example .env
+    - name: 🧱 Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
 
-      - name: Generate Application Key
-        run: php artisan key:generate
+    # ========================
+    # 📦 INSTALL STAGE
+    # ========================
+    - name: 📦 Install Composer Dependencies
+      run: composer install --prefer-dist --no-interaction --no-progress
 
-      - name: Configure Database
-        run: |
-          echo "DB_CONNECTION=mysql" >> .env
-          echo "DB_HOST=127.0.0.1" >> .env
-          echo "DB_PORT=3306" >> .env
-          echo "DB_DATABASE=laravel_test" >> .env
-          echo "DB_USERNAME=root" >> .env
-          echo "DB_PASSWORD=password" >> .env
+    - name: 📦 Install NPM Dependencies
+      run: npm ci
 
-      - name: Run Tests
-        run: php artisan test
+    # ========================
+    # ⚙️ CONFIG STAGE
+    # ========================
+    - name: ⚙️ Setup Environment
+      run: |
+        cp .env.example .env
+        php artisan key:generate
+
+    - name: ⚙️ Configure Database
+      run: |
+        echo "DB_CONNECTION=mysql" >> .env
+        echo "DB_HOST=127.0.0.1" >> .env
+        echo "DB_PORT=3306" >> .env
+        echo "DB_DATABASE=laravel_test" >> .env
+        echo "DB_USERNAME=root" >> .env
+        echo "DB_PASSWORD=password" >> .env
+
+    - name: ⚙️ Wait for MySQL
+      run: sleep 10
+
+    - name: ⚙️ Run Migrations
+      run: php artisan migrate --force
+
+    # ========================
+    # 🎨 CODE QUALITY
+    # ========================
+    - name: 🎨 Check Code Style
+      run: |
+        vendor/bin/pint --test
+        npx prettier --check .
+
+    # ========================
+    # 🏗 BUILD STAGE
+    # ========================
+    - name: 🏗 Build Assets
+      run: npm run build
+
+    # ========================
+    # 🧪 TEST STAGE
+    # ========================
+    - name: 🧪 Run Tests
+      run: php artisan test
