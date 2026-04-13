@@ -1,20 +1,46 @@
-name: Laravel CI Pipeline
-
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
-  # Allow manual triggering
-  workflow_dispatch:
-
 jobs:
+  prepare-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, fileinfo, mysql, xml
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install Composer Dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Install NPM Dependencies
+        run: npm ci
+
+      - name: Build Assets
+        run: npm run build
+
+      # Save vendor + build as artifact
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-build
+          path: |
+            vendor
+            node_modules
+            public/build
+
   laravel-tests:
     runs-on: ubuntu-latest
-    environment: Testing
+    needs: prepare-build   # 🔥 this creates the pipeline flow
 
     services:
-      # Add MySQL service for database tests
       mysql:
         image: mysql:8.0
         env:
@@ -25,89 +51,28 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.4'
-        extensions: mbstring, dom, fileinfo, mysql, xml
-        coverage: xdebug
+      # Download artifacts from previous job
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: app-build
 
-    - name: Setup Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-        cache: 'npm'
+      - name: Copy Environment File
+        run: cp .env.example .env
 
-    - name: Get Composer Cache Directory
-      id: composer-cache
-      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - name: Generate Application Key
+        run: php artisan key:generate
 
-    - name: Cache Composer dependencies
-      uses: actions/cache@v3
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: ${{ runner.os }}-composer-
+      - name: Configure Database
+        run: |
+          echo "DB_CONNECTION=mysql" >> .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_DATABASE=laravel_test" >> .env
+          echo "DB_USERNAME=root" >> .env
+          echo "DB_PASSWORD=password" >> .env
 
-    - name: Cache NPM dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: ${{ runner.os }}-node-
-
-    - name: Install Composer Dependencies
-      run: composer install --prefer-dist --no-interaction --no-progress
-
-    - name: Install NPM Dependencies
-      run: npm ci
-
-    - name: Copy Environment File
-      run: cp .env.example .env
-
-    - name: Generate Application Key
-      run: php artisan key:generate
-
-    - name: Configure Database
-      run: |
-        echo "DB_CONNECTION=mysql" >> .env
-        echo "DB_HOST=127.0.0.1" >> .env
-        echo "DB_PORT=3306" >> .env
-        echo "DB_DATABASE=laravel_test" >> .env
-        echo "DB_USERNAME=root" >> .env
-        echo "DB_PASSWORD=password" >> .env
-
-    - name: Check Code Style
-      id: code-style-check
-      run: |
-        vendor/bin/pint --test || echo "pint_has_changes=true" >> $GITHUB_OUTPUT
-        npx prettier --check . || echo "prettier_has_changes=true" >> $GITHUB_OUTPUT
-      continue-on-error: true
-
-    - name: Fix Code Style
-      if: steps.code-style-check.outputs.pint_has_changes == 'true' || steps.code-style-check.outputs.prettier_has_changes == 'true'
-      run: |
-        vendor/bin/pint
-        npx prettier --write .
-      
-    - name: Commit Style Fixes
-      if: steps.code-style-check.outputs.pint_has_changes == 'true' || steps.code-style-check.outputs.prettier_has_changes == 'true'
-      uses: stefanzweifel/git-auto-commit-action@v5
-      with:
-        commit_message: "style: fix code style issues"
-        commit_user_name: "GitHub Actions"
-        commit_user_email: "github-actions@github.com"
-
-    - name: Build Assets
-      run: npm run build
-
-    - name: Run Tests
-      run: php artisan test --coverage
-
-    - name: Upload Coverage Reports
-      uses: codecov/codecov-action@v3
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        fail_ci_if_error: false
+      - name: Run Tests
+        run: php artisan test
