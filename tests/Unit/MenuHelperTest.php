@@ -26,31 +26,31 @@ class TestMenuHelper extends MenuHelper
                     [
                         'name' => 'Users',
                         'path' => '/users.index',
-                        'pro' => false
+                        'pro' => false,
                     ],
                 ],
             ],
         ];
     }
-    
+
     public static function getMenuGroups(): array
     {
         return [
             [
                 'title' => 'Menu',
-                'items' => self::getMainNavItems()
+                'items' => self::getMainNavItems(),
             ],
             [
                 'title' => 'Administration',
-                'items' => self::getAdministrationItems()
-            ]
+                'items' => self::getAdministrationItems(),
+            ],
         ];
     }
 }
 
 test('getIconSvg returns svg for valid icon name', function () {
     $svg = MenuHelper::getIconSvg('dashboard');
-    
+
     expect($svg)
         ->toBeString()
         ->toContain('<svg')
@@ -59,7 +59,7 @@ test('getIconSvg returns svg for valid icon name', function () {
 
 test('getIconSvg returns default svg for invalid icon name', function () {
     $svg = MenuHelper::getIconSvg('non-existent-icon');
-    
+
     expect($svg)
         ->toBeString()
         ->toContain('<svg')
@@ -68,7 +68,7 @@ test('getIconSvg returns default svg for invalid icon name', function () {
 
 test('getMainNavItems returns array with dashboard item', function () {
     $items = TestMenuHelper::getMainNavItems();
-    
+
     expect($items)
         ->toBeArray()
         ->toHaveCount(1)
@@ -80,7 +80,7 @@ test('getMainNavItems returns array with dashboard item', function () {
 
 test('getAdministrationItems returns array with user management', function () {
     $items = TestMenuHelper::getAdministrationItems();
-    
+
     expect($items)
         ->toBeArray()
         ->toHaveCount(1)
@@ -92,7 +92,7 @@ test('getAdministrationItems returns array with user management', function () {
 
 test('getMenuGroups returns array with menu and administration groups', function () {
     $groups = TestMenuHelper::getMenuGroups();
-    
+
     expect($groups)
         ->toBeArray()
         ->toHaveCount(2)

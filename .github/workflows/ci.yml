@@ -79,10 +79,26 @@ jobs:
         echo "DB_USERNAME=root" >> .env
         echo "DB_PASSWORD=password" >> .env
 
-    - name: Run Code Style Checks
+    - name: Check Code Style
+      id: code-style-check
       run: |
-        vendor/bin/pint --test
-        npx prettier --check .
+        vendor/bin/pint --test || echo "pint_has_changes=true" >> $GITHUB_OUTPUT
+        npx prettier --check . || echo "prettier_has_changes=true" >> $GITHUB_OUTPUT
+      continue-on-error: true
+
+    - name: Fix Code Style
+      if: steps.code-style-check.outputs.pint_has_changes == 'true' || steps.code-style-check.outputs.prettier_has_changes == 'true'
+      run: |
+        vendor/bin/pint
+        npx prettier --write .
+      
+    - name: Commit Style Fixes
+      if: steps.code-style-check.outputs.pint_has_changes == 'true' || steps.code-style-check.outputs.prettier_has_changes == 'true'
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: "style: fix code style issues"
+        commit_user_name: "GitHub Actions"
+        commit_user_email: "github-actions@github.com"
 
     - name: Build Assets
       run: npm run build
