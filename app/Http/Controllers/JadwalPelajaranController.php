@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\JadwalPelajaran;
-use App\Models\TahunAjaran;
-use App\Models\MataPelajaran;
 use App\Models\Kelas;
+use App\Models\MataPelajaran;
+use App\Models\TahunAjaran;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -49,7 +49,7 @@ class JadwalPelajaranController extends Controller
         $tahunAjarans = TahunAjaran::all();
         $mataPelajarans = MataPelajaran::all();
         $kelas = Kelas::all();
-        $gurus = User::whereHas('roles', function($query) {
+        $gurus = User::whereHas('roles', function ($query) {
             $query->where('slug', 'guru');
         })->with('mataPelajaran')->orderBy('name')->get();
 
@@ -59,25 +59,25 @@ class JadwalPelajaranController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'tahun_ajaran_id'   => 'required|exists:tahun_ajaran,id',
+            'tahun_ajaran_id' => 'required|exists:tahun_ajaran,id',
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
-            'kelas_id'          => 'required|exists:kelas,id',
-            'guru_id'           => 'nullable|exists:users,id',
-            'hari'              => 'required|string|max:255',
-            'jam_mulai'         => 'required|date_format:H:i',
-            'jam_selesai'       => 'required|date_format:H:i|after:jam_mulai',
+            'kelas_id' => 'required|exists:kelas,id',
+            'guru_id' => 'nullable|exists:users,id',
+            'hari' => 'required|string|max:255',
+            'jam_mulai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
         ]);
 
         // Check time slot conflict for this kelas
         $conflict = JadwalPelajaran::where('kelas_id', $validated['kelas_id'])
             ->where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
             ->where('hari', $validated['hari'])
-            ->where(function($query) use ($validated) {
+            ->where(function ($query) use ($validated) {
                 $query->whereBetween('jam_mulai', [$validated['jam_mulai'], $validated['jam_selesai']])
                     ->orWhereBetween('jam_selesai', [$validated['jam_mulai'], $validated['jam_selesai']])
-                    ->orWhere(function($q) use ($validated) {
+                    ->orWhere(function ($q) use ($validated) {
                         $q->where('jam_mulai', '<=', $validated['jam_mulai'])
-                          ->where('jam_selesai', '>=', $validated['jam_selesai']);
+                            ->where('jam_selesai', '>=', $validated['jam_selesai']);
                     });
             })->exists();
 
@@ -87,7 +87,7 @@ class JadwalPelajaranController extends Controller
         }
 
         // Check jam_pelajaran weekly limit
-        $mapel = \App\Models\MataPelajaran::find($validated['mata_pelajaran_id']);
+        $mapel = MataPelajaran::find($validated['mata_pelajaran_id']);
         $weeklyCount = JadwalPelajaran::where('kelas_id', $validated['kelas_id'])
             ->where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
             ->where('mata_pelajaran_id', $validated['mata_pelajaran_id'])
@@ -109,7 +109,7 @@ class JadwalPelajaranController extends Controller
         $tahunAjarans = TahunAjaran::all();
         $mataPelajarans = MataPelajaran::all();
         $kelas = Kelas::all();
-        $gurus = User::whereHas('roles', function($query) {
+        $gurus = User::whereHas('roles', function ($query) {
             $query->where('slug', 'guru');
         })->with('mataPelajaran')->orderBy('name')->get();
 
@@ -119,13 +119,13 @@ class JadwalPelajaranController extends Controller
     public function update(Request $request, JadwalPelajaran $jadwalPelajaran)
     {
         $validated = $request->validate([
-            'tahun_ajaran_id'   => 'required|exists:tahun_ajaran,id',
+            'tahun_ajaran_id' => 'required|exists:tahun_ajaran,id',
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
-            'kelas_id'          => 'required|exists:kelas,id',
-            'guru_id'           => 'nullable|exists:users,id',
-            'hari'              => 'required|string|max:255',
-            'jam_mulai'         => 'required|date_format:H:i',
-            'jam_selesai'       => 'required|date_format:H:i|after:jam_mulai',
+            'kelas_id' => 'required|exists:kelas,id',
+            'guru_id' => 'nullable|exists:users,id',
+            'hari' => 'required|string|max:255',
+            'jam_mulai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
         ]);
 
         // Check time slot conflict (exclude self)
@@ -133,12 +133,12 @@ class JadwalPelajaranController extends Controller
             ->where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
             ->where('hari', $validated['hari'])
             ->where('id', '!=', $jadwalPelajaran->id)
-            ->where(function($query) use ($validated) {
+            ->where(function ($query) use ($validated) {
                 $query->whereBetween('jam_mulai', [$validated['jam_mulai'], $validated['jam_selesai']])
                     ->orWhereBetween('jam_selesai', [$validated['jam_mulai'], $validated['jam_selesai']])
-                    ->orWhere(function($q) use ($validated) {
+                    ->orWhere(function ($q) use ($validated) {
                         $q->where('jam_mulai', '<=', $validated['jam_mulai'])
-                          ->where('jam_selesai', '>=', $validated['jam_selesai']);
+                            ->where('jam_selesai', '>=', $validated['jam_selesai']);
                     });
             })->exists();
 
@@ -148,7 +148,7 @@ class JadwalPelajaranController extends Controller
         }
 
         // Check jam_pelajaran weekly limit (exclude self)
-        $mapel = \App\Models\MataPelajaran::find($validated['mata_pelajaran_id']);
+        $mapel = MataPelajaran::find($validated['mata_pelajaran_id']);
         $weeklyCount = JadwalPelajaran::where('kelas_id', $validated['kelas_id'])
             ->where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
             ->where('mata_pelajaran_id', $validated['mata_pelajaran_id'])

@@ -25,4 +25,3 @@ class SuperAdminDashboardController extends Controller
         ]);
     }
 }
-

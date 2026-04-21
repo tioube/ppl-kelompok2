@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kelas;
 use App\Models\Jurusan;
+use App\Models\Kelas;
 use Illuminate\Http\Request;
 
 class KelasController extends Controller
@@ -11,12 +11,14 @@ class KelasController extends Controller
     public function index()
     {
         $kelas = Kelas::with('jurusan')->latest()->paginate(10);
+
         return view('akademik.kelas.index', compact('kelas'));
     }
 
     public function create()
     {
         $jurusans = Jurusan::all();
+
         return view('akademik.kelas.create', compact('jurusans'));
     }
 
@@ -36,6 +38,7 @@ class KelasController extends Controller
     public function edit(Kelas $kela)
     {
         $jurusans = Jurusan::all();
+
         return view('akademik.kelas.edit', compact('kela', 'jurusans'));
     }
 

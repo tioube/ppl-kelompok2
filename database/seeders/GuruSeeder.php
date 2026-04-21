@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Models\Role;
 use App\Models\MataPelajaran;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -17,6 +17,7 @@ class GuruSeeder extends Seeder
 
         if ($mataPelajarans->isEmpty()) {
             $this->command->error('No Mata Pelajaran found. Please seed mata pelajaran first.');
+
             return;
         }
 
@@ -45,15 +46,15 @@ class GuruSeeder extends Seeder
 
             if ($guruData) {
                 [$name, $gelar, $gender] = $guruData;
-                $fullName = $name . ', ' . $gelar;
+                $fullName = $name.', '.$gelar;
             } else {
-                $name = 'Guru ' . $mapel->nama;
+                $name = 'Guru '.$mapel->nama;
                 $gelar = 'S.Pd';
-                $fullName = $name . ', ' . $gelar;
+                $fullName = $name.', '.$gelar;
                 $gender = ['Laki-laki', 'Perempuan'][array_rand(['Laki-laki', 'Perempuan'])];
             }
 
-            $email = strtolower(str_replace([' ', ',', '.'], ['', '', ''], $name)) . '@guru.school.id';
+            $email = strtolower(str_replace([' ', ',', '.'], ['', '', ''], $name)).'@guru.school.id';
 
             $year = rand(1970, 1990);
             $month = rand(1, 12);
@@ -67,8 +68,8 @@ class GuruSeeder extends Seeder
                 'mata_pelajaran_id' => $mapel->id,
                 'gender' => $gender,
                 'birth_date' => $birthDate,
-                'phone' => '08' . rand(1000000000, 9999999999),
-                'address' => 'Jl. Pendidikan No. ' . rand(1, 100) . ', Jakarta',
+                'phone' => '08'.rand(1000000000, 9999999999),
+                'address' => 'Jl. Pendidikan No. '.rand(1, 100).', Jakarta',
             ]);
 
             if ($guruRole) {
@@ -78,7 +79,7 @@ class GuruSeeder extends Seeder
             $assignedMapel[] = $mapel->nama;
         }
 
-        $this->command->info('Created ' . count($assignedMapel) . ' guru users!');
+        $this->command->info('Created '.count($assignedMapel).' guru users!');
         $this->command->info('Each guru assigned to one mata pelajaran.');
     }
 }

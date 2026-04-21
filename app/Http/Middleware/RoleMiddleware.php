@@ -10,7 +10,7 @@ class RoleMiddleware
 {
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -25,4 +25,3 @@ class RoleMiddleware
         abort(403, 'You do not have the required role to access this resource.');
     }
 }
-

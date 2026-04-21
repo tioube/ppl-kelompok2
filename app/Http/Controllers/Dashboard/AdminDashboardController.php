@@ -12,8 +12,8 @@ class AdminDashboardController extends Controller
     {
         $stats = [
             'total_users' => User::count(),
-            'total_students' => User::whereHas('roles', fn($q) => $q->where('slug', 'siswa'))->count(),
-            'total_teachers' => User::whereHas('roles', fn($q) => $q->where('slug', 'guru'))->count(),
+            'total_students' => User::whereHas('roles', fn ($q) => $q->where('slug', 'siswa'))->count(),
+            'total_teachers' => User::whereHas('roles', fn ($q) => $q->where('slug', 'guru'))->count(),
             'recent_users' => User::with('roles')->latest()->take(5)->get(),
         ];
 

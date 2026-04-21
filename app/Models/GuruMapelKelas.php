@@ -29,4 +29,3 @@ class GuruMapelKelas extends Model
         return $this->belongsTo(Kelas::class);
     }
 }
-

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Role;
-use App\Models\Kelas;
 use App\Models\Jurusan;
+use App\Models\Kelas;
+use App\Models\Role;
 use App\Models\TahunAjaran;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -15,16 +15,16 @@ class SiswaController extends Controller
 {
     public function index()
     {
-        $siswas = User::whereHas('roles', function($query) {
+        $siswas = User::whereHas('roles', function ($query) {
             $query->where('slug', 'siswa');
         })
-        ->with(['roles', 'kelas', 'jurusan', 'tahunAjaran'])
-        ->latest()
-        ->paginate(15);
+            ->with(['roles', 'kelas', 'jurusan', 'tahunAjaran'])
+            ->latest()
+            ->paginate(15);
 
         return view('pages.siswa.index', [
             'title' => 'List Siswa',
-            'siswas' => $siswas
+            'siswas' => $siswas,
         ]);
     }
 
@@ -105,9 +105,9 @@ class SiswaController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $siswa->id,
+            'email' => 'required|email|unique:users,email,'.$siswa->id,
             'password' => 'nullable|string|min:8',
-            'nisn' => 'nullable|string|unique:users,nisn,' . $siswa->id,
+            'nisn' => 'nullable|string|unique:users,nisn,'.$siswa->id,
             'kelas_id' => 'nullable|exists:kelas,id',
             'jurusan_id' => 'nullable|exists:jurusan,id',
             'tahun_ajaran_id' => 'nullable|exists:tahun_ajaran,id',
@@ -118,7 +118,7 @@ class SiswaController extends Controller
             'photo_profile' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
         } else {
             unset($validated['password']);

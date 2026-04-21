@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateUserRequest;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
@@ -48,11 +47,11 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        if (!empty($validated['roles'])) {
+        if (! empty($validated['roles'])) {
             $user->roles()->sync($validated['roles']);
         }
 
-        if (!empty($validated['permissions'])) {
+        if (! empty($validated['permissions'])) {
             $user->permissions()->sync($validated['permissions']);
         }
 
@@ -73,7 +72,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 

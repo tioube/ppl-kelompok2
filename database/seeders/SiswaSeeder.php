@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Models\Role;
 use App\Models\Kelas;
-use App\Models\Jurusan;
+use App\Models\Role;
 use App\Models\TahunAjaran;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -20,6 +19,7 @@ class SiswaSeeder extends Seeder
 
         if ($kelasList->isEmpty()) {
             $this->command->warn('No classes found. Please run AkademikSeeder first.');
+
             return;
         }
 
@@ -42,7 +42,7 @@ class SiswaSeeder extends Seeder
             $kelas = $kelasList->random();
             $firstName = $firstNames[array_rand($firstNames)];
             $lastName = $lastNames[array_rand($lastNames)];
-            $fullName = $firstName . ' ' . $lastName;
+            $fullName = $firstName.' '.$lastName;
             $gender = $genders[array_rand($genders)];
 
             $year = rand(2006, 2010);
@@ -50,11 +50,11 @@ class SiswaSeeder extends Seeder
             $day = rand(1, 28);
             $birthDate = sprintf('%04d-%02d-%02d', $year, $month, $day);
 
-            $nisn = '00' . str_pad($i, 8, '0', STR_PAD_LEFT);
+            $nisn = '00'.str_pad($i, 8, '0', STR_PAD_LEFT);
 
             $user = User::create([
                 'name' => $fullName,
-                'email' => strtolower(str_replace(' ', '.', $fullName)) . $i . '@student.school.id',
+                'email' => strtolower(str_replace(' ', '.', $fullName)).$i.'@student.school.id',
                 'password' => Hash::make('password'),
                 'kelas_id' => $kelas->id,
                 'jurusan_id' => $kelas->jurusan_id,
@@ -62,8 +62,8 @@ class SiswaSeeder extends Seeder
                 'nisn' => $nisn,
                 'gender' => $gender,
                 'birth_date' => $birthDate,
-                'phone' => '08' . rand(1000000000, 9999999999),
-                'address' => 'Jl. Contoh No. ' . rand(1, 100) . ', Jakarta',
+                'phone' => '08'.rand(1000000000, 9999999999),
+                'address' => 'Jl. Contoh No. '.rand(1, 100).', Jakarta',
             ]);
 
             if ($siswaRole) {

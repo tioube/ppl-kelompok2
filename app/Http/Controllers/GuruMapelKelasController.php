@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\GuruMapelKelas;
-use App\Models\User;
-use App\Models\MataPelajaran;
 use App\Models\Kelas;
+use App\Models\MataPelajaran;
+use App\Models\User;
 use App\Services\GuruMapelKelasGeneratorService;
+use Illuminate\Http\Request;
 
 class GuruMapelKelasController extends Controller
 {
@@ -17,6 +17,7 @@ class GuruMapelKelasController extends Controller
     {
         $this->generator = $generator;
     }
+
     public function index()
     {
         $assignments = GuruMapelKelas::with(['guru', 'mataPelajaran', 'kelas'])
@@ -25,13 +26,13 @@ class GuruMapelKelasController extends Controller
 
         return view('akademik.guru-mapel-kelas.index', [
             'title' => 'Penugasan Guru',
-            'assignments' => $assignments
+            'assignments' => $assignments,
         ]);
     }
 
     public function create()
     {
-        $gurus = User::whereHas('roles', function($query) {
+        $gurus = User::whereHas('roles', function ($query) {
             $query->where('slug', 'guru');
         })->orderBy('name')->get();
 
@@ -42,7 +43,7 @@ class GuruMapelKelasController extends Controller
             'title' => 'Tambah Penugasan Guru',
             'gurus' => $gurus,
             'mataPelajarans' => $mataPelajarans,
-            'kelas' => $kelas
+            'kelas' => $kelas,
         ]);
     }
 
@@ -72,7 +73,7 @@ class GuruMapelKelasController extends Controller
 
     public function edit(GuruMapelKelas $guruMapelKela)
     {
-        $gurus = User::whereHas('roles', function($query) {
+        $gurus = User::whereHas('roles', function ($query) {
             $query->where('slug', 'guru');
         })->orderBy('name')->get();
 
@@ -84,7 +85,7 @@ class GuruMapelKelasController extends Controller
             'assignment' => $guruMapelKela,
             'gurus' => $gurus,
             'mataPelajarans' => $mataPelajarans,
-            'kelas' => $kelas
+            'kelas' => $kelas,
         ]);
     }
 

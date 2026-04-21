@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\TahunAjaran;
 use App\Models\Jurusan;
 use App\Models\Kelas;
+use App\Models\TahunAjaran;
+use Illuminate\Database\Seeder;
 
 class AkademikSeeder extends Seeder
 {
@@ -48,4 +48,3 @@ class AkademikSeeder extends Seeder
         Kelas::create(['nama' => 'XII Bahasa 1', 'jurusan_id' => $bahasa->id]);
     }
 }
-

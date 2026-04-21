@@ -22,7 +22,7 @@ class ShowRbacInfo extends Command
         $roles = Role::with('permissions')->get();
         foreach ($roles as $role) {
             $this->line("  - {$role->name} ({$role->slug})");
-            $this->line("    Permissions: " . $role->permissions->count());
+            $this->line('    Permissions: '.$role->permissions->count());
         }
         $this->newLine();
 

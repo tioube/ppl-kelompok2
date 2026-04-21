@@ -10,6 +10,7 @@ class JurusanController extends Controller
     public function index()
     {
         $jurusans = Jurusan::latest()->paginate(10);
+
         return view('akademik.jurusan.index', compact('jurusans'));
     }
 

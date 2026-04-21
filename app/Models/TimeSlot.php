@@ -24,4 +24,3 @@ class TimeSlot extends Model
         return $this->type === 'teaching';
     }
 }
-

@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use App\Models\GuruMapelKelas;
-use App\Models\User;
-use App\Models\MataPelajaran;
 use App\Models\Kelas;
+use App\Models\MataPelajaran;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class GuruMapelKelasGeneratorService
@@ -17,7 +17,7 @@ class GuruMapelKelasGeneratorService
         try {
             GuruMapelKelas::query()->delete();
 
-            $gurus = User::whereHas('roles', function($query) {
+            $gurus = User::whereHas('roles', function ($query) {
                 $query->where('slug', 'guru');
             })->get();
 
@@ -26,9 +26,10 @@ class GuruMapelKelasGeneratorService
 
             if ($gurus->isEmpty() || $mataPelajarans->isEmpty() || $kelasList->isEmpty()) {
                 DB::rollBack();
+
                 return [
                     'success' => false,
-                    'message' => 'Data guru, mata pelajaran, atau kelas tidak lengkap untuk generate otomatis.'
+                    'message' => 'Data guru, mata pelajaran, atau kelas tidak lengkap untuk generate otomatis.',
                 ];
             }
 
@@ -60,15 +61,16 @@ class GuruMapelKelasGeneratorService
 
             return [
                 'success' => true,
-                'message' => 'Berhasil generate ' . count($assignmentData) . ' penugasan guru otomatis.',
-                'total' => count($assignmentData)
+                'message' => 'Berhasil generate '.count($assignmentData).' penugasan guru otomatis.',
+                'total' => count($assignmentData),
             ];
 
         } catch (\Exception $e) {
             DB::rollBack();
+
             return [
                 'success' => false,
-                'message' => 'Gagal generate penugasan: ' . $e->getMessage()
+                'message' => 'Gagal generate penugasan: '.$e->getMessage(),
             ];
         }
     }
@@ -81,14 +83,13 @@ class GuruMapelKelasGeneratorService
 
             return [
                 'success' => true,
-                'message' => "Berhasil menghapus $count penugasan guru."
+                'message' => "Berhasil menghapus $count penugasan guru.",
             ];
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Gagal menghapus penugasan: ' . $e->getMessage()
+                'message' => 'Gagal menghapus penugasan: '.$e->getMessage(),
             ];
         }
     }
 }
-

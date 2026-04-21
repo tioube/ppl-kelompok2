@@ -2,16 +2,18 @@
 
 namespace App\Services;
 
-use App\Models\Schedule;
-use App\Models\TimeSlot;
 use App\Models\GuruMapelKelas;
 use App\Models\Kelas;
+use App\Models\Schedule;
+use App\Models\TimeSlot;
 use Illuminate\Support\Facades\DB;
 
 class ScheduleGeneratorService
 {
     private $maxUniqueSubjectsPerDay = 6;
+
     private $maxSlotsPerDay = 10;
+
     private $timeSlotsCache = [];
 
     public function generateScheduleForKelas(Kelas $kelas)
@@ -56,14 +58,16 @@ class ScheduleGeneratorService
                     $assigned = false;
 
                     foreach ($teachingSlots as $day => $slots) {
-                        if ($assigned) break;
+                        if ($assigned) {
+                            break;
+                        }
 
                         $dailyCount = $this->getDailyMapelCount($scheduleData, $day, $mapel->id);
                         if ($dailyCount + $blockSize > $maxPerDay) {
                             continue;
                         }
 
-                        if ($mapelWeeklyCount[$mapel->id] + $blockSize > $totalSlots) {
+                        if ($totalSlots < $mapelWeeklyCount[$mapel->id] + $blockSize) {
                             continue;
                         }
 
@@ -92,16 +96,18 @@ class ScheduleGeneratorService
                         }
                     }
 
-                    if (!$assigned) {
+                    if (! $assigned) {
                         foreach ($teachingSlots as $day => $slots) {
-                            if ($assigned) break;
+                            if ($assigned) {
+                                break;
+                            }
 
                             $dailyCount = $this->getDailyMapelCount($scheduleData, $day, $mapel->id);
                             if ($dailyCount + $blockSize > $maxPerDay) {
                                 continue;
                             }
 
-                            if ($mapelWeeklyCount[$mapel->id] + $blockSize > $totalSlots) {
+                            if ($totalSlots < $mapelWeeklyCount[$mapel->id] + $blockSize) {
                                 continue;
                             }
 
@@ -134,15 +140,16 @@ class ScheduleGeneratorService
 
             return [
                 'success' => true,
-                'message' => 'Jadwal berhasil digenerate untuk kelas ' . $kelas->nama,
-                'total_slots' => count($scheduleData)
+                'message' => 'Jadwal berhasil digenerate untuk kelas '.$kelas->nama,
+                'total_slots' => count($scheduleData),
             ];
 
         } catch (\Exception $e) {
             DB::rollBack();
+
             return [
                 'success' => false,
-                'message' => 'Gagal generate jadwal: ' . $e->getMessage()
+                'message' => 'Gagal generate jadwal: '.$e->getMessage(),
             ];
         }
     }
@@ -174,6 +181,7 @@ class ScheduleGeneratorService
                 $count++;
             }
         }
+
         return $count;
     }
 
@@ -186,13 +194,14 @@ class ScheduleGeneratorService
                 $subjects[$schedule['mata_pelajaran_id']] = true;
             }
         }
+
         return count($subjects);
     }
 
     private function findConsecutiveSlots($scheduleData, $slots, $blockSize)
     {
         $usedSlotIds = array_column($scheduleData, 'time_slot_id');
-        $availableSlots = $slots->reject(function($slot) use ($usedSlotIds) {
+        $availableSlots = $slots->reject(function ($slot) use ($usedSlotIds) {
             return in_array($slot->id, $usedSlotIds);
         })->values();
 
@@ -205,7 +214,7 @@ class ScheduleGeneratorService
             $expectedIndex = $availableSlots[$i]->slot_index;
 
             for ($j = 0; $j < $blockSize; $j++) {
-                if (!isset($availableSlots[$i + $j]) || $availableSlots[$i + $j]->slot_index != $expectedIndex + $j) {
+                if (! isset($availableSlots[$i + $j]) || $availableSlots[$i + $j]->slot_index != $expectedIndex + $j) {
                     $consecutive = false;
                     break;
                 }
@@ -243,9 +252,8 @@ class ScheduleGeneratorService
             }
         }
 
-        return $slots->reject(function($slot) use ($usedSlotIds, $guruSlotIds) {
+        return $slots->reject(function ($slot) use ($usedSlotIds, $guruSlotIds) {
             return in_array($slot->id, $usedSlotIds) || in_array($slot->id, $guruSlotIds);
         })->values();
     }
 }
-

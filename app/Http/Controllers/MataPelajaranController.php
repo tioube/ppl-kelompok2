@@ -13,7 +13,7 @@ class MataPelajaranController extends Controller
 
         return view('pages.mata-pelajaran.index', [
             'title' => 'List Mata Pelajaran',
-            'mataPelajaran' => $mataPelajaran
+            'mataPelajaran' => $mataPelajaran,
         ]);
     }
 
@@ -25,13 +25,13 @@ class MataPelajaranController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'kode'          => 'required|string|max:20|unique:mata_pelajaran,kode',
-            'nama'          => 'required|string|max:255',
-            'kategori'      => 'required|in:Wajib,Peminatan,Lintas Minat',
+            'kode' => 'required|string|max:20|unique:mata_pelajaran,kode',
+            'nama' => 'required|string|max:255',
+            'kategori' => 'required|in:Wajib,Peminatan,Lintas Minat',
             'jam_pelajaran' => 'required|integer|min:1|max:20',
             'preferred_block' => 'required|integer|min:1|max:3',
-            'max_per_day'   => 'required|integer|min:1|max:5',
-            'deskripsi'     => 'nullable|string',
+            'max_per_day' => 'required|integer|min:1|max:5',
+            'deskripsi' => 'nullable|string',
         ]);
 
         MataPelajaran::create($validated);
@@ -43,7 +43,7 @@ class MataPelajaranController extends Controller
     public function edit(MataPelajaran $mataPelajaran)
     {
         return view('pages.mata-pelajaran.edit', [
-            'title'         => 'Edit Mata Pelajaran',
+            'title' => 'Edit Mata Pelajaran',
             'mataPelajaran' => $mataPelajaran,
         ]);
     }
@@ -51,13 +51,13 @@ class MataPelajaranController extends Controller
     public function update(Request $request, MataPelajaran $mataPelajaran)
     {
         $validated = $request->validate([
-            'kode'          => 'required|string|max:20|unique:mata_pelajaran,kode,' . $mataPelajaran->id,
-            'nama'          => 'required|string|max:255',
-            'kategori'      => 'required|in:Wajib,Peminatan,Lintas Minat',
+            'kode' => 'required|string|max:20|unique:mata_pelajaran,kode,'.$mataPelajaran->id,
+            'nama' => 'required|string|max:255',
+            'kategori' => 'required|in:Wajib,Peminatan,Lintas Minat',
             'jam_pelajaran' => 'required|integer|min:1|max:20',
             'preferred_block' => 'required|integer|min:1|max:3',
-            'max_per_day'   => 'required|integer|min:1|max:5',
-            'deskripsi'     => 'nullable|string',
+            'max_per_day' => 'required|integer|min:1|max:5',
+            'deskripsi' => 'nullable|string',
         ]);
 
         $mataPelajaran->update($validated);

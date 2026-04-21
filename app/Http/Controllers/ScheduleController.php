@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Schedule;
+use App\Models\GuruMapelKelas;
 use App\Models\Kelas;
+use App\Models\MataPelajaran;
+use App\Models\Schedule;
 use App\Models\TimeSlot;
+use App\Models\User;
 use App\Services\ScheduleGeneratorService;
+use Illuminate\Http\Request;
 
 class ScheduleController extends Controller
 {
@@ -42,14 +45,14 @@ class ScheduleController extends Controller
             'kelasList' => $kelasList,
             'selectedKelasId' => $selectedKelasId,
             'schedules' => $schedules,
-            'timeSlotsByDay' => $timeSlotsByDay
+            'timeSlotsByDay' => $timeSlotsByDay,
         ]);
     }
 
     public function generate(Request $request)
     {
         $validated = $request->validate([
-            'kelas_id' => 'required|exists:kelas,id'
+            'kelas_id' => 'required|exists:kelas,id',
         ]);
 
         $kelas = Kelas::findOrFail($validated['kelas_id']);
@@ -67,7 +70,7 @@ class ScheduleController extends Controller
     public function destroy(Request $request)
     {
         $validated = $request->validate([
-            'kelas_id' => 'required|exists:kelas,id'
+            'kelas_id' => 'required|exists:kelas,id',
         ]);
 
         Schedule::where('kelas_id', $validated['kelas_id'])->delete();
@@ -107,7 +110,7 @@ class ScheduleController extends Controller
         ]);
 
         $schedule = Schedule::findOrFail($validated['schedule_id']);
-        $targetSlot = \App\Models\TimeSlot::findOrFail($validated['target_slot_id']);
+        $targetSlot = TimeSlot::findOrFail($validated['target_slot_id']);
 
         if ($targetSlot->type !== 'teaching') {
             return redirect()->back()
@@ -166,7 +169,7 @@ class ScheduleController extends Controller
         }
 
         $mataPelajaranId = $validated['mata_pelajaran_id'] ?? $schedule->mata_pelajaran_id;
-        $mataPelajaran = \App\Models\MataPelajaran::find($mataPelajaranId);
+        $mataPelajaran = MataPelajaran::find($mataPelajaranId);
 
         if ($mataPelajaran) {
             $oldTimeSlot = $schedule->timeSlot;
@@ -175,7 +178,7 @@ class ScheduleController extends Controller
                 $dailyCount = Schedule::where('kelas_id', $schedule->kelas_id)
                     ->where('mata_pelajaran_id', $mataPelajaran->id)
                     ->where('id', '!=', $id)
-                    ->whereHas('timeSlot', function($query) use ($newTimeSlot) {
+                    ->whereHas('timeSlot', function ($query) use ($newTimeSlot) {
                         $query->where('day', $newTimeSlot->day);
                     })
                     ->count();
@@ -197,8 +200,8 @@ class ScheduleController extends Controller
     {
         $schedule = Schedule::with(['kelas', 'timeSlot', 'mataPelajaran', 'guru'])->findOrFail($id);
         $timeSlots = TimeSlot::where('type', 'teaching')->orderBy('day')->orderBy('slot_index')->get();
-        $mataPelajarans = \App\Models\MataPelajaran::orderBy('nama')->get();
-        $gurus = \App\Models\User::whereHas('roles', function($query) {
+        $mataPelajarans = MataPelajaran::orderBy('nama')->get();
+        $gurus = User::whereHas('roles', function ($query) {
             $query->where('slug', 'guru');
         })->orderBy('name')->get();
 
@@ -210,7 +213,7 @@ class ScheduleController extends Controller
         $kelasId = $request->get('kelas_id');
         $slotId = $request->get('slot_id');
 
-        if (!$kelasId || !$slotId) {
+        if (! $kelasId || ! $slotId) {
             return redirect()->route('schedules.index')
                 ->with('error', 'Kelas dan slot harus dipilih!');
         }
@@ -232,7 +235,7 @@ class ScheduleController extends Controller
                 ->with('error', 'Slot ini sudah terisi!');
         }
 
-        $assignments = \App\Models\GuruMapelKelas::where('kelas_id', $kelasId)
+        $assignments = GuruMapelKelas::where('kelas_id', $kelasId)
             ->with(['guru', 'mataPelajaran'])
             ->get();
 
@@ -247,7 +250,7 @@ class ScheduleController extends Controller
             'guru_mapel_kelas_id' => 'required|exists:guru_mapel_kelas,id',
         ]);
 
-        $assignment = \App\Models\GuruMapelKelas::findOrFail($validated['guru_mapel_kelas_id']);
+        $assignment = GuruMapelKelas::findOrFail($validated['guru_mapel_kelas_id']);
 
         if ($assignment->kelas_id != $validated['kelas_id']) {
             return redirect()->back()
@@ -283,7 +286,7 @@ class ScheduleController extends Controller
 
         $dailyCount = Schedule::where('kelas_id', $validated['kelas_id'])
             ->where('mata_pelajaran_id', $mataPelajaran->id)
-            ->whereHas('timeSlot', function($query) use ($timeSlot) {
+            ->whereHas('timeSlot', function ($query) use ($timeSlot) {
                 $query->where('day', $timeSlot->day);
             })
             ->count();
