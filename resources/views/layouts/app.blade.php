@@ -8,6 +8,11 @@
 
     <title>{{ $title ?? 'Dashboard' }} | TailAdmin - Laravel Tailwind CSS Admin Dashboard Template</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/images/logo/al-azhar.svg">
+    <link rel="shortcut icon" type="image/png" href="/images/logo/al-azhar.svg">
+    <link rel="apple-touch-icon" href="/images/logo/al-azhar.svg">
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
