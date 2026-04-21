@@ -2,44 +2,37 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'kelas_id',
+        'jurusan_id',
+        'tahun_ajaran_id',
+        'mata_pelajaran_id',
+        'photo_profile',
+        'nisn',
+        'address',
+        'phone',
+        'birth_date',
+        'gender',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -48,14 +41,114 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Get the user's initials
-     */
     public function initials(): string
     {
         return Str::of($this->name)
             ->explode(' ')
             ->map(fn (string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'role_user')->withTimestamps();
+    }
+
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class, 'permission_user')->withTimestamps();
+    }
+
+    public function hasRole(string|array $roles): bool
+    {
+        if (is_array($roles)) {
+            return $this->roles()->whereIn('slug', $roles)->exists();
+        }
+
+        return $this->roles()->where('slug', $roles)->exists();
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        return $this->hasPermissionThroughRole($permission) ||
+               $this->hasPermissionDirect($permission);
+    }
+
+    public function hasPermissionThroughRole(string $permission): bool
+    {
+        foreach ($this->roles as $role) {
+            if ($role->hasPermission($permission)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function hasPermissionDirect(string $permission): bool
+    {
+        return $this->permissions()->where('slug', $permission)->exists();
+    }
+
+    public function assignRole(Role|string $role): void
+    {
+        if (is_string($role)) {
+            $role = Role::where('slug', $role)->firstOrFail();
+        }
+
+        $this->roles()->syncWithoutDetaching($role);
+    }
+
+    public function removeRole(Role|string $role): void
+    {
+        if (is_string($role)) {
+            $role = Role::where('slug', $role)->firstOrFail();
+        }
+
+        $this->roles()->detach($role);
+    }
+
+    public function givePermissionTo(Permission|string $permission): void
+    {
+        if (is_string($permission)) {
+            $permission = Permission::where('slug', $permission)->firstOrFail();
+        }
+
+        $this->permissions()->syncWithoutDetaching($permission);
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole('super-admin');
+    }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class);
+    }
+
+    public function jurusan()
+    {
+        return $this->belongsTo(Jurusan::class);
+    }
+
+    public function tahunAjaran()
+    {
+        return $this->belongsTo(TahunAjaran::class);
+    }
+
+    public function mataPelajaran()
+    {
+        return $this->belongsTo(MataPelajaran::class);
+    }
+
+    public function guruMapelKelas()
+    {
+        return $this->hasMany(GuruMapelKelas::class, 'guru_id');
+    }
+
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class, 'guru_id');
     }
 }
