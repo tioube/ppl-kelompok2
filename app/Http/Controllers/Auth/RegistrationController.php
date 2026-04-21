@@ -35,6 +35,8 @@ class RegistrationController extends Controller
 
         event(new Registered($user));
 
+        $user = $user->fresh();
+
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));
