@@ -58,19 +58,23 @@
     @mouseenter="if (!$store.sidebar.isExpanded) $store.sidebar.setHovered(true)"
     @mouseleave="$store.sidebar.setHovered(false)">
     <!-- Logo Section -->
-    <div class="pt-8 pb-7 flex"
+    <div class="pt-8 pb-7 flex items-center justify-center"
         :class="(!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen) ?
         'xl:justify-center' :
-        'justify-start'">
-        <a href="/">
+        'justify-center'">
+        <a href="/" class="flex items-center justify-center">
+            <!-- Full Logo (Expanded) -->
             <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
-                class="dark:hidden" src="/images/logo/logo.svg" alt="Logo" width="150" height="40" />
-            <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
-                class="hidden dark:block" src="/images/logo/logo-dark.svg" alt="Logo" width="150"
-                height="40" />
-            <img x-show="!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen"
-                src="/images/logo/logo-icon.svg" alt="Logo" width="32" height="32" />
+                src="/images/logo/al-azhar.svg"
+                alt="Al-Azhar Logo"
+                class="max-h-16 w-auto object-contain transition-all duration-200"
+                style="max-width: 200px;" />
 
+            <!-- Icon Logo (Collapsed) -->
+            <img x-show="!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen"
+                src="/images/logo/al-azhar.svg"
+                alt="Al-Azhar Logo"
+                class="h-12 w-12 object-contain transition-all duration-200" />
         </a>
     </div>
 
@@ -216,10 +220,7 @@
             </div>
         </nav>
 
-        <!-- Sidebar Widget -->
-        <div x-data x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen" x-transition class="mt-auto">
-            @include('layouts.sidebar-widget')
-        </div>
+
 
     </div>
 </aside>

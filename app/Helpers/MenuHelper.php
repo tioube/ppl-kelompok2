@@ -34,14 +34,79 @@ class MenuHelper
 
     public static function getMenuGroups(): array
     {
-        return [
+        $user = auth()->user();
+
+        $menuGroups = [
             [
                 'title' => 'Menu',
                 'items' => self::getMainNavItems(),
             ],
-            [
+        ];
+
+        if ($user && $user->hasRole('super-admin')) {
+            $menuGroups[] = [
+                'title' => 'Super Admin',
+                'items' => self::getSuperAdminItems(),
+            ];
+        }
+
+        if ($user && ($user->hasRole('super-admin') || $user->hasRole('admin'))) {
+            $menuGroups[] = [
                 'title' => 'Administration',
                 'items' => self::getAdministrationItems(),
+            ];
+        }
+
+        return $menuGroups;
+    }
+
+    public static function getSuperAdminItems(): array
+    {
+        return [
+            [
+                'icon' => 'user-profile',
+                'name' => 'List Guru',
+                'path' => route('guru.index', absolute: false),
+            ],
+            [
+                'icon' => 'user-profile',
+                'name' => 'List Siswa',
+                'path' => route('siswa.index', absolute: false),
+            ],
+            [
+                'icon' => 'calendar',
+                'name' => 'Akademik',
+                'subItems' => [
+                    [
+                        'name' => 'Tahun Ajaran',
+                        'path' => route('tahun-ajaran.index', absolute: false),
+                    ],
+                    [
+                        'icon' => 'tables',
+                        'name' => 'List Mata Pelajaran',
+                        'path' => route('mata-pelajaran.index', absolute: false),
+                    ],
+                    [
+                        'name' => 'Jurusan',
+                        'path' => route('jurusan.index', absolute: false),
+                    ],
+                    [
+                        'name' => 'Kelas',
+                        'path' => route('kelas.index', absolute: false),
+                    ],
+                    [
+                        'name' => 'Penugasan Guru',
+                        'path' => route('guru-mapel-kelas.index', absolute: false),
+                    ],
+                    [
+                        'name' => 'Jadwal Pelajaran (Lama)',
+                        'path' => route('jadwal-pelajaran.index', absolute: false),
+                    ],
+                    [
+                        'name' => 'Jadwal Pelajaran (Baru)',
+                        'path' => route('schedules.index', absolute: false),
+                    ],
+                ],
             ],
         ];
     }
