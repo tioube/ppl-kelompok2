@@ -83,18 +83,21 @@ This guide provides a systematic approach to adding new features to the TailAdmi
 ## 🔄 Development Workflow
 
 ### Phase 1: Planning (1-2 hours)
+
 1. Define feature requirements
 2. Design database schema
 3. Plan user interface
 4. Identify required permissions
 
 ### Phase 2: Database (30 min - 1 hour)
+
 1. Create migration
 2. Create/update model
 3. Define relationships
 4. Run migration
 
 ### Phase 3: Backend (2-4 hours)
+
 1. Create controller
 2. Create service (if needed)
 3. Add validation
@@ -102,18 +105,21 @@ This guide provides a systematic approach to adding new features to the TailAdmi
 5. Test with Postman/curl
 
 ### Phase 4: Frontend (2-4 hours)
+
 1. Create views
 2. Add forms
 3. Add JavaScript (if needed)
 4. Style with Tailwind CSS
 
 ### Phase 5: Testing (1-2 hours)
+
 1. Manual testing
 2. Write automated tests
 3. Test edge cases
 4. Fix bugs
 
 ### Phase 6: Documentation (30 min)
+
 1. Update README
 2. Write feature docs
 3. Add code comments
@@ -129,33 +135,40 @@ This guide provides a systematic approach to adding new features to the TailAdmi
 # Feature: [Feature Name]
 
 ## Requirements
+
 - What should this feature do?
 - Who will use it?
 - What problems does it solve?
 
 ## Database Schema
+
 - What tables are needed?
 - What fields are required?
 - What relationships exist?
 
 ## UI/UX
+
 - What pages are needed?
 - What forms/inputs are required?
 - How should users interact?
 
 ## Permissions
+
 - What roles can access?
 - What actions need permissions?
 
 ## Dependencies
+
 - What existing features does this depend on?
 - What libraries/packages are needed?
 
 ## Validation Rules
+
 - What data needs validation?
 - What are the constraints?
 
 ## Success Criteria
+
 - How do we know it works?
 - What tests should pass?
 ```
@@ -197,21 +210,21 @@ return new class extends Migration
     {
         Schema::create('nilai', function (Blueprint $table) {
             $table->id();
-            
+
             // Foreign keys
             $table->foreignId('siswa_id')->constrained('siswa')->onDelete('cascade');
             $table->foreignId('mata_pelajaran_id')->constrained('mata_pelajaran')->onDelete('cascade');
             $table->foreignId('tahun_ajaran_id')->constrained('tahun_ajaran')->onDelete('cascade');
             $table->foreignId('guru_id')->constrained('users')->onDelete('cascade');
-            
+
             // Data columns
             $table->enum('semester', ['ganjil', 'genap']);
             $table->enum('jenis', ['tugas', 'uts', 'uas', 'praktek']);
             $table->decimal('nilai', 5, 2); // e.g., 98.50
             $table->text('catatan')->nullable();
-            
+
             $table->timestamps();
-            
+
             // Indexes for performance
             $table->index('siswa_id');
             $table->index('mata_pelajaran_id');
@@ -227,6 +240,7 @@ return new class extends Migration
 ```
 
 **Run Migration:**
+
 ```bash
 php artisan migrate
 ```
@@ -257,7 +271,7 @@ use Illuminate\Database\Eloquent\Model;
 class Nilai extends Model
 {
     protected $table = 'nilai';
-    
+
     protected $fillable = [
         'siswa_id',
         'mata_pelajaran_id',
@@ -268,32 +282,32 @@ class Nilai extends Model
         'nilai',
         'catatan',
     ];
-    
+
     protected $casts = [
         'nilai' => 'decimal:2',
     ];
-    
+
     // Relationships
     public function siswa()
     {
         return $this->belongsTo(Siswa::class);
     }
-    
+
     public function mataPelajaran()
     {
         return $this->belongsTo(MataPelajaran::class);
     }
-    
+
     public function tahunAjaran()
     {
         return $this->belongsTo(TahunAjaran::class);
     }
-    
+
     public function guru()
     {
         return $this->belongsTo(User::class, 'guru_id');
     }
-    
+
     // Accessors (optional)
     public function getNilaiHurufAttribute()
     {
@@ -303,13 +317,13 @@ class Nilai extends Model
         if ($this->nilai >= 60) return 'D';
         return 'E';
     }
-    
+
     // Scopes (optional)
     public function scopeSemesterGanjil($query)
     {
         return $query->where('semester', 'ganjil');
     }
-    
+
     public function scopeSemesterGenap($query)
     {
         return $query->where('semester', 'genap');
@@ -352,13 +366,13 @@ class NilaiController extends Controller
         $nilai = Nilai::with(['siswa', 'mataPelajaran', 'tahunAjaran', 'guru'])
             ->latest()
             ->paginate(15);
-        
+
         return view('akademik.nilai.index', [
             'title' => 'Daftar Nilai',
             'nilai' => $nilai
         ]);
     }
-    
+
     public function create()
     {
         $siswa = Siswa::orderBy('nama')->get();
@@ -367,7 +381,7 @@ class NilaiController extends Controller
         $guru = User::whereHas('roles', function($query) {
             $query->where('slug', 'guru');
         })->orderBy('name')->get();
-        
+
         return view('akademik.nilai.create', [
             'title' => 'Tambah Nilai',
             'siswa' => $siswa,
@@ -376,7 +390,7 @@ class NilaiController extends Controller
             'guru' => $guru
         ]);
     }
-    
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -389,7 +403,7 @@ class NilaiController extends Controller
             'nilai' => 'required|numeric|min:0|max:100',
             'catatan' => 'nullable|string|max:500',
         ]);
-        
+
         // Check duplicate
         $exists = Nilai::where('siswa_id', $validated['siswa_id'])
             ->where('mata_pelajaran_id', $validated['mata_pelajaran_id'])
@@ -397,19 +411,19 @@ class NilaiController extends Controller
             ->where('semester', $validated['semester'])
             ->where('jenis', $validated['jenis'])
             ->exists();
-        
+
         if ($exists) {
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['error' => 'Nilai untuk kombinasi ini sudah ada!']);
         }
-        
+
         Nilai::create($validated);
-        
+
         return redirect()->route('nilai.index')
             ->with('success', 'Nilai berhasil ditambahkan.');
     }
-    
+
     public function edit(Nilai $nilai)
     {
         $siswa = Siswa::orderBy('nama')->get();
@@ -418,7 +432,7 @@ class NilaiController extends Controller
         $guru = User::whereHas('roles', function($query) {
             $query->where('slug', 'guru');
         })->orderBy('name')->get();
-        
+
         return view('akademik.nilai.edit', [
             'title' => 'Edit Nilai',
             'nilai' => $nilai,
@@ -428,7 +442,7 @@ class NilaiController extends Controller
             'guru' => $guru
         ]);
     }
-    
+
     public function update(Request $request, Nilai $nilai)
     {
         $validated = $request->validate([
@@ -441,17 +455,17 @@ class NilaiController extends Controller
             'nilai' => 'required|numeric|min:0|max:100',
             'catatan' => 'nullable|string|max:500',
         ]);
-        
+
         $nilai->update($validated);
-        
+
         return redirect()->route('nilai.index')
             ->with('success', 'Nilai berhasil diperbarui.');
     }
-    
+
     public function destroy(Nilai $nilai)
     {
         $nilai->delete();
-        
+
         return redirect()->route('nilai.index')
             ->with('success', 'Nilai berhasil dihapus.');
     }
@@ -465,6 +479,7 @@ class NilaiController extends Controller
 **Purpose:** Separate complex business logic from controller
 
 **Use Service When:**
+
 - Complex calculations
 - Multiple database operations
 - External API calls
@@ -496,18 +511,18 @@ class NilaiCalculationService
             ->with('mataPelajaran')
             ->get()
             ->groupBy('mata_pelajaran_id');
-        
+
         $rapor = [];
-        
+
         foreach ($nilai as $mapelId => $nilaiList) {
             $tugas = $nilaiList->where('jenis', 'tugas')->avg('nilai') ?? 0;
             $uts = $nilaiList->where('jenis', 'uts')->first()->nilai ?? 0;
             $uas = $nilaiList->where('jenis', 'uas')->first()->nilai ?? 0;
             $praktek = $nilaiList->where('jenis', 'praktek')->avg('nilai') ?? 0;
-            
+
             // Formula: (30% Tugas + 30% UTS + 40% UAS + 10% Praktek) / 1.1
             $nilaiAkhir = (($tugas * 0.3) + ($uts * 0.3) + ($uas * 0.4) + ($praktek * 0.1)) / 1.1;
-            
+
             $rapor[] = [
                 'mata_pelajaran' => $nilaiList->first()->mataPelajaran->nama,
                 'nilai_tugas' => round($tugas, 2),
@@ -519,10 +534,10 @@ class NilaiCalculationService
                 'predikat' => $this->getPredikat($nilaiAkhir),
             ];
         }
-        
+
         return $rapor;
     }
-    
+
     private function getNilaiHuruf($nilai)
     {
         if ($nilai >= 90) return 'A';
@@ -531,7 +546,7 @@ class NilaiCalculationService
         if ($nilai >= 60) return 'D';
         return 'E';
     }
-    
+
     private function getPredikat($nilai)
     {
         if ($nilai >= 90) return 'Sangat Baik';
@@ -544,18 +559,19 @@ class NilaiCalculationService
 ```
 
 **Use in Controller:**
+
 ```php
 use App\Services\NilaiCalculationService;
 
 class NilaiController extends Controller
 {
     protected $nilaiService;
-    
+
     public function __construct(NilaiCalculationService $nilaiService)
     {
         $this->nilaiService = $nilaiService;
     }
-    
+
     public function rapor($siswaId)
     {
         $rapor = $this->nilaiService->calculateRapor($siswaId, 1, 'ganjil');
@@ -576,10 +592,10 @@ class NilaiController extends Controller
 // Add inside super-admin middleware group
 Route::middleware('role:super-admin')->group(function () {
     // ... existing routes ...
-    
+
     // Nilai routes
     Route::resource('nilai', App\Http\Controllers\NilaiController::class);
-    
+
     // Custom routes (if needed)
     Route::get('/nilai/rapor/{siswa}', [App\Http\Controllers\NilaiController::class, 'rapor'])
         ->name('nilai.rapor');
@@ -623,6 +639,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 **Purpose:** User interface
 
 **Folder Structure:**
+
 ```
 resources/views/akademik/nilai/
 ├── index.blade.php      # List view
@@ -885,6 +902,7 @@ resources/views/akademik/nilai/
 
 ```markdown
 ✅ CREATE (Tambah)
+
 - [ ] Form displays correctly
 - [ ] All dropdowns populated
 - [ ] Validation works (required fields)
@@ -893,12 +911,14 @@ resources/views/akademik/nilai/
 - [ ] Redirects correctly
 
 ✅ READ (List)
+
 - [ ] All data displays
 - [ ] Pagination works
 - [ ] Search/filter works (if implemented)
 - [ ] No errors in console
 
 ✅ UPDATE (Edit)
+
 - [ ] Edit form pre-populated
 - [ ] Can update all fields
 - [ ] Validation works
@@ -906,12 +926,14 @@ resources/views/akademik/nilai/
 - [ ] Data updated in database
 
 ✅ DELETE
+
 - [ ] Confirmation dialog appears
 - [ ] Data deleted from database
 - [ ] Success message shown
 - [ ] No orphaned records
 
 ✅ EDGE CASES
+
 - [ ] Duplicate prevention works
 - [ ] Foreign key constraints work
 - [ ] Error messages are clear
@@ -954,7 +976,7 @@ class NilaiTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('super-admin');
-        
+
         $siswa = Siswa::factory()->create();
 
         $data = [
@@ -976,6 +998,7 @@ class NilaiTest extends TestCase
 ```
 
 **Run Tests:**
+
 ```bash
 php artisan test
 # or
@@ -994,15 +1017,19 @@ Create feature documentation file.
 # Nilai (Grades) Feature Documentation
 
 ## Overview
+
 Feature for managing student grades across subjects, semesters, and assessment types.
 
 ## Database Schema
+
 Table: `nilai`
+
 - Primary Key: id
 - Foreign Keys: siswa_id, mata_pelajaran_id, tahun_ajaran_id, guru_id
 - Fields: semester, jenis, nilai, catatan
 
 ## Routes
+
 - GET /nilai - List all grades
 - GET /nilai/create - Create form
 - POST /nilai - Store new grade
@@ -1011,6 +1038,7 @@ Table: `nilai`
 - DELETE /nilai/{id} - Delete grade
 
 ## Validation Rules
+
 - siswa_id: required, exists
 - mata_pelajaran_id: required, exists
 - nilai: required, numeric, 0-100
@@ -1018,15 +1046,17 @@ Table: `nilai`
 - jenis: required, enum(tugas, uts, uas, praktek)
 
 ## Business Logic
+
 - Prevents duplicate grades for same student, subject, year, semester, type
 - Calculates grade letter (A-E) based on numeric value
 - Can calculate rapor (report card) with weighted average
 
 ## Files Created/Modified
+
 - Migration: 2026_04_22_XXXXXX_create_nilai_table.php
 - Model: app/Models/Nilai.php
 - Controller: app/Http/Controllers/NilaiController.php
-- Views: resources/views/akademik/nilai/*.blade.php
+- Views: resources/views/akademik/nilai/\*.blade.php
 - Routes: routes/web.php
 ```
 
@@ -1143,12 +1173,12 @@ public function test_nilai_validation()
 {
     // Arrange
     $user = User::factory()->create();
-    
+
     // Act
     $response = $this->actingAs($user)->post(route('nilai.store'), [
         'nilai' => 150 // Invalid
     ]);
-    
+
     // Assert
     $response->assertSessionHasErrors('nilai');
 }
@@ -1177,17 +1207,17 @@ Every feature should have:
 public function index(Request $request)
 {
     $query = Nilai::query();
-    
+
     if ($request->has('siswa_id')) {
         $query->where('siswa_id', $request->siswa_id);
     }
-    
+
     if ($request->has('semester')) {
         $query->where('semester', $request->semester);
     }
-    
+
     $nilai = $query->paginate(15);
-    
+
     return view('nilai.index', compact('nilai'));
 }
 ```
@@ -1200,7 +1230,7 @@ public function bulkDelete(Request $request)
 {
     $ids = $request->input('ids', []);
     Nilai::whereIn('id', $ids)->delete();
-    
+
     return redirect()->back()
         ->with('success', count($ids) . ' nilai berhasil dihapus.');
 }
@@ -1230,17 +1260,20 @@ public function import(Request $request)
 ### Common Issues
 
 **Issue:** Route not found
+
 ```bash
 php artisan route:clear
 php artisan route:cache
 ```
 
 **Issue:** View not found
+
 ```bash
 php artisan view:clear
 ```
 
 **Issue:** Migration fails
+
 ```bash
 php artisan migrate:rollback
 # Fix migration file
@@ -1248,6 +1281,7 @@ php artisan migrate
 ```
 
 **Issue:** Class not found
+
 ```bash
 composer dump-autoload
 ```
@@ -1258,12 +1292,14 @@ composer dump-autoload
 
 ```markdown
 ## Pre-Development
+
 - [ ] Requirements defined
 - [ ] Database schema designed
 - [ ] UI/UX planned
 - [ ] Permissions identified
 
 ## Development
+
 - [ ] Migration created and tested
 - [ ] Model created with relationships
 - [ ] Controller created with CRUD
@@ -1274,6 +1310,7 @@ composer dump-autoload
 - [ ] Authorization implemented
 
 ## Testing
+
 - [ ] Manual testing completed
 - [ ] Edge cases tested
 - [ ] Unit tests written
@@ -1281,6 +1318,7 @@ composer dump-autoload
 - [ ] Browser tests written (if needed)
 
 ## Documentation
+
 - [ ] Code comments added
 - [ ] PHPDoc blocks added
 - [ ] Feature documentation created
@@ -1288,6 +1326,7 @@ composer dump-autoload
 - [ ] Changelog updated
 
 ## Deployment
+
 - [ ] Code reviewed
 - [ ] Tests passing
 - [ ] No console errors
@@ -1312,4 +1351,3 @@ composer dump-autoload
 
 **Last Updated:** April 22, 2026  
 **Version:** 1.0
-

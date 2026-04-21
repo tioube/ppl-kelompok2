@@ -23,13 +23,13 @@
 
 ### Required Software
 
-| Software | Minimum Version | Recommended | Download Link |
-|----------|----------------|-------------|---------------|
-| PHP | 8.2 | 8.3 | https://www.php.net/downloads |
-| Composer | 2.6 | 2.7+ | https://getcomposer.org |
-| MySQL/MariaDB | 8.0 / 10.6 | 8.3 / 11.0 | https://dev.mysql.com |
-| Node.js | 18.x | 20.x LTS | https://nodejs.org |
-| npm | 9.x | 10.x | (included with Node.js) |
+| Software      | Minimum Version | Recommended | Download Link                 |
+| ------------- | --------------- | ----------- | ----------------------------- |
+| PHP           | 8.2             | 8.3         | https://www.php.net/downloads |
+| Composer      | 2.6             | 2.7+        | https://getcomposer.org       |
+| MySQL/MariaDB | 8.0 / 10.6      | 8.3 / 11.0  | https://dev.mysql.com         |
+| Node.js       | 18.x            | 20.x LTS    | https://nodejs.org            |
+| npm           | 9.x             | 10.x        | (included with Node.js)       |
 
 ### PHP Extensions Required
 
@@ -81,6 +81,7 @@ composer install --no-dev --optimize-autoloader
 ```
 
 **Expected Output:**
+
 ```
 Loading composer repositories with package information
 Installing dependencies from lock file
@@ -101,6 +102,7 @@ npm install --legacy-peer-deps
 ```
 
 **Expected Output:**
+
 ```
 added XXX packages in XXs
 ```
@@ -152,6 +154,7 @@ npm run build
 ```
 
 **Expected Output:**
+
 ```
 VITE v5.x.x  ready in XXX ms
 
@@ -218,6 +221,7 @@ php artisan migrate
 ```
 
 **Expected Output:**
+
 ```
 Migration table created successfully.
 Migrating: 2014_10_12_000000_create_users_table
@@ -251,6 +255,7 @@ mysql -u root -p tailadmin_laravel -e "SHOW TABLES;"
 ```
 
 **Expected Tables:**
+
 ```
 cache
 cache_locks
@@ -284,13 +289,13 @@ users
 
 The application includes several seeders for initial data:
 
-| Seeder | Purpose | Required |
-|--------|---------|----------|
-| `RoleSeeder` | Creates 5 roles (super-admin, admin, akademik, guru, siswa) | ✅ Yes |
-| `PermissionSeeder` | Creates permissions and assigns to roles | ✅ Yes |
-| `SuperAdminSeeder` | Creates super admin user | ✅ Yes |
-| `TimeSlotSeeder` | Creates default time slots for schedule | ✅ Yes |
-| `DatabaseSeeder` | Runs all seeders | ✅ Yes |
+| Seeder             | Purpose                                                     | Required |
+| ------------------ | ----------------------------------------------------------- | -------- |
+| `RoleSeeder`       | Creates 5 roles (super-admin, admin, akademik, guru, siswa) | ✅ Yes   |
+| `PermissionSeeder` | Creates permissions and assigns to roles                    | ✅ Yes   |
+| `SuperAdminSeeder` | Creates super admin user                                    | ✅ Yes   |
+| `TimeSlotSeeder`   | Creates default time slots for schedule                     | ✅ Yes   |
+| `DatabaseSeeder`   | Runs all seeders                                            | ✅ Yes   |
 
 ### Step 1: Run All Seeders
 
@@ -300,6 +305,7 @@ php artisan db:seed
 ```
 
 **Expected Output:**
+
 ```
 Seeding: Database\Seeders\RoleSeeder
 Seeded:  Database\Seeders\RoleSeeder (XX.XXms)
@@ -336,6 +342,7 @@ php artisan migrate:fresh --seed
 After seeding, you'll have these accounts:
 
 #### Super Admin Account
+
 ```
 Email:    super@admin.com
 Password: password
@@ -343,6 +350,7 @@ Role:     super-admin
 ```
 
 #### Test Accounts (if using factory)
+
 ```
 Email:    admin@test.com
 Password: password
@@ -369,6 +377,7 @@ php artisan storage:link
 ```
 
 **Expected Output:**
+
 ```
 The [public/storage] link has been connected to [storage/app/public].
 ```
@@ -405,6 +414,7 @@ php artisan rbac:show
 ```
 
 **Expected Output:**
+
 ```
 ┌─────────────────────────────────────────┐
 │           RBAC CONFIGURATION            │
@@ -434,6 +444,7 @@ php artisan serve
 ```
 
 **Expected Output:**
+
 ```
 INFO  Server running on [http://127.0.0.1:8000].
 
@@ -450,11 +461,13 @@ npm run dev
 ### Step 3: Access Application
 
 Open browser and navigate to:
+
 ```
 http://localhost:8000
 ```
 
 **You should see:**
+
 - ✅ TailAdmin Laravel homepage
 - ✅ Login button/link
 - ✅ No errors in browser console
@@ -463,11 +476,12 @@ http://localhost:8000
 
 1. Click "Login"
 2. Enter credentials:
-   - Email: `super@admin.com`
-   - Password: `password`
+    - Email: `super@admin.com`
+    - Password: `password`
 3. Click "Sign In"
 
 **Expected Result:**
+
 - ✅ Redirect to dashboard
 - ✅ See super-admin menu items
 - ✅ User name displayed in header
@@ -475,6 +489,7 @@ http://localhost:8000
 ### Step 5: Check Key Features
 
 Navigate through:
+
 - ✅ `/dashboard` - Dashboard displays
 - ✅ `/mata-pelajaran` - Mata Pelajaran list
 - ✅ `/guru-mapel-kelas` - Teacher assignments
@@ -513,6 +528,7 @@ php artisan test
 ### Issue 1: "Class not found" errors
 
 **Solution:**
+
 ```bash
 composer dump-autoload
 php artisan clear-compiled
@@ -522,11 +538,13 @@ php artisan optimize:clear
 ### Issue 2: Database connection refused
 
 **Check:**
+
 1. MySQL service is running
 2. Credentials in `.env` are correct
 3. Database exists
 
 **Solution:**
+
 ```bash
 # Check MySQL status (Linux)
 sudo systemctl status mysql
@@ -545,6 +563,7 @@ mysql -u root -p -h 127.0.0.1
 
 **Solution:**
 Edit `app/Providers/AppServiceProvider.php`:
+
 ```php
 use Illuminate\Support\Facades\Schema;
 
@@ -555,6 +574,7 @@ public function boot()
 ```
 
 Then:
+
 ```bash
 php artisan migrate:fresh --seed
 ```
@@ -562,6 +582,7 @@ php artisan migrate:fresh --seed
 ### Issue 4: Vite manifest not found
 
 **Solution:**
+
 ```bash
 npm install
 npm run build
@@ -571,6 +592,7 @@ php artisan view:clear
 ### Issue 5: Permission denied errors
 
 **Linux/Mac Solution:**
+
 ```bash
 sudo chown -R $USER:www-data storage
 sudo chown -R $USER:www-data bootstrap/cache
@@ -578,6 +600,7 @@ chmod -R 775 storage bootstrap/cache
 ```
 
 **Windows Solution:**
+
 ```bash
 # Run as Administrator
 icacls storage /grant Everyone:(OI)(CI)F /T
@@ -587,6 +610,7 @@ icacls bootstrap/cache /grant Everyone:(OI)(CI)F /T
 ### Issue 6: Composer memory limit
 
 **Solution:**
+
 ```bash
 # Increase memory limit temporarily
 php -d memory_limit=-1 /path/to/composer install
@@ -598,6 +622,7 @@ memory_limit = 512M
 ### Issue 7: npm install fails
 
 **Solution:**
+
 ```bash
 # Clear npm cache
 npm cache clean --force
@@ -678,6 +703,7 @@ php artisan optimize
 ### Step 4: Server Configuration
 
 **Apache (.htaccess):**
+
 ```apache
 <IfModule mod_rewrite.c>
     RewriteEngine On
@@ -686,6 +712,7 @@ php artisan optimize
 ```
 
 **Nginx:**
+
 ```nginx
 server {
     listen 80;
@@ -738,6 +765,7 @@ gzip backup_$DATE.sql
 ## 📚 Additional Resources
 
 ### Documentation Files
+
 - `README.md` - Project overview
 - `RBAC_DOCUMENTATION.md` - Role-based access control
 - `SCHEDULING_SYSTEM_IMPLEMENTATION.md` - Scheduling system details
@@ -782,6 +810,7 @@ php artisan make:seeder SeederName
 You should now have a fully functional TailAdmin Laravel application.
 
 **Next Steps:**
+
 1. Login as super-admin
 2. Create mata pelajaran (subjects)
 3. Create tahun ajaran (academic years)
@@ -791,6 +820,7 @@ You should now have a fully functional TailAdmin Laravel application.
 7. Generate schedules
 
 **Default Login:**
+
 - Email: `super@admin.com`
 - Password: `password`
 
@@ -801,4 +831,3 @@ You should now have a fully functional TailAdmin Laravel application.
 **Last Updated:** April 22, 2026  
 **Version:** 1.0  
 **Maintainer:** Development Team
-
