@@ -19,7 +19,6 @@ class UserController extends Controller
 
     public function create()
     {
-        $this->authorize('manage-users');
 
         $roles = Role::all();
         $permissions = Permission::all();
@@ -29,8 +28,6 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('manage-users');
-
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -97,8 +94,6 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        $this->authorize('manage-users');
-
         if ($user->id === auth()->id()) {
             return redirect()->route('users.index')->with('error', 'You cannot delete yourself');
         }

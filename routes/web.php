@@ -85,7 +85,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/schedules/{id}/edit', [ScheduleController::class, 'edit'])->name('schedules.edit');
         Route::put('/schedules/{id}', [ScheduleController::class, 'update'])->name('schedules.update');
     });
+});
 
+Route::middleware(['auth', 'role:super-admin'])->group(function () {
     Route::resource('users', UserController::class);
 });
 
