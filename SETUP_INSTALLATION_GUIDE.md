@@ -345,7 +345,7 @@ After seeding, you'll have these accounts:
 
 ```
 Email:    super@admin.com
-Password: password
+Password: abc123456
 Role:     super-admin
 ```
 
@@ -477,7 +477,7 @@ http://localhost:8000
 1. Click "Login"
 2. Enter credentials:
     - Email: `super@admin.com`
-    - Password: `password`
+    - Password: `abc123456`
 3. Click "Sign In"
 
 **Expected Result:**
