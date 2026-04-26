@@ -6,8 +6,6 @@
     <div class="space-y-6">
         <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="mb-6">
-                <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Generate Jadwal Otomatis</h2>
-
                 <form action="{{ route('schedules.index') }}" method="GET" class="mb-4">
                     <div class="flex items-end gap-3">
                         <div class="flex-1">
@@ -39,16 +37,16 @@
                             <button type="submit"
                                 onclick="return confirm('Generate ulang jadwal? Jadwal lama akan dihapus!')"
                                 class="bg-blue-600 hover:bg-blue-700 rounded-lg px-5 py-2.5 text-sm font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition">
-                                <i class="fas fa-magic mr-2"></i>Generate Jadwal
+                                <i class="fas fa-magic mr-2"></i>Generate Jadwal (Deprecated)
                             </button>
                         </form>
 
-                        @if($schedules && $schedules->count() > 0)
-                            <button type="button" id="toggleEditMode"
-                                class="rounded-lg border border-blue-300 bg-white px-5 py-2.5 text-sm font-medium text-blue-700 transition hover:bg-blue-50 dark:border-blue-700 dark:bg-gray-800 dark:text-blue-400">
-                                <i class="fas fa-edit mr-2"></i>Mode Edit
-                            </button>
+                        <button type="button" id="toggleEditMode"
+                            class="rounded-lg border border-blue-300 bg-white px-5 py-2.5 text-sm font-medium text-blue-700 transition hover:bg-blue-50 dark:border-blue-700 dark:bg-gray-800 dark:text-blue-400">
+                            <i class="fas fa-edit mr-2"></i>Mode Edit
+                        </button>
 
+                        @if($schedules && $schedules->count() > 0)
                             <form action="{{ route('schedules.destroy') }}" method="POST">
                                 @csrf
                                 @method('DELETE')
@@ -76,7 +74,23 @@
                 </div>
             @endif
 
+            @if($selectedKelasId && !$hasAssignments)
+                <div class="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+                    Kelas ini belum punya data <span class="font-semibold">Penugasan Guru</span>. Tambahkan dulu di menu Penugasan Guru sebelum mengelola jadwal di halaman ini.
+                </div>
+            @endif
+
+            <div class="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+                <span class="font-semibold">Deprecated:</span> Tombol <span class="font-semibold">Generate Jadwal</span> dipertahankan untuk kompatibilitas, tetapi alur yang direkomendasikan adalah pengelolaan jadwal manual melalui mode edit/tabel.
+            </div>
+
             @if($selectedKelasId && $timeSlotsByDay)
+                @if(!$schedules || $schedules->count() === 0)
+                    <div class="mb-4 rounded-lg bg-blue-50 p-4 text-sm text-blue-800 dark:bg-blue-900/20 dark:text-blue-300">
+                        Belum ada jadwal. Aktifkan <span class="font-semibold">Mode Edit</span> untuk menambahkan penugasan langsung dari tabel.
+                    </div>
+                @endif
+
             <div class="overflow-x-auto">
                 <table class="w-full border-collapse text-sm shadow-sm">
                     <thead>
@@ -91,23 +105,47 @@
                     </thead>
                     <tbody>
                             @php
-                                $maxSlots = $timeSlotsByDay->max(function($slots) {
-                                    return $slots->count();
-                                });
+                                $days = ['senin', 'selasa', 'rabu', 'kamis', 'jumat'];
+
+                                $slotsByDayAndIndex = [];
+                                $allSlotIndexes = collect();
+
+                                foreach ($days as $day) {
+                                    $daySlots = $timeSlotsByDay[$day] ?? collect();
+                                    $slotsByDayAndIndex[$day] = $daySlots->keyBy('slot_index');
+                                    $allSlotIndexes = $allSlotIndexes->merge($daySlots->pluck('slot_index'));
+                                }
+
+                                $allSlotIndexes = $allSlotIndexes->unique()->sort()->values();
                             @endphp
 
-                            @for($i = 0; $i < $maxSlots; $i++)
+                            @foreach($allSlotIndexes as $slotIndex)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                    @php
+                                        $rowTimeSlot = null;
+                                        foreach ($days as $dayKey) {
+                                            $candidateSlot = $slotsByDayAndIndex[$dayKey]->get($slotIndex) ?? null;
+                                            if ($candidateSlot) {
+                                                $rowTimeSlot = $candidateSlot;
+                                                break;
+                                            }
+                                        }
+                                    @endphp
                                     <td class="border border-gray-300 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-300">
-                                        @if(isset($timeSlotsByDay['senin'][$i]))
-                                            {{ $timeSlotsByDay['senin'][$i]->start_time }} - {{ $timeSlotsByDay['senin'][$i]->end_time }}
+                                        @if($rowTimeSlot)
+                                            {{ $rowTimeSlot->start_time }} - {{ $rowTimeSlot->end_time }}
+                                        @else
+                                            -
                                         @endif
                                     </td>
-                                    @foreach(['senin', 'selasa', 'rabu', 'kamis', 'jumat'] as $day)
+                                    @foreach($days as $day)
                                         <td class="border border-gray-300 px-4 py-3 dark:border-gray-700">
-                                            @if(isset($timeSlotsByDay[$day][$i]))
+                                            @php
+                                                $slot = $slotsByDayAndIndex[$day]->get($slotIndex) ?? null;
+                                            @endphp
+
+                                            @if($slot)
                                                 @php
-                                                    $slot = $timeSlotsByDay[$day][$i];
                                                     $schedule = $schedules ? $schedules->get($slot->id) : null;
                                                 @endphp
 
@@ -121,7 +159,7 @@
                                                         <i class="fas fa-coffee text-amber-600 dark:text-amber-400"></i>
                                                         <div class="mt-1 text-sm font-semibold text-amber-800 dark:text-amber-300">Istirahat</div>
                                                     </div>
-                                                @elseif($schedule)
+                                                @elseif($schedule && $schedule->mataPelajaran && $schedule->guru)
                                                     <div class="schedule-cell rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 p-3 shadow-sm transition-all dark:from-blue-900/30 dark:to-blue-800/20"
                                                          data-schedule-id="{{ $schedule->id }}"
                                                          data-slot-id="{{ $slot->id }}"
@@ -139,6 +177,22 @@
                                                                 <i class="fas fa-edit mr-1"></i> Edit
                                                             </a>
                                                         </div>
+                                                    </div>
+                                                @elseif($schedule)
+                                                    <div class="schedule-cell empty-slot rounded-lg border-2 border-dashed border-orange-300 bg-orange-50 p-3 text-center transition-all dark:border-orange-600 dark:bg-orange-900/20"
+                                                         data-schedule-id="{{ $schedule->id }}"
+                                                         data-slot-id="{{ $slot->id }}"
+                                                         data-has-schedule="true">
+                                                        <div class="mb-2 text-sm font-medium text-orange-700 dark:text-orange-300">
+                                                            Data jadwal tidak lengkap
+                                                        </div>
+                                                        <div class="edit-actions mt-2 hidden">
+                                                            <a href="{{ route('schedules.edit', $schedule->id) }}"
+                                                               class="inline-block rounded-md bg-white px-3 py-1.5 text-xs font-medium text-orange-700 shadow-sm hover:bg-orange-50 dark:bg-orange-900/50 dark:text-orange-300 dark:hover:bg-orange-800/50">
+                                                                <i class="fas fa-edit mr-1"></i> Perbaiki
+                                                            </a>
+                                                        </div>
+                                                        <div class="normal-indicator text-orange-500 dark:text-orange-400">!</div>
                                                     </div>
                                                 @else
                                                     <div class="schedule-cell empty-slot rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-3 text-center transition-all dark:border-gray-600 dark:bg-gray-800/30"
@@ -161,17 +215,10 @@
                                         </td>
                                     @endforeach
                                 </tr>
-                            @endfor
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
-
-                @if(!$schedules || $schedules->count() === 0)
-                    <div class="mt-6 text-center">
-                        <i class="fas fa-calendar-times mb-3 text-4xl text-gray-400 dark:text-gray-600"></i>
-                        <p class="text-gray-700 dark:text-gray-400">Belum ada jadwal. Klik "Generate Jadwal" untuk membuat jadwal otomatis.</p>
-                    </div>
-                @endif
             @elseif(!$selectedKelasId)
                 <div class="text-center">
                     <i class="fas fa-hand-pointer mb-3 text-4xl text-gray-400 dark:text-gray-600"></i>

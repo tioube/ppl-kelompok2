@@ -13,25 +13,17 @@
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="kelas_id" value="{{ $schedule->kelas_id }}">
+                <input type="hidden" name="time_slot_id" value="{{ $schedule->time_slot_id }}">
 
                 <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                     <div>
-                        <label for="time_slot_id" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+                        <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                             Waktu <span class="text-red-500">*</span>
                         </label>
-                        <select name="time_slot_id" id="time_slot_id"
-                            class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-700 dark:bg-gray-800 dark:text-white @error('time_slot_id') border-red-500 @enderror">
-                            @foreach($timeSlots->groupBy('day') as $day => $slots)
-                                <optgroup label="{{ ucfirst($day) }}">
-                                    @foreach($slots as $slot)
-                                        <option value="{{ $slot->id }}"
-                                            {{ old('time_slot_id', $schedule->time_slot_id) == $slot->id ? 'selected' : '' }}>
-                                            {{ $slot->start_time }} - {{ $slot->end_time }}
-                                        </option>
-                                    @endforeach
-                                </optgroup>
-                            @endforeach
-                        </select>
+                        <div class="block w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                            {{ ucfirst($schedule->timeSlot->day) }} - {{ $schedule->timeSlot->start_time }} - {{ $schedule->timeSlot->end_time }}
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Waktu hanya bisa diubah dari fitur pindah/tukar pada tabel jadwal.</p>
                         @error('time_slot_id')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror

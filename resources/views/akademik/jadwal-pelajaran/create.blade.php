@@ -87,46 +87,25 @@
                     </div>
 
                     <div>
-                        <label for="hari" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-                            Hari <span class="text-red-500">*</span>
+                        <label for="time_slot_id" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+                            Slot Waktu <span class="text-red-500">*</span>
                         </label>
-                        <select name="hari" id="hari"
-                            class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-700 dark:bg-gray-800 dark:text-white @error('hari') border-red-500 @enderror">
-                            <option value="">Pilih Hari</option>
-                            <option value="Senin" {{ old('hari') == 'Senin' ? 'selected' : '' }}>Senin</option>
-                            <option value="Selasa" {{ old('hari') == 'Selasa' ? 'selected' : '' }}>Selasa</option>
-                            <option value="Rabu" {{ old('hari') == 'Rabu' ? 'selected' : '' }}>Rabu</option>
-                            <option value="Kamis" {{ old('hari') == 'Kamis' ? 'selected' : '' }}>Kamis</option>
-                            <option value="Jumat" {{ old('hari') == 'Jumat' ? 'selected' : '' }}>Jumat</option>
-                            <option value="Sabtu" {{ old('hari') == 'Sabtu' ? 'selected' : '' }}>Sabtu</option>
+                        <select name="time_slot_id" id="time_slot_id"
+                            class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-700 dark:bg-gray-800 dark:text-white @error('time_slot_id') border-red-500 @enderror">
+                            <option value="">Pilih Slot Waktu Pengajaran</option>
+                            @foreach($teachingSlots->groupBy('day') as $day => $slots)
+                                <optgroup label="{{ ucfirst($day) }}">
+                                    @foreach($slots as $slot)
+                                        <option value="{{ $slot->id }}" {{ old('time_slot_id') == $slot->id ? 'selected' : '' }}>
+                                            {{ substr($slot->start_time, 0, 5) }} - {{ substr($slot->end_time, 0, 5) }} (Slot {{ $slot->slot_index }})
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            @endforeach
                         </select>
-                        @error('hari')
+                        @error('time_slot_id')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                         @enderror
-                    </div>
-
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <div>
-                            <label for="jam_mulai" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-                                Jam Mulai <span class="text-red-500">*</span>
-                            </label>
-                            <input type="time" name="jam_mulai" id="jam_mulai" value="{{ old('jam_mulai') }}"
-                                class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-700 dark:bg-gray-800 dark:text-white @error('jam_mulai') border-red-500 @enderror">
-                            @error('jam_mulai')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label for="jam_selesai" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-                                Jam Selesai <span class="text-red-500">*</span>
-                            </label>
-                            <input type="time" name="jam_selesai" id="jam_selesai" value="{{ old('jam_selesai') }}"
-                                class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-700 dark:bg-gray-800 dark:text-white @error('jam_selesai') border-red-500 @enderror">
-                            @error('jam_selesai')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
-                            @enderror
-                        </div>
                     </div>
                 </div>
 

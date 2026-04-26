@@ -14,6 +14,7 @@ use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\TahunAjaranController;
+use App\Http\Controllers\TimeSlotController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -69,6 +70,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('tahun-ajaran', TahunAjaranController::class);
         Route::resource('jurusan', JurusanController::class);
         Route::resource('kelas', KelasController::class);
+        Route::resource('time-slots', TimeSlotController::class);
         Route::resource('jadwal-pelajaran', JadwalPelajaranController::class);
 
         Route::resource('guru-mapel-kelas', GuruMapelKelasController::class);

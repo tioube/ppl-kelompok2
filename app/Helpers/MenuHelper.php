@@ -99,6 +99,10 @@ class MenuHelper
                         'path' => route('guru-mapel-kelas.index', absolute: false),
                     ],
                     [
+                        'name' => 'Time Slots',
+                        'path' => route('time-slots.index', absolute: false),
+                    ],
+                    [
                         'name' => 'Jadwal Pelajaran (Lama)',
                         'path' => route('jadwal-pelajaran.index', absolute: false),
                     ],

@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Models\GuruMapelKelas;
 use App\Models\Kelas;
+use App\Models\JadwalPelajaran;
 use App\Models\Schedule;
+use App\Models\TahunAjaran;
 use App\Models\TimeSlot;
 use Illuminate\Support\Facades\DB;
 
@@ -22,6 +24,54 @@ class ScheduleGeneratorService
 
         try {
             Schedule::where('kelas_id', $kelas->id)->delete();
+
+            $activeTahunAjaran = TahunAjaran::where('is_active', true)->first();
+
+            if ($activeTahunAjaran) {
+                $jadwalRows = JadwalPelajaran::where('kelas_id', $kelas->id)
+                    ->where('tahun_ajaran_id', $activeTahunAjaran->id)
+                    ->with(['mataPelajaran', 'guru'])
+                    ->get();
+
+                $timeSlots = TimeSlot::where('type', 'teaching')->get()->keyBy(function (TimeSlot $slot) {
+                    return $this->buildSlotKey($slot->day, $slot->start_time, $slot->end_time);
+                });
+
+                $scheduleData = [];
+
+                foreach ($jadwalRows as $jadwal) {
+                    $slotKey = $this->buildSlotKey(
+                        strtolower($jadwal->hari),
+                        (string) $jadwal->jam_mulai,
+                        (string) $jadwal->jam_selesai
+                    );
+
+                    $timeSlot = $timeSlots->get($slotKey);
+
+                    if (! $timeSlot || ! $jadwal->mataPelajaran) {
+                        continue;
+                    }
+
+                    $scheduleData[] = [
+                        'kelas_id' => $kelas->id,
+                        'time_slot_id' => $timeSlot->id,
+                        'mata_pelajaran_id' => $jadwal->mata_pelajaran_id,
+                        'guru_id' => $jadwal->guru_id,
+                    ];
+                }
+
+                foreach ($scheduleData as $data) {
+                    Schedule::create($data);
+                }
+
+                DB::commit();
+
+                return [
+                    'success' => true,
+                    'message' => 'Jadwal berhasil disinkronkan dari Jadwal Pelajaran aktif untuk kelas '.$kelas->nama,
+                    'total_slots' => count($scheduleData),
+                ];
+            }
 
             $assignments = GuruMapelKelas::where('kelas_id', $kelas->id)
                 ->with(['mataPelajaran', 'guru'])
@@ -255,5 +305,10 @@ class ScheduleGeneratorService
         return $slots->reject(function ($slot) use ($usedSlotIds, $guruSlotIds) {
             return in_array($slot->id, $usedSlotIds) || in_array($slot->id, $guruSlotIds);
         })->values();
+    }
+
+    private function buildSlotKey(string $day, string $startTime, string $endTime): string
+    {
+        return strtolower($day).'|'.substr($startTime, 0, 5).'|'.substr($endTime, 0, 5);
     }
 }

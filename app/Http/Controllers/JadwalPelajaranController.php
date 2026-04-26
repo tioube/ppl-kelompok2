@@ -6,11 +6,17 @@ use App\Models\JadwalPelajaran;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use App\Models\TahunAjaran;
+use App\Models\TimeSlot;
 use App\Models\User;
+use App\Services\ScheduleJadwalSyncService;
 use Illuminate\Http\Request;
 
 class JadwalPelajaranController extends Controller
 {
+    public function __construct(protected ScheduleJadwalSyncService $scheduleJadwalSyncService)
+    {
+    }
+
     public function index(Request $request)
     {
         $kelasList = Kelas::orderBy('nama')->get();
@@ -49,11 +55,15 @@ class JadwalPelajaranController extends Controller
         $tahunAjarans = TahunAjaran::all();
         $mataPelajarans = MataPelajaran::all();
         $kelas = Kelas::all();
+        $teachingSlots = TimeSlot::where('type', 'teaching')
+            ->orderByRaw("FIELD(day, 'senin', 'selasa', 'rabu', 'kamis', 'jumat')")
+            ->orderBy('slot_index')
+            ->get();
         $gurus = User::whereHas('roles', function ($query) {
             $query->where('slug', 'guru');
         })->with('mataPelajaran')->orderBy('name')->get();
 
-        return view('akademik.jadwal-pelajaran.create', compact('tahunAjarans', 'mataPelajarans', 'kelas', 'gurus'));
+        return view('akademik.jadwal-pelajaran.create', compact('tahunAjarans', 'mataPelajarans', 'kelas', 'gurus', 'teachingSlots'));
     }
 
     public function store(Request $request)
@@ -63,23 +73,28 @@ class JadwalPelajaranController extends Controller
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
             'kelas_id' => 'required|exists:kelas,id',
             'guru_id' => 'nullable|exists:users,id',
-            'hari' => 'required|string|max:255',
-            'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+            'time_slot_id' => 'required|exists:time_slots,id',
         ]);
+
+        $timeSlot = TimeSlot::where('type', 'teaching')->find($validated['time_slot_id']);
+
+        if (! $timeSlot) {
+            return redirect()->back()->withInput()
+                ->withErrors(['time_slot_id' => 'Slot waktu harus berupa slot pengajaran.']);
+        }
+
+        $validated['hari'] = ucfirst($timeSlot->day);
+        $validated['jam_mulai'] = substr($timeSlot->start_time, 0, 5);
+        $validated['jam_selesai'] = substr($timeSlot->end_time, 0, 5);
+        unset($validated['time_slot_id']);
 
         // Check time slot conflict for this kelas
         $conflict = JadwalPelajaran::where('kelas_id', $validated['kelas_id'])
             ->where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
             ->where('hari', $validated['hari'])
-            ->where(function ($query) use ($validated) {
-                $query->whereBetween('jam_mulai', [$validated['jam_mulai'], $validated['jam_selesai']])
-                    ->orWhereBetween('jam_selesai', [$validated['jam_mulai'], $validated['jam_selesai']])
-                    ->orWhere(function ($q) use ($validated) {
-                        $q->where('jam_mulai', '<=', $validated['jam_mulai'])
-                            ->where('jam_selesai', '>=', $validated['jam_selesai']);
-                    });
-            })->exists();
+            ->where('jam_mulai', '<', $validated['jam_selesai'])
+            ->where('jam_selesai', '>', $validated['jam_mulai'])
+            ->exists();
 
         if ($conflict) {
             return redirect()->back()->withInput()
@@ -100,6 +115,11 @@ class JadwalPelajaranController extends Controller
 
         JadwalPelajaran::create($validated);
 
+        $this->scheduleJadwalSyncService->syncSchedulesFromJadwalIfActive(
+            (int) $validated['kelas_id'],
+            (int) $validated['tahun_ajaran_id']
+        );
+
         return redirect()->route('jadwal-pelajaran.index')
             ->with('success', 'Jadwal Pelajaran berhasil ditambahkan.');
     }
@@ -109,11 +129,20 @@ class JadwalPelajaranController extends Controller
         $tahunAjarans = TahunAjaran::all();
         $mataPelajarans = MataPelajaran::all();
         $kelas = Kelas::all();
+        $teachingSlots = TimeSlot::where('type', 'teaching')
+            ->orderByRaw("FIELD(day, 'senin', 'selasa', 'rabu', 'kamis', 'jumat')")
+            ->orderBy('slot_index')
+            ->get();
+        $selectedTimeSlotId = TimeSlot::where('type', 'teaching')
+            ->where('day', strtolower($jadwalPelajaran->hari))
+            ->whereTime('start_time', $jadwalPelajaran->jam_mulai)
+            ->whereTime('end_time', $jadwalPelajaran->jam_selesai)
+            ->value('id');
         $gurus = User::whereHas('roles', function ($query) {
             $query->where('slug', 'guru');
         })->with('mataPelajaran')->orderBy('name')->get();
 
-        return view('akademik.jadwal-pelajaran.edit', compact('jadwalPelajaran', 'tahunAjarans', 'mataPelajarans', 'kelas', 'gurus'));
+        return view('akademik.jadwal-pelajaran.edit', compact('jadwalPelajaran', 'tahunAjarans', 'mataPelajarans', 'kelas', 'gurus', 'teachingSlots', 'selectedTimeSlotId'));
     }
 
     public function update(Request $request, JadwalPelajaran $jadwalPelajaran)
@@ -123,24 +152,29 @@ class JadwalPelajaranController extends Controller
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
             'kelas_id' => 'required|exists:kelas,id',
             'guru_id' => 'nullable|exists:users,id',
-            'hari' => 'required|string|max:255',
-            'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+            'time_slot_id' => 'required|exists:time_slots,id',
         ]);
+
+        $timeSlot = TimeSlot::where('type', 'teaching')->find($validated['time_slot_id']);
+
+        if (! $timeSlot) {
+            return redirect()->back()->withInput()
+                ->withErrors(['time_slot_id' => 'Slot waktu harus berupa slot pengajaran.']);
+        }
+
+        $validated['hari'] = ucfirst($timeSlot->day);
+        $validated['jam_mulai'] = substr($timeSlot->start_time, 0, 5);
+        $validated['jam_selesai'] = substr($timeSlot->end_time, 0, 5);
+        unset($validated['time_slot_id']);
 
         // Check time slot conflict (exclude self)
         $conflict = JadwalPelajaran::where('kelas_id', $validated['kelas_id'])
             ->where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
             ->where('hari', $validated['hari'])
             ->where('id', '!=', $jadwalPelajaran->id)
-            ->where(function ($query) use ($validated) {
-                $query->whereBetween('jam_mulai', [$validated['jam_mulai'], $validated['jam_selesai']])
-                    ->orWhereBetween('jam_selesai', [$validated['jam_mulai'], $validated['jam_selesai']])
-                    ->orWhere(function ($q) use ($validated) {
-                        $q->where('jam_mulai', '<=', $validated['jam_mulai'])
-                            ->where('jam_selesai', '>=', $validated['jam_selesai']);
-                    });
-            })->exists();
+            ->where('jam_mulai', '<', $validated['jam_selesai'])
+            ->where('jam_selesai', '>', $validated['jam_mulai'])
+            ->exists();
 
         if ($conflict) {
             return redirect()->back()->withInput()
@@ -162,13 +196,22 @@ class JadwalPelajaranController extends Controller
 
         $jadwalPelajaran->update($validated);
 
+        $this->scheduleJadwalSyncService->syncSchedulesFromJadwalIfActive(
+            (int) $validated['kelas_id'],
+            (int) $validated['tahun_ajaran_id']
+        );
+
         return redirect()->route('jadwal-pelajaran.index')
             ->with('success', 'Jadwal Pelajaran berhasil diperbarui.');
     }
 
     public function destroy(JadwalPelajaran $jadwalPelajaran)
     {
+        $kelasId = (int) $jadwalPelajaran->kelas_id;
+        $tahunAjaranId = (int) $jadwalPelajaran->tahun_ajaran_id;
         $jadwalPelajaran->delete();
+
+        $this->scheduleJadwalSyncService->syncSchedulesFromJadwalIfActive($kelasId, $tahunAjaranId);
 
         return redirect()->route('jadwal-pelajaran.index')
             ->with('success', 'Jadwal Pelajaran berhasil dihapus.');
