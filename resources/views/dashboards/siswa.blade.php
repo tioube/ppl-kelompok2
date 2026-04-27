@@ -162,5 +162,63 @@
         </div>
     </div>
 </div>
+
+{{-- Jadwal Hari Ini & Guru Pengajar --}}
+<div class="grid grid-cols-1 gap-4 md:gap-6 xl:grid-cols-2 mt-6">
+
+    {{-- Jadwal Hari Ini --}}
+    <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+        <h3 class="mb-4 text-xl font-semibold text-black dark:text-white">
+            📅 Jadwal Hari Ini
+            <span class="ml-2 text-sm font-normal text-gray-400">({{ now()->translatedFormat('l, d F Y') }})</span>
+        </h3>
+
+        @if ($jadwalHariIni->isEmpty())
+            <p class="text-sm text-gray-400 text-center py-6">Tidak ada jadwal pelajaran hari ini</p>
+        @else
+            <div class="space-y-3">
+                @foreach ($jadwalHariIni as $jadwal)
+                    <div class="flex items-center gap-4 rounded-lg border border-stroke p-4 dark:border-strokedark hover:bg-gray-2 dark:hover:bg-meta-4 transition">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary bg-opacity-10 text-primary font-bold text-sm">
+                            {{ $loop->iteration }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-medium text-black dark:text-white truncate">{{ $jadwal->mataPelajaran?->nama ?? '-' }}</p>
+                            <p class="text-xs text-gray-500">{{ $jadwal->guru?->name ?? '-' }}</p>
+                        </div>
+                        <div class="text-right text-xs text-gray-400 shrink-0">
+                            <p>{{ $jadwal->timeSlot?->start_time ?? '' }}</p>
+                            <p>{{ $jadwal->timeSlot?->end_time ?? '' }}</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+
+    {{-- Guru Pengajar Kelas --}}
+    <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+        <h3 class="mb-4 text-xl font-semibold text-black dark:text-white">👨‍🏫 Guru Pengajar Kelas</h3>
+
+        @if ($guruKelas->isEmpty())
+            <p class="text-sm text-gray-400 text-center py-6">Belum ada guru yang ditugaskan</p>
+        @else
+            <div class="space-y-3 max-h-80 overflow-y-auto pr-1">
+                @foreach ($guruKelas as $gmk)
+                    <div class="flex items-center gap-3 rounded-lg border border-stroke p-3 dark:border-strokedark hover:bg-gray-2 dark:hover:bg-meta-4 transition">
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4 text-primary font-semibold text-sm">
+                            {{ strtoupper(substr($gmk->guru?->name ?? 'G', 0, 1)) }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-black dark:text-white truncate">{{ $gmk->guru?->name ?? '-' }}</p>
+                            <p class="text-xs text-gray-500 truncate">{{ $gmk->mataPelajaran?->nama ?? '-' }}</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+
+</div>
 @endsection
 

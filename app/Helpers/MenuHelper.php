@@ -57,6 +57,13 @@ class MenuHelper
             ];
         }
 
+        if ($user && $user->hasRole('siswa')) {
+        $menuGroups[] = [
+                'title' => 'Menu Siswa',
+                'items' => self::getSiswaItems(),
+            ];
+        }
+
         return $menuGroups;
     }
 
@@ -110,6 +117,18 @@ class MenuHelper
             ],
         ];
     }
+
+    public static function getSiswaItems(): array
+    {
+        return [
+            [
+                'icon' => 'task',
+                'name' => 'Tugas',
+                'path' => route('siswa.tugas', absolute: false),
+            ],
+        ];
+    }
+
 
     public static function isActive($path): bool
     {

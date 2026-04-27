@@ -15,6 +15,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\TahunAjaranController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SiswaTugasController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -59,6 +60,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/siswa', [SiswaDashboardController::class, 'index'])
         ->middleware('role:siswa')
         ->name('dashboard.siswa');
+
+    Route::get('/siswa/tugas', [SiswaTugasController::class, 'index'])
+        ->middleware('role:siswa')
+        ->name('siswa.tugas');
+
+    Route::post('/siswa/tugas/{tugas}/upload', [SiswaTugasController::class, 'upload'])
+    ->middleware('role:siswa')
+    ->name('siswa.tugas.upload');
 
     Route::middleware('role:super-admin')->group(function () {
         Route::get('/guru', [GuruController::class, 'index'])->name('guru.index');
