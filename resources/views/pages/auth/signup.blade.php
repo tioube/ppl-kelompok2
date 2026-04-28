@@ -6,13 +6,23 @@
             <!-- Form -->
             <div class="flex w-full flex-1 flex-col lg:w-1/2">
                 <div class="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
-                    <div class="mb-5 sm:mb-8">
-                        <h1 class="text-title-sm sm:text-title-md mb-2 font-semibold text-gray-800 dark:text-white/90">
-                            Sign Up
-                        </h1>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Enter your details to create an account!
-                        </p>
+                    <div class="text-center mb-8">
+                        <div class="flex items-center justify-center space-x-3 mb-6">
+                            <img src="/images/logo/al-azhar.svg" alt="StudentDesk Logo" class="h-12 w-12">
+                            <div class="text-left">
+                                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">StudentDesk</h1>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Sistem Akademik</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                                Buat Akun Baru
+                            </h2>
+                            <p class="text-gray-600 dark:text-gray-400">
+                                Daftar untuk mengakses StudentDesk
+                            </p>
+                        </div>
                     </div>
                     <div>
                         <form method="POST" action="{{ route('register') }}">
@@ -116,15 +126,18 @@
                                 <div>
                                     <button type="submit"
                                         class="bg-brand-500 shadow-theme-xs hover:bg-brand-600 flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-medium text-white transition">
-                                        Sign Up
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                        </svg>
+                                        Daftar ke StudentDesk
                                     </button>
                                 </div>
                             </div>
                         </form>
                         <div class="mt-5">
                             <p class="text-center text-sm font-normal text-gray-700 sm:text-start dark:text-gray-400">
-                                Already have an account?
-                                <a href="{{ route('login') }}" class="text-brand-500 hover:text-brand-600 dark:text-brand-400">Sign In</a>
+                                Sudah punya akun?
+                                <a href="{{ route('login') }}" class="text-brand-500 hover:text-brand-600 dark:text-brand-400">Masuk di sini</a>
                             </p>
                         </div>
                     </div>
@@ -134,12 +147,16 @@
                 <div class="z-1 flex items-center justify-center">
                     <!-- ===== Common Grid Shape Start ===== -->
                     <x-common.common-grid-shape />
-                    <div class="flex max-w-xs flex-col items-center">
-                        <a href="{{ route('dashboard') }}" class="mb-4 block">
-                            <img src="{{ asset('images/logo/auth-logo.svg') }}" alt="Logo" />
+                    <div class="flex max-w-xs flex-col items-center text-center text-white">
+                        <a href="{{ route('home') }}" class="mb-4 block">
+                            <img src="/images/logo/al-azhar.svg" alt="StudentDesk Logo" class="h-16 w-16 mx-auto" />
                         </a>
-                        <p class="text-center text-gray-400 dark:text-white/60">
-                            Free and Open-Source Tailwind CSS Admin Dashboard Template
+                        <h3 class="text-xl font-bold mb-2">StudentDesk</h3>
+                        <p class="text-sm text-gray-300 dark:text-white/60 mb-4">
+                            Sistem Manajemen Akademik Modern
+                        </p>
+                        <p class="text-xs text-gray-400 dark:text-white/50">
+                            Bergabunglah dengan revolusi digital dalam pendidikan. Kelola akademik dengan mudah dan efisien.
                         </p>
                     </div>
                 </div>
