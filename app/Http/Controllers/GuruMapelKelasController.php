@@ -18,15 +18,99 @@ class GuruMapelKelasController extends Controller
         $this->generator = $generator;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $assignments = GuruMapelKelas::with(['guru', 'mataPelajaran', 'kelas'])
-            ->orderBy('kelas_id')
-            ->paginate(15);
+        // Debug: Log request parameters
+        \Log::info('GuruMapelKelas Filter Request:', $request->all());
+
+        $query = GuruMapelKelas::with(['guru', 'mataPelajaran', 'kelas']);
+
+        // Search functionality
+        if ($search = $request->get('search')) {
+            \Log::info('Search parameter:', ['search' => $search]);
+            $query->where(function($q) use ($search) {
+                $q->whereHas('guru', function($guruQuery) use ($search) {
+                    $guruQuery->where('name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('mataPelajaran', function($mapelQuery) use ($search) {
+                    $mapelQuery->where('nama', 'like', "%{$search}%")
+                              ->orWhere('kode', 'like', "%{$search}%");
+                })
+                ->orWhereHas('kelas', function($kelasQuery) use ($search) {
+                    $kelasQuery->where('nama', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        // Filter by guru
+        if ($guruId = $request->get('guru_id')) {
+            \Log::info('Guru filter:', ['guru_id' => $guruId]);
+            $query->where('guru_id', $guruId);
+        }
+
+        // Filter by mata pelajaran
+        if ($mataPelajaranId = $request->get('mata_pelajaran_id')) {
+            \Log::info('Mapel filter:', ['mata_pelajaran_id' => $mataPelajaranId]);
+            $query->where('mata_pelajaran_id', $mataPelajaranId);
+        }
+
+        // Filter by kelas
+        if ($kelasId = $request->get('kelas_id')) {
+            \Log::info('Kelas filter:', ['kelas_id' => $kelasId]);
+            $query->where('kelas_id', $kelasId);
+        }
+
+        // Sorting
+        $sortBy = $request->get('sort', 'kelas_id');
+        $sortDirection = $request->get('direction', 'asc');
+
+        $allowedSorts = ['guru_id', 'mata_pelajaran_id', 'kelas_id', 'created_at'];
+        if (in_array($sortBy, $allowedSorts)) {
+            if ($sortBy === 'guru_id') {
+                $query->join('users', 'guru_mapel_kelas.guru_id', '=', 'users.id')
+                      ->orderBy('users.name', $sortDirection)
+                      ->select('guru_mapel_kelas.*');
+            } elseif ($sortBy === 'mata_pelajaran_id') {
+                $query->join('mata_pelajaran', 'guru_mapel_kelas.mata_pelajaran_id', '=', 'mata_pelajaran.id')
+                      ->orderBy('mata_pelajaran.nama', $sortDirection)
+                      ->select('guru_mapel_kelas.*');
+            } elseif ($sortBy === 'kelas_id') {
+                $query->join('kelas', 'guru_mapel_kelas.kelas_id', '=', 'kelas.id')
+                      ->orderBy('kelas.nama', $sortDirection)
+                      ->select('guru_mapel_kelas.*');
+            } else {
+                $query->orderBy($sortBy, $sortDirection);
+            }
+        } else {
+            $query->orderBy('kelas_id');
+        }
+
+        $assignments = $query->paginate(15)->withQueryString();
+
+        // Get filter options
+        $gurus = User::whereHas('roles', function ($query) {
+            $query->where('slug', 'guru');
+        })->orderBy('name')->get();
+
+        $mataPelajarans = MataPelajaran::orderBy('nama')->get();
+        $kelas = Kelas::orderBy('nama')->get();
+
+        // Get statistics
+        $stats = [
+            'total' => GuruMapelKelas::count(),
+            'gurus_assigned' => GuruMapelKelas::distinct('guru_id')->count('guru_id'),
+            'mapel_assigned' => GuruMapelKelas::distinct('mata_pelajaran_id')->count('mata_pelajaran_id'),
+            'kelas_covered' => GuruMapelKelas::distinct('kelas_id')->count('kelas_id'),
+        ];
 
         return view('akademik.guru-mapel-kelas.index', [
             'title' => 'Penugasan Guru',
             'assignments' => $assignments,
+            'gurus' => $gurus,
+            'mataPelajarans' => $mataPelajarans,
+            'kelas' => $kelas,
+            'stats' => $stats,
+            'filters' => $request->only(['search', 'guru_id', 'mata_pelajaran_id', 'kelas_id', 'sort', 'direction'])
         ]);
     }
 

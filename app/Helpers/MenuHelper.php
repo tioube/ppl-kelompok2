@@ -99,11 +99,7 @@ class MenuHelper
                         'path' => route('guru-mapel-kelas.index', absolute: false),
                     ],
                     [
-                        'name' => 'Jadwal Pelajaran (Lama)',
-                        'path' => route('jadwal-pelajaran.index', absolute: false),
-                    ],
-                    [
-                        'name' => 'Jadwal Pelajaran (Baru)',
+                        'name' => 'Jadwal Pelajaran',
                         'path' => route('schedules.index', absolute: false),
                     ],
                 ],

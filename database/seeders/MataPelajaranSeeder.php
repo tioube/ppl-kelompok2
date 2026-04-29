@@ -10,6 +10,7 @@ class MataPelajaranSeeder extends Seeder
     public function run(): void
     {
         $mataPelajaran = [
+            // MATA PELAJARAN WAJIB - KELOMPOK A (Umum)
             [
                 'kode' => 'PAI',
                 'nama' => 'Pendidikan Agama Islam dan Budi Pekerti',
@@ -18,9 +19,44 @@ class MataPelajaranSeeder extends Seeder
                 'jam_pelajaran' => 3,
             ],
             [
-                'kode' => 'PKN',
-                'nama' => 'Pendidikan Pancasila dan Kewarganegaraan',
-                'deskripsi' => 'Mata pelajaran yang membentuk karakter warga negara yang baik',
+                'kode' => 'PAK',
+                'nama' => 'Pendidikan Agama Kristen dan Budi Pekerti',
+                'deskripsi' => 'Mata pelajaran yang mengajarkan nilai-nilai agama Kristen dan pembentukan karakter',
+                'kategori' => 'Wajib',
+                'jam_pelajaran' => 3,
+            ],
+            [
+                'kode' => 'PAP',
+                'nama' => 'Pendidikan Agama Katolik dan Budi Pekerti',
+                'deskripsi' => 'Mata pelajaran yang mengajarkan nilai-nilai agama Katolik dan pembentukan karakter',
+                'kategori' => 'Wajib',
+                'jam_pelajaran' => 3,
+            ],
+            [
+                'kode' => 'PAH',
+                'nama' => 'Pendidikan Agama Hindu dan Budi Pekerti',
+                'deskripsi' => 'Mata pelajaran yang mengajarkan nilai-nilai agama Hindu dan pembentukan karakter',
+                'kategori' => 'Wajib',
+                'jam_pelajaran' => 3,
+            ],
+            [
+                'kode' => 'PAB',
+                'nama' => 'Pendidikan Agama Buddha dan Budi Pekerti',
+                'deskripsi' => 'Mata pelajaran yang mengajarkan nilai-nilai agama Buddha dan pembentukan karakter',
+                'kategori' => 'Wajib',
+                'jam_pelajaran' => 3,
+            ],
+            [
+                'kode' => 'PAKK',
+                'nama' => 'Pendidikan Agama Khonghucu dan Budi Pekerti',
+                'deskripsi' => 'Mata pelajaran yang mengajarkan nilai-nilai agama Khonghucu dan pembentukan karakter',
+                'kategori' => 'Wajib',
+                'jam_pelajaran' => 3,
+            ],
+            [
+                'kode' => 'PP',
+                'nama' => 'Pendidikan Pancasila',
+                'deskripsi' => 'Mata pelajaran yang membentuk karakter warga negara berdasarkan nilai-nilai Pancasila',
                 'kategori' => 'Wajib',
                 'jam_pelajaran' => 2,
             ],
@@ -74,6 +110,37 @@ class MataPelajaranSeeder extends Seeder
                 'jam_pelajaran' => 2,
             ],
             [
+                'kode' => 'INF',
+                'nama' => 'Informatika',
+                'deskripsi' => 'Mata pelajaran teknologi informasi dan komunikasi',
+                'kategori' => 'Wajib',
+                'jam_pelajaran' => 2,
+            ],
+            [
+                'kode' => 'BK',
+                'nama' => 'Bimbingan Konseling',
+                'deskripsi' => 'Layanan bimbingan dan konseling untuk pengembangan diri siswa',
+                'kategori' => 'Wajib',
+                'jam_pelajaran' => 2,
+            ],
+            [
+                'kode' => 'ML',
+                'nama' => 'Muatan Lokal',
+                'deskripsi' => 'Mata pelajaran muatan lokal sesuai kekhasan daerah',
+                'kategori' => 'Wajib',
+                'jam_pelajaran' => 2,
+            ],
+
+            // MATA PELAJARAN PEMINATAN MIPA
+            // MATA PELAJARAN PEMINATAN MIPA
+            [
+                'kode' => 'MTML',
+                'nama' => 'Matematika Lanjut',
+                'deskripsi' => 'Mata pelajaran matematika lanjutan untuk peminatan MIPA',
+                'kategori' => 'Peminatan',
+                'jam_pelajaran' => 4,
+            ],
+            [
                 'kode' => 'FIS',
                 'nama' => 'Fisika',
                 'deskripsi' => 'Mata pelajaran fisika untuk peminatan MIPA',
@@ -94,6 +161,7 @@ class MataPelajaranSeeder extends Seeder
                 'kategori' => 'Peminatan',
                 'jam_pelajaran' => 4,
             ],
+            // MATA PELAJARAN PEMINATAN IPS
             [
                 'kode' => 'EKO',
                 'nama' => 'Ekonomi',
@@ -116,6 +184,23 @@ class MataPelajaranSeeder extends Seeder
                 'jam_pelajaran' => 3,
             ],
             [
+                'kode' => 'SEJP',
+                'nama' => 'Sejarah Peminatan',
+                'deskripsi' => 'Mata pelajaran sejarah lanjutan untuk peminatan IPS',
+                'kategori' => 'Peminatan',
+                'jam_pelajaran' => 3,
+            ],
+            [
+                'kode' => 'ANT',
+                'nama' => 'Antropologi',
+                'deskripsi' => 'Mata pelajaran antropologi untuk peminatan IPS',
+                'kategori' => 'Peminatan',
+                'jam_pelajaran' => 3,
+            ],
+
+            // MATA PELAJARAN LINTAS MINAT
+            // MATA PELAJARAN LINTAS MINAT
+            [
                 'kode' => 'BSAR',
                 'nama' => 'Bahasa Arab',
                 'deskripsi' => 'Mata pelajaran bahasa asing pilihan',
@@ -137,11 +222,18 @@ class MataPelajaranSeeder extends Seeder
                 'jam_pelajaran' => 3,
             ],
             [
-                'kode' => 'TIK',
-                'nama' => 'Teknologi Informasi dan Komunikasi',
-                'deskripsi' => 'Mata pelajaran teknologi informasi',
+                'kode' => 'BKOR',
+                'nama' => 'Bahasa Korea',
+                'deskripsi' => 'Mata pelajaran bahasa asing pilihan',
                 'kategori' => 'Lintas Minat',
-                'jam_pelajaran' => 2,
+                'jam_pelajaran' => 3,
+            ],
+            [
+                'kode' => 'BPRN',
+                'nama' => 'Bahasa Prancis',
+                'deskripsi' => 'Mata pelajaran bahasa asing pilihan',
+                'kategori' => 'Lintas Minat',
+                'jam_pelajaran' => 3,
             ],
         ];
 
