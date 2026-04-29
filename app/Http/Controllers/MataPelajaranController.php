@@ -13,10 +13,10 @@ class MataPelajaranController extends Controller
 
         // Search functionality
         if ($search = $request->get('search')) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('kode', 'like', "%{$search}%")
-                  ->orWhere('nama', 'like', "%{$search}%")
-                  ->orWhere('deskripsi', 'like', "%{$search}%");
+                    ->orWhere('nama', 'like', "%{$search}%")
+                    ->orWhere('deskripsi', 'like', "%{$search}%");
             });
         }
 
@@ -61,7 +61,7 @@ class MataPelajaranController extends Controller
             'title' => 'List Mata Pelajaran',
             'mataPelajaran' => $mataPelajaran,
             'stats' => $stats,
-            'filters' => $request->only(['search', 'kategori', 'min_jam', 'max_jam', 'sort', 'direction'])
+            'filters' => $request->only(['search', 'kategori', 'min_jam', 'max_jam', 'sort', 'direction']),
         ]);
     }
 

@@ -28,17 +28,17 @@ class GuruMapelKelasController extends Controller
         // Search functionality
         if ($search = $request->get('search')) {
             \Log::info('Search parameter:', ['search' => $search]);
-            $query->where(function($q) use ($search) {
-                $q->whereHas('guru', function($guruQuery) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('guru', function ($guruQuery) use ($search) {
                     $guruQuery->where('name', 'like', "%{$search}%");
                 })
-                ->orWhereHas('mataPelajaran', function($mapelQuery) use ($search) {
-                    $mapelQuery->where('nama', 'like', "%{$search}%")
-                              ->orWhere('kode', 'like', "%{$search}%");
-                })
-                ->orWhereHas('kelas', function($kelasQuery) use ($search) {
-                    $kelasQuery->where('nama', 'like', "%{$search}%");
-                });
+                    ->orWhereHas('mataPelajaran', function ($mapelQuery) use ($search) {
+                        $mapelQuery->where('nama', 'like', "%{$search}%")
+                            ->orWhere('kode', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('kelas', function ($kelasQuery) use ($search) {
+                        $kelasQuery->where('nama', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -68,16 +68,16 @@ class GuruMapelKelasController extends Controller
         if (in_array($sortBy, $allowedSorts)) {
             if ($sortBy === 'guru_id') {
                 $query->join('users', 'guru_mapel_kelas.guru_id', '=', 'users.id')
-                      ->orderBy('users.name', $sortDirection)
-                      ->select('guru_mapel_kelas.*');
+                    ->orderBy('users.name', $sortDirection)
+                    ->select('guru_mapel_kelas.*');
             } elseif ($sortBy === 'mata_pelajaran_id') {
                 $query->join('mata_pelajaran', 'guru_mapel_kelas.mata_pelajaran_id', '=', 'mata_pelajaran.id')
-                      ->orderBy('mata_pelajaran.nama', $sortDirection)
-                      ->select('guru_mapel_kelas.*');
+                    ->orderBy('mata_pelajaran.nama', $sortDirection)
+                    ->select('guru_mapel_kelas.*');
             } elseif ($sortBy === 'kelas_id') {
                 $query->join('kelas', 'guru_mapel_kelas.kelas_id', '=', 'kelas.id')
-                      ->orderBy('kelas.nama', $sortDirection)
-                      ->select('guru_mapel_kelas.*');
+                    ->orderBy('kelas.nama', $sortDirection)
+                    ->select('guru_mapel_kelas.*');
             } else {
                 $query->orderBy($sortBy, $sortDirection);
             }
@@ -110,7 +110,7 @@ class GuruMapelKelasController extends Controller
             'mataPelajarans' => $mataPelajarans,
             'kelas' => $kelas,
             'stats' => $stats,
-            'filters' => $request->only(['search', 'guru_id', 'mata_pelajaran_id', 'kelas_id', 'sort', 'direction'])
+            'filters' => $request->only(['search', 'guru_id', 'mata_pelajaran_id', 'kelas_id', 'sort', 'direction']),
         ]);
     }
 
