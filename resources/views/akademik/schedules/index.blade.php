@@ -33,6 +33,7 @@
 
                 @if($selectedKelasId)
                     <div class="flex flex-wrap items-center gap-3">
+                        @if (auth()->user()->hasPermission('generate-schedules') || auth()->user()->hasPermission('manage-schedules'))
                         <form action="{{ route('schedules.generate') }}" method="POST">
                             @csrf
                             <input type="hidden" name="kelas_id" value="{{ $selectedKelasId }}">
@@ -42,13 +43,17 @@
                                 <i class="fas fa-magic mr-2"></i>Generate Jadwal
                             </button>
                         </form>
+                        @endif
 
                         @if($schedules && $schedules->count() > 0)
+                            @if (auth()->user()->hasPermission('edit-schedules') || auth()->user()->hasPermission('manage-schedules'))
                             <button type="button" id="toggleEditMode"
                                 class="rounded-lg border border-blue-300 bg-white px-5 py-2.5 text-sm font-medium text-blue-700 transition hover:bg-blue-50 dark:border-blue-700 dark:bg-gray-800 dark:text-blue-400">
                                 <i class="fas fa-edit mr-2"></i>Mode Edit
                             </button>
+                            @endif
 
+                            @if (auth()->user()->hasPermission('delete-schedules') || auth()->user()->hasPermission('manage-schedules'))
                             <form action="{{ route('schedules.destroy') }}" method="POST">
                                 @csrf
                                 @method('DELETE')
@@ -59,6 +64,7 @@
                                     <i class="fas fa-trash mr-2"></i>Hapus Jadwal
                                 </button>
                             </form>
+                            @endif
                         @endif
                     </div>
                 @endif
@@ -149,10 +155,12 @@
                                                             <div class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
                                                                 <i class="fas fa-plus-circle mr-1"></i>Kosong
                                                             </div>
+                                                            @if (auth()->user()->hasPermission('create-schedules') || auth()->user()->hasPermission('manage-schedules'))
                                                             <a href="{{ route('schedules.create', ['kelas_id' => $selectedKelasId, 'slot_id' => $slot->id]) }}"
                                                                class="inline-block rounded-md bg-blue-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700">
                                                                 <i class="fas fa-plus mr-1"></i>Tambah
                                                             </a>
+                                                            @endif
                                                         </div>
                                                         <div class="normal-indicator text-gray-400 dark:text-gray-600">-</div>
                                                     </div>

@@ -10,6 +10,7 @@
             </x-ui.alert>
         @endsession
 
+        @if (auth()->user()->hasPermission('create-jurusan') || auth()->user()->hasPermission('manage-jurusan'))
         <div class="flex justify-end">
             <a href="{{ route('jurusan.create') }}" class="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -19,6 +20,7 @@
                 Tambah Jurusan
             </a>
         </div>
+        @endif
 
         <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="max-w-full overflow-x-auto custom-scrollbar">
@@ -34,9 +36,11 @@
                             <th class="px-5 py-3 text-left sm:px-6">
                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Dibuat</p>
                             </th>
+                            @if (auth()->user()->hasPermission('edit-jurusan') || auth()->user()->hasPermission('delete-jurusan') || auth()->user()->hasPermission('manage-jurusan'))
                             <th class="px-5 py-3 text-left sm:px-6">
                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Aksi</p>
                             </th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -51,8 +55,10 @@
                                 <td class="px-5 py-4 sm:px-6">
                                     <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ $jurusan->created_at->diffForHumans() }}</p>
                                 </td>
+                                @if (auth()->user()->hasPermission('edit-jurusan') || auth()->user()->hasPermission('delete-jurusan') || auth()->user()->hasPermission('manage-jurusan'))
                                 <td class="px-5 py-4 sm:px-6">
                                     <div class="flex items-center gap-2">
+                                        @if (auth()->user()->hasPermission('edit-jurusan') || auth()->user()->hasPermission('manage-jurusan'))
                                         <a href="{{ route('jurusan.edit', $jurusan) }}"
                                             class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-theme-xs transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -60,7 +66,9 @@
                                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                                             </svg>
                                         </a>
+                                        @endif
 
+                                        @if (auth()->user()->hasPermission('delete-jurusan') || auth()->user()->hasPermission('manage-jurusan'))
                                         <form action="{{ route('jurusan.destroy', $jurusan) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jurusan ini?')">
                                             @csrf
                                             @method('DELETE')
@@ -72,12 +80,14 @@
                                                 </svg>
                                             </button>
                                         </form>
+                                        @endif
                                     </div>
                                 </td>
+                                @endif
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-5 py-8 text-center sm:px-6">
+                                <td colspan="{{ (auth()->user()->hasPermission('edit-jurusan') || auth()->user()->hasPermission('delete-jurusan') || auth()->user()->hasPermission('manage-jurusan')) ? '4' : '3' }}" class="px-5 py-8 text-center sm:px-6">
                                     <p class="text-gray-500 dark:text-gray-400">Belum ada data jurusan.</p>
                                 </td>
                             </tr>

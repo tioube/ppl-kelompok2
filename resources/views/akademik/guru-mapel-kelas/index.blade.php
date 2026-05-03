@@ -72,10 +72,12 @@
         </div>
 
         <!-- Action Buttons Section -->
+        @if (auth()->user()->hasPermission('generate-guru-mapel-kelas') || auth()->user()->hasPermission('clear-guru-mapel-kelas') || auth()->user()->hasPermission('create-guru-mapel-kelas') || auth()->user()->hasPermission('manage-guru-mapel-kelas'))
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <div class="flex items-center justify-between">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white">Aksi Penugasan</h3>
                 <div class="flex items-center gap-3">
+                    @if (auth()->user()->hasPermission('generate-guru-mapel-kelas') || auth()->user()->hasPermission('manage-guru-mapel-kelas'))
                     <form action="{{ route('guru-mapel-kelas.generate') }}" method="POST" class="inline"
                         onsubmit="return confirm('Generate otomatis akan membuat penugasan untuk semua kombinasi guru-mapel-kelas. Lanjutkan?')">
                         @csrf
@@ -84,6 +86,9 @@
                             <i class="fas fa-magic mr-2"></i>Generate Otomatis
                         </button>
                     </form>
+                    @endif
+
+                    @if (auth()->user()->hasPermission('clear-guru-mapel-kelas') || auth()->user()->hasPermission('manage-guru-mapel-kelas'))
                     <form action="{{ route('guru-mapel-kelas.clear') }}" method="POST" class="inline"
                         onsubmit="return confirm('Yakin ingin menghapus SEMUA penugasan? Tindakan ini tidak dapat dibatalkan!')">
                         @csrf
@@ -93,13 +98,18 @@
                             <i class="fas fa-trash-alt mr-2"></i>Hapus Semua
                         </button>
                     </form>
+                    @endif
+
+                    @if (auth()->user()->hasPermission('create-guru-mapel-kelas') || auth()->user()->hasPermission('manage-guru-mapel-kelas'))
                     <a href="{{ route('guru-mapel-kelas.create') }}"
                         class="bg-green-600 hover:bg-green-700 rounded-lg px-4 py-2 text-sm font-medium text-white dark:bg-green-600 dark:hover:bg-green-700 transition">
                         <i class="fas fa-plus mr-2"></i>Tambah Penugasan
                     </a>
+                    @endif
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Search and Filter Section -->
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
@@ -300,7 +310,9 @@
                                     @endif
                                 </div>
                             </th>
+                            @if (auth()->user()->hasPermission('edit-guru-mapel-kelas') || auth()->user()->hasPermission('delete-guru-mapel-kelas') || auth()->user()->hasPermission('manage-guru-mapel-kelas'))
                             <th scope="col" class="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Aksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -326,13 +338,18 @@
                                         {{ $assignment->kelas->nama }}
                                     </span>
                                 </td>
+                                @if (auth()->user()->hasPermission('edit-guru-mapel-kelas') || auth()->user()->hasPermission('delete-guru-mapel-kelas') || auth()->user()->hasPermission('manage-guru-mapel-kelas'))
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
+                                        @if (auth()->user()->hasPermission('edit-guru-mapel-kelas') || auth()->user()->hasPermission('manage-guru-mapel-kelas'))
                                         <a href="{{ route('guru-mapel-kelas.edit', $assignment) }}"
                                             class="text-blue-600 transition-colors hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                                             title="Edit">
                                             <i class="fas fa-edit text-lg"></i>
                                         </a>
+                                        @endif
+
+                                        @if (auth()->user()->hasPermission('delete-guru-mapel-kelas') || auth()->user()->hasPermission('manage-guru-mapel-kelas'))
                                         <form action="{{ route('guru-mapel-kelas.destroy', $assignment) }}" method="POST"
                                             onsubmit="return confirm('Yakin ingin menghapus penugasan ini?')">
                                             @csrf
@@ -343,12 +360,14 @@
                                                 <i class="fas fa-trash text-lg"></i>
                                             </button>
                                         </form>
+                                        @endif
                                     </div>
                                 </td>
+                                @endif
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-12 text-center text-gray-600 dark:text-gray-400">
+                                <td colspan="{{ (auth()->user()->hasPermission('edit-guru-mapel-kelas') || auth()->user()->hasPermission('delete-guru-mapel-kelas') || auth()->user()->hasPermission('manage-guru-mapel-kelas')) ? '5' : '4' }}" class="px-6 py-12 text-center text-gray-600 dark:text-gray-400">
                                     <div class="flex flex-col items-center justify-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 dark:text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
