@@ -99,7 +99,7 @@
                             @foreach($mataPelajaran as $mapel)
                                 <option value="{{ $mapel->id }}"
                                         data-kategori="{{ $mapel->kategori }}"
-                                        {{ old('mata_pelajaran_id') == $mapel->id ? 'selected' : '' }}>
+                                        {{ (old('mata_pelajaran_id', $selectedMataPelajaranId ?? null) == $mapel->id) ? 'selected' : '' }}>
                                     {{ $mapel->nama }} ({{ $mapel->kode }}) - {{ $mapel->kategori }}
                                 </option>
                             @endforeach

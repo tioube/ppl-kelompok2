@@ -65,6 +65,29 @@ class MataPelajaranController extends Controller
         ]);
     }
 
+    public function show(MataPelajaran $mataPelajaran)
+    {
+        $mataPelajaran->load([
+            'silabusAktif' => function ($query) {
+                $query->with(['createdBy', 'approvedBy'])
+                    ->orderBy('kategori')
+                    ->orderBy('urutan');
+            },
+        ]);
+
+        $silabusStats = [
+            'total' => $mataPelajaran->silabusAktif->count(),
+            'formatif' => $mataPelajaran->silabusFormatif->count(),
+            'sumatif' => $mataPelajaran->silabusSumatif->count(),
+        ];
+
+        return view('pages.mata-pelajaran.show', [
+            'title' => 'Detail Mata Pelajaran',
+            'mataPelajaran' => $mataPelajaran,
+            'silabusStats' => $silabusStats,
+        ]);
+    }
+
     public function create()
     {
         return view('pages.mata-pelajaran.create', ['title' => 'Tambah Mata Pelajaran']);

@@ -87,13 +87,14 @@ class SilabusController extends Controller
         return view('silabus.index', compact('silabus', 'mataPelajaran', 'stats'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         Gate::authorize('create', Silabus::class);
 
         $mataPelajaran = MataPelajaran::orderBy('nama')->get();
+        $selectedMataPelajaranId = $request->mata_pelajaran_id;
 
-        return view('silabus.create', compact('mataPelajaran'));
+        return view('silabus.create', compact('mataPelajaran', 'selectedMataPelajaranId'));
     }
 
     public function store(Request $request)
