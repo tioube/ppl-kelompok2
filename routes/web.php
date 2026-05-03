@@ -12,6 +12,7 @@ use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\SilabusController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\TahunAjaranController;
 use App\Http\Controllers\UserController;
@@ -255,6 +256,39 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware('permission:manage-users,delete-users')->group(function () {
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    });
+
+    // Silabus Routes with Granular Permissions
+    Route::middleware('permission:manage-silabus,view-silabus')->group(function () {
+        Route::get('/silabus', [SilabusController::class, 'index'])->name('silabus.index');
+    });
+
+    Route::middleware('permission:manage-silabus,create-silabus')->group(function () {
+        Route::get('/silabus/create', [SilabusController::class, 'create'])->name('silabus.create');
+        Route::post('/silabus', [SilabusController::class, 'store'])->name('silabus.store');
+    });
+
+    Route::middleware('permission:manage-silabus,edit-silabus')->group(function () {
+        Route::get('/silabus/{silabus}/edit', [SilabusController::class, 'edit'])->name('silabus.edit');
+        Route::put('/silabus/{silabus}', [SilabusController::class, 'update'])->name('silabus.update');
+        Route::patch('/silabus/{silabus}', [SilabusController::class, 'update']);
+    });
+
+    Route::middleware('permission:manage-silabus,delete-silabus')->group(function () {
+        Route::delete('/silabus/{silabus}', [SilabusController::class, 'destroy'])->name('silabus.destroy');
+    });
+
+    // Put show route after specific routes to prevent collision
+    Route::middleware('permission:manage-silabus,view-silabus')->group(function () {
+        Route::get('/silabus/{silabus}', [SilabusController::class, 'show'])->name('silabus.show');
+    });
+
+    // Silabus Approval Routes - Akademik & Super-admin
+    Route::middleware('permission:manage-silabus,approve-silabus')->group(function () {
+        Route::post('/silabus/{silabus}/submit-approval', [SilabusController::class, 'submitForApproval'])->name('silabus.submit-approval');
+        Route::post('/silabus/{silabus}/approve', [SilabusController::class, 'approve'])->name('silabus.approve');
+        Route::post('/silabus/{silabus}/reject', [SilabusController::class, 'reject'])->name('silabus.reject');
+        Route::patch('/silabus/{silabus}/toggle-status', [SilabusController::class, 'toggleStatus'])->name('silabus.toggle-status');
     });
 });
 

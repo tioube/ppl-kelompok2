@@ -27,4 +27,24 @@ class MataPelajaran extends Model
     {
         return $this->hasMany(Schedule::class);
     }
+
+    public function silabus()
+    {
+        return $this->hasMany(Silabus::class);
+    }
+
+    public function silabusAktif()
+    {
+        return $this->hasMany(Silabus::class)->active()->approved();
+    }
+
+    public function silabusFormatif()
+    {
+        return $this->hasMany(Silabus::class)->formatif()->active()->approved();
+    }
+
+    public function silabusSumatif()
+    {
+        return $this->hasMany(Silabus::class)->sumatif()->active()->approved();
+    }
 }

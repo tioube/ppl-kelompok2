@@ -101,6 +101,7 @@
                                 'User Management' => ['manage-users', 'view-users', 'create-users', 'edit-users', 'delete-users', 'manage-roles', 'manage-permissions'],
                                 'Academic Data Management' => ['manage-academic', 'view-academic'],
                                 'Subject Management' => ['manage-mata-pelajaran', 'view-mata-pelajaran', 'create-mata-pelajaran', 'edit-mata-pelajaran', 'delete-mata-pelajaran'],
+                                'Silabus Management' => ['manage-silabus', 'view-silabus', 'create-silabus', 'edit-silabus', 'delete-silabus', 'approve-silabus'],
                                 'Student Management' => ['manage-siswa', 'view-siswa', 'create-siswa', 'edit-siswa', 'delete-siswa'],
                                 'Academic Year Management' => ['manage-tahun-ajaran', 'view-tahun-ajaran', 'create-tahun-ajaran', 'edit-tahun-ajaran', 'delete-tahun-ajaran'],
                                 'Department Management' => ['manage-jurusan', 'view-jurusan', 'create-jurusan', 'edit-jurusan', 'delete-jurusan'],

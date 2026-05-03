@@ -238,7 +238,7 @@
                             <th class="px-5 py-3 text-left sm:px-6">
                                 <p class="font-medium text-gray-700 text-theme-xs dark:text-gray-300">Deskripsi</p>
                             </th>
-                            @if (auth()->user()->hasPermission('edit-mata-pelajaran') || auth()->user()->hasPermission('delete-mata-pelajaran') || auth()->user()->hasPermission('manage-mata-pelajaran'))
+                            @if (auth()->user()->hasPermission('edit-mata-pelajaran') || auth()->user()->hasPermission('delete-mata-pelajaran') || auth()->user()->hasPermission('manage-mata-pelajaran') || auth()->user()->hasPermission('view-mata-pelajaran'))
                             <th class="px-5 py-3 text-left sm:px-6">
                                 <p class="font-medium text-gray-700 text-theme-xs dark:text-gray-300">Aksi</p>
                             </th>
@@ -293,11 +293,21 @@
                                         {{ $mp->deskripsi ?? '-' }}
                                     </p>
                                 </td>
-                                @if (auth()->user()->hasPermission('edit-mata-pelajaran') || auth()->user()->hasPermission('delete-mata-pelajaran') || auth()->user()->hasPermission('manage-mata-pelajaran'))
+                                @if (auth()->user()->hasPermission('edit-mata-pelajaran') || auth()->user()->hasPermission('delete-mata-pelajaran') || auth()->user()->hasPermission('manage-mata-pelajaran') || auth()->user()->hasPermission('view-mata-pelajaran'))
                                 <td class="px-5 py-4 sm:px-6">
                                     <div class="flex items-center gap-2">
+                                        @if (auth()->user()->hasPermission('view-mata-pelajaran') || auth()->user()->hasPermission('manage-mata-pelajaran'))
+                                        <a href="{{ route('mata-pelajaran.show', $mp) }}" title="Lihat Detail & Silabus"
+                                            class="inline-flex items-center justify-center rounded-lg border border-blue-300 bg-white px-3 py-2 text-sm font-medium text-blue-600 shadow-theme-xs transition hover:bg-blue-50 dark:border-blue-600 dark:bg-gray-800 dark:text-blue-400 dark:hover:bg-blue-900/10">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                                <circle cx="12" cy="12" r="3"/>
+                                            </svg>
+                                        </a>
+                                        @endif
+
                                         @if (auth()->user()->hasPermission('edit-mata-pelajaran') || auth()->user()->hasPermission('manage-mata-pelajaran'))
-                                        <a href="{{ route('mata-pelajaran.edit', $mp) }}"
+                                        <a href="{{ route('mata-pelajaran.edit', $mp) }}" title="Edit Mata Pelajaran"
                                             class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-theme-xs transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -326,7 +336,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="{{ (auth()->user()->hasPermission('edit-mata-pelajaran') || auth()->user()->hasPermission('delete-mata-pelajaran') || auth()->user()->hasPermission('manage-mata-pelajaran')) ? '6' : '5' }}" class="px-5 py-12 text-center sm:px-6">
+                                <td colspan="{{ (auth()->user()->hasPermission('edit-mata-pelajaran') || auth()->user()->hasPermission('delete-mata-pelajaran') || auth()->user()->hasPermission('manage-mata-pelajaran') || auth()->user()->hasPermission('view-mata-pelajaran')) ? '6' : '5' }}" class="px-5 py-12 text-center sm:px-6">
                                     <div class="flex flex-col items-center justify-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
