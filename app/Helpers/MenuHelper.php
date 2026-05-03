@@ -20,8 +20,8 @@ class MenuHelper
         $user = auth()->user();
         $items = [];
 
-        // User Management - Only show if user has user-related permissions
-        if ($user && ($user->hasPermission('manage-users') || $user->hasPermission('view-users'))) {
+        // User Management submenu
+        if ($user && ($user->hasPermission('view-users') || $user->hasPermission('manage-users'))) {
             $items[] = [
                 'icon' => 'charts',
                 'name' => 'User Management',
@@ -49,7 +49,7 @@ class MenuHelper
             ],
         ];
 
-        // Academic Management - Permission-based checking
+        // Super Admin or Academic Management Items
         if ($user && self::canAccessAcademicManagement($user)) {
             $menuGroups[] = [
                 'title' => 'Academic Management',
@@ -57,7 +57,7 @@ class MenuHelper
             ];
         }
 
-        // Administration - Permission-based checking
+        // Administration Items (User Management)
         if ($user && self::canAccessAdministration($user)) {
             $menuGroups[] = [
                 'title' => 'Administration',
@@ -68,42 +68,42 @@ class MenuHelper
         return $menuGroups;
     }
 
-    private static function canAccessAcademicManagement($user): bool
+    protected static function canAccessAcademicManagement($user): bool
     {
-        return $user->hasPermission('manage-guru') ||
-               $user->hasPermission('view-guru') ||
-               $user->hasPermission('manage-siswa') ||
-               $user->hasPermission('view-siswa') ||
+        return $user->hasPermission('view-mata-pelajaran') ||
                $user->hasPermission('manage-mata-pelajaran') ||
-               $user->hasPermission('view-mata-pelajaran') ||
-               $user->hasPermission('manage-tahun-ajaran') ||
+               $user->hasPermission('view-siswa') ||
+               $user->hasPermission('manage-siswa') ||
+               $user->hasPermission('view-guru') ||
+               $user->hasPermission('manage-guru') ||
                $user->hasPermission('view-tahun-ajaran') ||
-               $user->hasPermission('manage-jurusan') ||
+               $user->hasPermission('manage-tahun-ajaran') ||
                $user->hasPermission('view-jurusan') ||
-               $user->hasPermission('manage-kelas') ||
+               $user->hasPermission('manage-jurusan') ||
                $user->hasPermission('view-kelas') ||
-               $user->hasPermission('manage-guru-mapel-kelas') ||
+               $user->hasPermission('manage-kelas') ||
+               $user->hasPermission('view-classes') ||
+               $user->hasPermission('manage-classes') ||
                $user->hasPermission('view-guru-mapel-kelas') ||
-               $user->hasPermission('manage-schedules') ||
+               $user->hasPermission('manage-guru-mapel-kelas') ||
                $user->hasPermission('view-schedules') ||
-               $user->hasPermission('manage-jadwal-pelajaran') ||
-               $user->hasPermission('view-jadwal-pelajaran');
+               $user->hasPermission('manage-schedules') ||
+               $user->hasPermission('view-jadwal-pelajaran') ||
+               $user->hasPermission('manage-jadwal-pelajaran');
     }
 
-    private static function canAccessAdministration($user): bool
+    protected static function canAccessAdministration($user): bool
     {
-        return $user->hasPermission('manage-users') ||
-               $user->hasPermission('view-users') ||
-               $user->hasPermission('manage-roles') ||
-               $user->hasPermission('manage-permissions');
+        return $user->hasPermission('view-users') ||
+               $user->hasPermission('manage-users');
     }
 
     public static function getAcademicManagementItems($user): array
     {
         $items = [];
 
-        // Guru Management
-        if ($user->hasPermission('manage-guru') || $user->hasPermission('view-guru')) {
+        // List Guru
+        if ($user->hasPermission('view-guru') || $user->hasPermission('manage-guru')) {
             $items[] = [
                 'icon' => 'user-profile',
                 'name' => 'List Guru',
@@ -111,8 +111,8 @@ class MenuHelper
             ];
         }
 
-        // Siswa Management
-        if ($user->hasPermission('manage-siswa') || $user->hasPermission('view-siswa')) {
+        // List Siswa
+        if ($user->hasPermission('view-siswa') || $user->hasPermission('manage-siswa')) {
             $items[] = [
                 'icon' => 'user-profile',
                 'name' => 'List Siswa',
@@ -123,51 +123,49 @@ class MenuHelper
         // Academic submenu
         $academicSubItems = [];
 
-        if ($user->hasPermission('manage-tahun-ajaran') || $user->hasPermission('view-tahun-ajaran')) {
+        if ($user->hasPermission('view-tahun-ajaran') || $user->hasPermission('manage-tahun-ajaran')) {
             $academicSubItems[] = [
                 'name' => 'Tahun Ajaran',
                 'path' => route('tahun-ajaran.index', absolute: false),
             ];
         }
 
-        if ($user->hasPermission('manage-mata-pelajaran') || $user->hasPermission('view-mata-pelajaran')) {
+        if ($user->hasPermission('view-mata-pelajaran') || $user->hasPermission('manage-mata-pelajaran')) {
             $academicSubItems[] = [
-                'icon' => 'tables',
                 'name' => 'List Mata Pelajaran',
                 'path' => route('mata-pelajaran.index', absolute: false),
             ];
         }
 
-        if ($user->hasPermission('manage-jurusan') || $user->hasPermission('view-jurusan')) {
+        if ($user->hasPermission('view-jurusan') || $user->hasPermission('manage-jurusan')) {
             $academicSubItems[] = [
                 'name' => 'Jurusan',
                 'path' => route('jurusan.index', absolute: false),
             ];
         }
 
-        if ($user->hasPermission('manage-kelas') || $user->hasPermission('view-kelas')) {
+        if ($user->hasPermission('view-kelas') || $user->hasPermission('manage-kelas') || $user->hasPermission('view-classes')) {
             $academicSubItems[] = [
                 'name' => 'Kelas',
                 'path' => route('kelas.index', absolute: false),
             ];
         }
 
-        if ($user->hasPermission('manage-guru-mapel-kelas') || $user->hasPermission('view-guru-mapel-kelas')) {
+        if ($user->hasPermission('view-guru-mapel-kelas') || $user->hasPermission('manage-guru-mapel-kelas')) {
             $academicSubItems[] = [
                 'name' => 'Penugasan Guru',
                 'path' => route('guru-mapel-kelas.index', absolute: false),
             ];
         }
 
-        if ($user->hasPermission('manage-schedules') || $user->hasPermission('view-schedules') ||
-            $user->hasPermission('manage-jadwal-pelajaran') || $user->hasPermission('view-jadwal-pelajaran')) {
+        if ($user->hasPermission('view-schedules') || $user->hasPermission('manage-schedules') || $user->hasPermission('view-jadwal-pelajaran')) {
             $academicSubItems[] = [
                 'name' => 'Jadwal Pelajaran',
                 'path' => route('schedules.index', absolute: false),
             ];
         }
 
-        // Add Academic submenu if has any items
+        // Add Academic submenu if there are any items
         if (! empty($academicSubItems)) {
             $items[] = [
                 'icon' => 'calendar',
@@ -177,53 +175,6 @@ class MenuHelper
         }
 
         return $items;
-    }
-
-    public static function getSuperAdminItems(): array
-    {
-        return [
-            [
-                'icon' => 'user-profile',
-                'name' => 'List Guru',
-                'path' => route('guru.index', absolute: false),
-            ],
-            [
-                'icon' => 'user-profile',
-                'name' => 'List Siswa',
-                'path' => route('siswa.index', absolute: false),
-            ],
-            [
-                'icon' => 'calendar',
-                'name' => 'Akademik',
-                'subItems' => [
-                    [
-                        'name' => 'Tahun Ajaran',
-                        'path' => route('tahun-ajaran.index', absolute: false),
-                    ],
-                    [
-                        'icon' => 'tables',
-                        'name' => 'List Mata Pelajaran',
-                        'path' => route('mata-pelajaran.index', absolute: false),
-                    ],
-                    [
-                        'name' => 'Jurusan',
-                        'path' => route('jurusan.index', absolute: false),
-                    ],
-                    [
-                        'name' => 'Kelas',
-                        'path' => route('kelas.index', absolute: false),
-                    ],
-                    [
-                        'name' => 'Penugasan Guru',
-                        'path' => route('guru-mapel-kelas.index', absolute: false),
-                    ],
-                    [
-                        'name' => 'Jadwal Pelajaran',
-                        'path' => route('schedules.index', absolute: false),
-                    ],
-                ],
-            ],
-        ];
     }
 
     public static function isActive($path): bool

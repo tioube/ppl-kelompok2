@@ -16,6 +16,7 @@ class PermissionMiddleware
 
         $user = auth()->user();
 
+        // If user has ANY of the required permissions, grant access
         foreach ($permissions as $permission) {
             if ($user->hasPermission($permission)) {
                 return $next($request);
