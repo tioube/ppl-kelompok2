@@ -112,7 +112,7 @@ class UserController extends Controller
                     'user_id' => $user->id,
                     'user_name' => $user->name,
                     'revoked_permission_ids' => $revokedPermissionIds,
-                    'previous_revoked_count' => $user->revokedPermissions()->count()
+                    'previous_revoked_count' => $user->revokedPermissions()->count(),
                 ]);
 
                 $user->revokedPermissions()->sync($revokedPermissionIds);
@@ -124,7 +124,7 @@ class UserController extends Controller
                 \Log::info('Revoked permissions updated', [
                     'user_id' => $user->id,
                     'new_revoked_count' => $user->revokedPermissions()->count(),
-                    'revoked_permission_slugs' => $user->revokedPermissions->pluck('slug')->toArray()
+                    'revoked_permission_slugs' => $user->revokedPermissions->pluck('slug')->toArray(),
                 ]);
             }
         }

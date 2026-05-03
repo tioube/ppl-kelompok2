@@ -149,6 +149,7 @@ class User extends Authenticatable
             foreach ($permission as $perm) {
                 $this->revokePermissionTo($perm);
             }
+
             return;
         }
 
@@ -168,6 +169,7 @@ class User extends Authenticatable
             foreach ($permission as $perm) {
                 $this->restorePermissionTo($perm);
             }
+
             return;
         }
 
