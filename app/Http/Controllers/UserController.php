@@ -19,7 +19,9 @@ class UserController extends Controller
 
     public function create()
     {
-        $this->authorize('manage-users');
+        if (! auth()->user()->hasPermission('manage-users') && ! auth()->user()->hasPermission('create-users')) {
+            abort(403, 'You do not have permission to create users.');
+        }
 
         $roles = Role::all();
         $permissions = Permission::all();
@@ -29,7 +31,9 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('manage-users');
+        if (! auth()->user()->hasPermission('manage-users') && ! auth()->user()->hasPermission('create-users')) {
+            abort(403, 'You do not have permission to create users.');
+        }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -60,6 +64,10 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        if (! auth()->user()->hasPermission('manage-users') && ! auth()->user()->hasPermission('edit-users')) {
+            abort(403, 'You do not have permission to edit users.');
+        }
+
         $roles = Role::all();
         $permissions = Permission::all();
         $userRoles = $user->roles->pluck('id')->toArray();
@@ -70,6 +78,10 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
+        if (! auth()->user()->hasPermission('manage-users') && ! auth()->user()->hasPermission('edit-users')) {
+            abort(403, 'You do not have permission to edit users.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$user->id,
@@ -97,7 +109,9 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        $this->authorize('manage-users');
+        if (! auth()->user()->hasPermission('manage-users') && ! auth()->user()->hasPermission('delete-users')) {
+            abort(403, 'You do not have permission to delete users.');
+        }
 
         if ($user->id === auth()->id()) {
             return redirect()->route('users.index')->with('error', 'You cannot delete yourself');

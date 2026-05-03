@@ -15,6 +15,10 @@ class SiswaController extends Controller
 {
     public function index()
     {
+        if (! auth()->user()->hasPermission('manage-siswa') && ! auth()->user()->hasPermission('view-siswa')) {
+            abort(403, 'You do not have permission to view students.');
+        }
+
         $siswas = User::whereHas('roles', function ($query) {
             $query->where('slug', 'siswa');
         })
@@ -30,6 +34,10 @@ class SiswaController extends Controller
 
     public function create()
     {
+        if (! auth()->user()->hasPermission('manage-siswa') && ! auth()->user()->hasPermission('create-siswa')) {
+            abort(403, 'You do not have permission to create students.');
+        }
+
         $kelasList = Kelas::all();
         $jurusanList = Jurusan::all();
         $tahunAjaranList = TahunAjaran::all();
@@ -44,6 +52,10 @@ class SiswaController extends Controller
 
     public function store(Request $request)
     {
+        if (! auth()->user()->hasPermission('manage-siswa') && ! auth()->user()->hasPermission('create-siswa')) {
+            abort(403, 'You do not have permission to create students.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -78,6 +90,10 @@ class SiswaController extends Controller
 
     public function show(User $siswa)
     {
+        if (! auth()->user()->hasPermission('manage-siswa') && ! auth()->user()->hasPermission('view-siswa')) {
+            abort(403, 'You do not have permission to view students.');
+        }
+
         $siswa->load(['roles', 'kelas', 'jurusan', 'tahunAjaran']);
 
         return view('pages.siswa.show', [
@@ -88,6 +104,10 @@ class SiswaController extends Controller
 
     public function edit(User $siswa)
     {
+        if (! auth()->user()->hasPermission('manage-siswa') && ! auth()->user()->hasPermission('edit-siswa')) {
+            abort(403, 'You do not have permission to edit students.');
+        }
+
         $kelasList = Kelas::all();
         $jurusanList = Jurusan::all();
         $tahunAjaranList = TahunAjaran::all();
@@ -103,6 +123,10 @@ class SiswaController extends Controller
 
     public function update(Request $request, User $siswa)
     {
+        if (! auth()->user()->hasPermission('manage-siswa') && ! auth()->user()->hasPermission('edit-siswa')) {
+            abort(403, 'You do not have permission to edit students.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$siswa->id,
@@ -139,6 +163,10 @@ class SiswaController extends Controller
 
     public function destroy(User $siswa)
     {
+        if (! auth()->user()->hasPermission('manage-siswa') && ! auth()->user()->hasPermission('delete-siswa')) {
+            abort(403, 'You do not have permission to delete students.');
+        }
+
         if ($siswa->photo_profile) {
             Storage::disk('public')->delete($siswa->photo_profile);
         }
