@@ -98,8 +98,16 @@
                         @php
                             $permissionCategories = [
                                 'System & Dashboard' => ['view-dashboard', 'view-settings', 'manage-settings'],
-                                'User Management' => ['manage-users', 'view-users', 'manage-roles', 'manage-permissions'],
-                                'Academic Management' => ['manage-academic', 'view-academic', 'manage-classes', 'view-classes'],
+                                'User Management' => ['manage-users', 'view-users', 'create-users', 'edit-users', 'delete-users', 'manage-roles', 'manage-permissions'],
+                                'Academic Data Management' => ['manage-academic', 'view-academic'],
+                                'Subject Management' => ['manage-mata-pelajaran', 'view-mata-pelajaran', 'create-mata-pelajaran', 'edit-mata-pelajaran', 'delete-mata-pelajaran'],
+                                'Student Management' => ['manage-siswa', 'view-siswa', 'create-siswa', 'edit-siswa', 'delete-siswa'],
+                                'Teacher Management' => ['manage-guru', 'view-guru', 'create-guru', 'edit-guru', 'delete-guru'],
+                                'Academic Year Management' => ['manage-tahun-ajaran', 'view-tahun-ajaran', 'create-tahun-ajaran', 'edit-tahun-ajaran', 'delete-tahun-ajaran'],
+                                'Department Management' => ['manage-jurusan', 'view-jurusan', 'create-jurusan', 'edit-jurusan', 'delete-jurusan'],
+                                'Class Management' => ['manage-classes', 'view-classes', 'manage-kelas', 'view-kelas', 'create-kelas', 'edit-kelas', 'delete-kelas'],
+                                'Teacher-Subject-Class Management' => ['manage-guru-mapel-kelas', 'view-guru-mapel-kelas', 'create-guru-mapel-kelas', 'edit-guru-mapel-kelas', 'delete-guru-mapel-kelas', 'generate-guru-mapel-kelas', 'clear-guru-mapel-kelas'],
+                                'Schedule Management' => ['manage-jadwal-pelajaran', 'view-jadwal-pelajaran', 'create-jadwal-pelajaran', 'edit-jadwal-pelajaran', 'delete-jadwal-pelajaran', 'manage-schedules', 'view-schedules', 'create-schedules', 'generate-schedules', 'swap-schedules', 'move-schedules'],
                                 'Assessment & Grading' => ['manage-grades', 'view-grades', 'view-own-grades'],
                                 'Attendance Management' => ['manage-attendance', 'view-attendance'],
                             ];

@@ -16,27 +16,39 @@
             </x-ui.alert>
         @endsession
 
+        @if (auth()->user()->hasPermission('create-guru') || auth()->user()->hasPermission('manage-guru'))
+        <div class="flex justify-end">
+            <a href="{{ route('guru.create') }}" class="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Tambah Guru
+            </a>
+        </div>
+        @endif
+
         <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Daftar Guru</h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">List semua pengguna dengan role Guru</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Kelola data guru</p>
             </div>
 
             <div class="max-w-full overflow-x-auto custom-scrollbar">
-                <table class="w-full min-w-[1102px]">
+                <table class="w-full min-w-[1000px]">
                     <thead>
                         <tr class="border-b border-gray-100 dark:border-gray-800">
                             <th class="px-5 py-3 text-left sm:px-6">
-                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Name</p>
+                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Guru</p>
+                            </th>
+                            <th class="px-5 py-3 text-left sm:px-6">
+                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">NIP</p>
                             </th>
                             <th class="px-5 py-3 text-left sm:px-6">
                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Email</p>
                             </th>
                             <th class="px-5 py-3 text-left sm:px-6">
-                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Roles</p>
-                            </th>
-                            <th class="px-5 py-3 text-left sm:px-6">
-                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Joined</p>
+                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Aksi</p>
                             </th>
                         </tr>
                     </thead>
@@ -45,51 +57,84 @@
                             <tr class="border-b border-gray-100 dark:border-gray-800">
                                 <td class="px-5 py-4 sm:px-6">
                                     <div class="flex items-center gap-3">
-                                        <p class="font-medium text-gray-900 dark:text-white">{{ $guru->name }}</p>
+                                        @if($guru->photo_profile)
+                                            <img src="{{ Storage::url($guru->photo_profile) }}" alt="{{ $guru->name }}" class="h-10 w-10 rounded-full object-cover">
+                                        @else
+                                            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+                                                <span class="font-medium text-green-800 dark:text-green-400">{{ substr($guru->name, 0, 1) }}</span>
+                                            </div>
+                                        @endif
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-white">{{ $guru->name }}</p>
+                                            @if($guru->gender)
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $guru->gender }}</p>
+                                            @endif
+                                        </div>
                                     </div>
+                                </td>
+                                <td class="px-5 py-4 sm:px-6">
+                                    <p class="text-gray-900 dark:text-white">{{ $guru->nip ?? '-' }}</p>
                                 </td>
                                 <td class="px-5 py-4 sm:px-6">
                                     <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ $guru->email }}</p>
                                 </td>
                                 <td class="px-5 py-4 sm:px-6">
-                                    <div class="flex flex-wrap gap-2">
-                                        @forelse($guru->roles as $role)
-                                            <span class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                                {{ $role->name }}
-                                            </span>
-                                        @empty
-                                            <span class="text-sm text-gray-400 dark:text-gray-500">No roles</span>
-                                        @endforelse
+                                    <div class="flex items-center gap-2">
+                                        @if (auth()->user()->hasPermission('view-guru') || auth()->user()->hasPermission('manage-guru'))
+                                        <a href="{{ route('guru.show', $guru) }}"
+                                            class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-theme-xs transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]"
+                                            title="View">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        </a>
+                                        @endif
+
+                                        @if (auth()->user()->hasPermission('edit-guru') || auth()->user()->hasPermission('manage-guru'))
+                                        <a href="{{ route('guru.edit', $guru) }}"
+                                            class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-theme-xs transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]"
+                                            title="Edit">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                            </svg>
+                                        </a>
+                                        @endif
+
+                                        @if (auth()->user()->hasPermission('delete-guru') || auth()->user()->hasPermission('manage-guru'))
+                                        <form action="{{ route('guru.destroy', $guru) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus guru ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="inline-flex items-center justify-center rounded-lg border border-red-300 bg-white px-3 py-2 text-sm font-medium text-red-600 shadow-theme-xs transition hover:bg-red-50 dark:border-red-700 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-red-900/10"
+                                                title="Delete">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                        @endif
                                     </div>
-                                </td>
-                                <td class="px-5 py-4 sm:px-6">
-                                    <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ $guru->created_at->format('d M Y') }}</p>
-                                    <p class="text-xs text-gray-400 dark:text-gray-500">{{ $guru->created_at->diffForHumans() }}</p>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="4" class="px-5 py-8 text-center sm:px-6">
-                                    <div class="flex flex-col items-center justify-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                        </svg>
-                                        <p class="mt-4 text-sm font-medium text-gray-900 dark:text-white">Belum ada data Guru</p>
-                                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Data akan muncul setelah ada pengguna dengan role Guru</p>
-                                    </div>
+                                    <p class="text-gray-500 dark:text-gray-400">Belum ada data guru.</p>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-
-            @if($gurus->hasPages())
-                <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-800">
-                    {{ $gurus->links() }}
-                </div>
-            @endif
         </div>
+
+        @if($gurus->hasPages())
+            <div class="mt-4">
+                {{ $gurus->links() }}
+            </div>
+        @endif
     </div>
 @endsection
-

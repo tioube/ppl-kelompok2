@@ -17,8 +17,12 @@ class MenuHelper
 
     public static function getAdministrationItems(): array
     {
-        return [
-            [
+        $user = auth()->user();
+        $items = [];
+
+        // User Management - Only show if user has user-related permissions
+        if ($user && ($user->hasPermission('manage-users') || $user->hasPermission('view-users'))) {
+            $items[] = [
                 'icon' => 'charts',
                 'name' => 'User Management',
                 'subItems' => [
@@ -28,8 +32,10 @@ class MenuHelper
                         'pro' => false,
                     ],
                 ],
-            ],
-        ];
+            ];
+        }
+
+        return $items;
     }
 
     public static function getMenuGroups(): array
@@ -43,14 +49,16 @@ class MenuHelper
             ],
         ];
 
-        if ($user && $user->hasRole('super-admin')) {
+        // Academic Management - Permission-based checking
+        if ($user && self::canAccessAcademicManagement($user)) {
             $menuGroups[] = [
-                'title' => 'Super Admin',
-                'items' => self::getSuperAdminItems(),
+                'title' => 'Academic Management',
+                'items' => self::getAcademicManagementItems($user),
             ];
         }
 
-        if ($user && ($user->hasRole('super-admin') || $user->hasRole('admin'))) {
+        // Administration - Permission-based checking
+        if ($user && self::canAccessAdministration($user)) {
             $menuGroups[] = [
                 'title' => 'Administration',
                 'items' => self::getAdministrationItems(),
@@ -58,6 +66,117 @@ class MenuHelper
         }
 
         return $menuGroups;
+    }
+
+    private static function canAccessAcademicManagement($user): bool
+    {
+        return $user->hasPermission('manage-guru') ||
+               $user->hasPermission('view-guru') ||
+               $user->hasPermission('manage-siswa') ||
+               $user->hasPermission('view-siswa') ||
+               $user->hasPermission('manage-mata-pelajaran') ||
+               $user->hasPermission('view-mata-pelajaran') ||
+               $user->hasPermission('manage-tahun-ajaran') ||
+               $user->hasPermission('view-tahun-ajaran') ||
+               $user->hasPermission('manage-jurusan') ||
+               $user->hasPermission('view-jurusan') ||
+               $user->hasPermission('manage-kelas') ||
+               $user->hasPermission('view-kelas') ||
+               $user->hasPermission('manage-guru-mapel-kelas') ||
+               $user->hasPermission('view-guru-mapel-kelas') ||
+               $user->hasPermission('manage-schedules') ||
+               $user->hasPermission('view-schedules') ||
+               $user->hasPermission('manage-jadwal-pelajaran') ||
+               $user->hasPermission('view-jadwal-pelajaran');
+    }
+
+    private static function canAccessAdministration($user): bool
+    {
+        return $user->hasPermission('manage-users') ||
+               $user->hasPermission('view-users') ||
+               $user->hasPermission('manage-roles') ||
+               $user->hasPermission('manage-permissions');
+    }
+
+    public static function getAcademicManagementItems($user): array
+    {
+        $items = [];
+
+        // Guru Management
+        if ($user->hasPermission('manage-guru') || $user->hasPermission('view-guru')) {
+            $items[] = [
+                'icon' => 'user-profile',
+                'name' => 'List Guru',
+                'path' => route('guru.index', absolute: false),
+            ];
+        }
+
+        // Siswa Management
+        if ($user->hasPermission('manage-siswa') || $user->hasPermission('view-siswa')) {
+            $items[] = [
+                'icon' => 'user-profile',
+                'name' => 'List Siswa',
+                'path' => route('siswa.index', absolute: false),
+            ];
+        }
+
+        // Academic submenu
+        $academicSubItems = [];
+
+        if ($user->hasPermission('manage-tahun-ajaran') || $user->hasPermission('view-tahun-ajaran')) {
+            $academicSubItems[] = [
+                'name' => 'Tahun Ajaran',
+                'path' => route('tahun-ajaran.index', absolute: false),
+            ];
+        }
+
+        if ($user->hasPermission('manage-mata-pelajaran') || $user->hasPermission('view-mata-pelajaran')) {
+            $academicSubItems[] = [
+                'icon' => 'tables',
+                'name' => 'List Mata Pelajaran',
+                'path' => route('mata-pelajaran.index', absolute: false),
+            ];
+        }
+
+        if ($user->hasPermission('manage-jurusan') || $user->hasPermission('view-jurusan')) {
+            $academicSubItems[] = [
+                'name' => 'Jurusan',
+                'path' => route('jurusan.index', absolute: false),
+            ];
+        }
+
+        if ($user->hasPermission('manage-kelas') || $user->hasPermission('view-kelas')) {
+            $academicSubItems[] = [
+                'name' => 'Kelas',
+                'path' => route('kelas.index', absolute: false),
+            ];
+        }
+
+        if ($user->hasPermission('manage-guru-mapel-kelas') || $user->hasPermission('view-guru-mapel-kelas')) {
+            $academicSubItems[] = [
+                'name' => 'Penugasan Guru',
+                'path' => route('guru-mapel-kelas.index', absolute: false),
+            ];
+        }
+
+        if ($user->hasPermission('manage-schedules') || $user->hasPermission('view-schedules') ||
+            $user->hasPermission('manage-jadwal-pelajaran') || $user->hasPermission('view-jadwal-pelajaran')) {
+            $academicSubItems[] = [
+                'name' => 'Jadwal Pelajaran',
+                'path' => route('schedules.index', absolute: false),
+            ];
+        }
+
+        // Add Academic submenu if has any items
+        if (! empty($academicSubItems)) {
+            $items[] = [
+                'icon' => 'calendar',
+                'name' => 'Akademik',
+                'subItems' => $academicSubItems,
+            ];
+        }
+
+        return $items;
     }
 
     public static function getSuperAdminItems(): array
