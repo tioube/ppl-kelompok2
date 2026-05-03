@@ -108,10 +108,17 @@ class User extends Authenticatable
         $this->roles()->detach($role);
     }
 
-    public function givePermissionTo(Permission|string $permission): void
+    public function givePermissionTo($permission): void
     {
         if (is_string($permission)) {
             $permission = Permission::where('slug', $permission)->firstOrFail();
+        } elseif (is_array($permission)) {
+            // Handle array of permissions
+            foreach ($permission as $perm) {
+                $this->givePermissionTo($perm);
+            }
+
+            return;
         }
 
         $this->permissions()->syncWithoutDetaching($permission);

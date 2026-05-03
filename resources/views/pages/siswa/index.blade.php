@@ -16,6 +16,7 @@
             </x-ui.alert>
         @endsession
 
+        @if (auth()->user()->hasPermission('create-siswa') || auth()->user()->hasPermission('manage-siswa'))
         <div class="flex justify-end">
             <a href="{{ route('siswa.create') }}" class="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -25,6 +26,7 @@
                 Tambah Siswa
             </a>
         </div>
+        @endif
 
         <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
@@ -110,6 +112,7 @@
                                 </td>
                                 <td class="px-5 py-4 sm:px-6">
                                     <div class="flex items-center gap-2">
+                                        @if (auth()->user()->hasPermission('view-siswa') || auth()->user()->hasPermission('manage-siswa'))
                                         <a href="{{ route('siswa.show', $siswa) }}"
                                             class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-theme-xs transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]"
                                             title="View">
@@ -118,6 +121,8 @@
                                                 <circle cx="12" cy="12" r="3"></circle>
                                             </svg>
                                         </a>
+                                        @endif
+                                        @if (auth()->user()->hasPermission('edit-siswa') || auth()->user()->hasPermission('manage-siswa'))
                                         <a href="{{ route('siswa.edit', $siswa) }}"
                                             class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-theme-xs transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]"
                                             title="Edit">
@@ -126,6 +131,8 @@
                                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                                             </svg>
                                         </a>
+                                        @endif
+                                        @if (auth()->user()->hasPermission('delete-siswa') || auth()->user()->hasPermission('manage-siswa'))
                                         <form action="{{ route('siswa.destroy', $siswa) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus siswa ini?')">
                                             @csrf
                                             @method('DELETE')
@@ -138,6 +145,7 @@
                                                 </svg>
                                             </button>
                                         </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
