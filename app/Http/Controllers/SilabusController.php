@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\MataPelajaran;
 use App\Models\Silabus;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 
 class SilabusController extends Controller
 {
@@ -89,7 +88,6 @@ class SilabusController extends Controller
 
     public function create(Request $request)
     {
-        Gate::authorize('create', Silabus::class);
 
         $mataPelajaran = MataPelajaran::orderBy('nama')->get();
         $selectedMataPelajaranId = $request->mata_pelajaran_id;
@@ -99,7 +97,6 @@ class SilabusController extends Controller
 
     public function store(Request $request)
     {
-        Gate::authorize('create', Silabus::class);
 
         $validated = $request->validate([
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
@@ -121,8 +118,6 @@ class SilabusController extends Controller
 
     public function show(Silabus $silabus)
     {
-        Gate::authorize('view', $silabus);
-
         $silabus->load(['mataPelajaran', 'createdBy', 'approvedBy']);
 
         return view('silabus.show', compact('silabus'));
@@ -130,7 +125,6 @@ class SilabusController extends Controller
 
     public function edit(Silabus $silabus)
     {
-        Gate::authorize('update', $silabus);
 
         if (! $silabus->canBeEdited()) {
             return redirect()->route('silabus.index')
@@ -144,7 +138,6 @@ class SilabusController extends Controller
 
     public function update(Request $request, Silabus $silabus)
     {
-        Gate::authorize('update', $silabus);
 
         if (! $silabus->canBeEdited()) {
             return redirect()->route('silabus.index')
@@ -174,8 +167,6 @@ class SilabusController extends Controller
 
     public function destroy(Silabus $silabus)
     {
-        Gate::authorize('delete', $silabus);
-
         if (! $silabus->canBeDeleted()) {
             return redirect()->route('silabus.index')
                 ->with('error', 'Silabus yang sudah aktif tidak dapat dihapus.');
@@ -189,7 +180,6 @@ class SilabusController extends Controller
 
     public function submitForApproval(Silabus $silabus)
     {
-        Gate::authorize('update', $silabus);
 
         if ($silabus->approval_status !== 'draft') {
             return back()->with('error', 'Hanya silabus dengan status draft yang bisa diajukan.');
@@ -204,8 +194,6 @@ class SilabusController extends Controller
 
     public function approve(Silabus $silabus)
     {
-        Gate::authorize('approve', $silabus);
-
         $silabus->update([
             'approval_status' => 'approved',
             'approved_by' => auth()->id(),
@@ -218,7 +206,6 @@ class SilabusController extends Controller
 
     public function reject(Request $request, Silabus $silabus)
     {
-        Gate::authorize('approve', $silabus);
 
         $request->validate([
             'rejection_reason' => 'required|string|min:10',
@@ -235,7 +222,6 @@ class SilabusController extends Controller
 
     public function toggleStatus(Silabus $silabus)
     {
-        Gate::authorize('approve', $silabus);
 
         if ($silabus->approval_status !== 'approved') {
             return back()->with('error', 'Hanya silabus yang sudah disetujui yang bisa diaktifkan/nonaktifkan.');

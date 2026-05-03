@@ -60,6 +60,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Permission::class, 'permission_user')->withTimestamps();
     }
 
+    public function revokedPermissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class, 'user_revoked_permissions')->withTimestamps();
+    }
+
     public function hasRole(string|array $roles): bool
     {
         if (is_array($roles)) {
@@ -71,9 +76,18 @@ class User extends Authenticatable
 
     public function hasPermission(string $permission): bool
     {
+        // First, check if permission is explicitly revoked
+        if ($this->hasRevokedPermission($permission)) {
+            return false;
+        }
 
         return $this->hasPermissionThroughRole($permission) ||
                $this->hasPermissionDirect($permission);
+    }
+
+    public function hasRevokedPermission(string $permission): bool
+    {
+        return $this->revokedPermissions()->where('slug', $permission)->exists();
     }
 
     public function hasPermissionThroughRole(string $permission): bool
@@ -124,6 +138,41 @@ class User extends Authenticatable
         }
 
         $this->permissions()->syncWithoutDetaching($permission);
+    }
+
+    public function revokePermissionTo($permission): void
+    {
+        if (is_string($permission)) {
+            $permission = Permission::where('slug', $permission)->firstOrFail();
+        } elseif (is_array($permission)) {
+            // Handle array of permissions
+            foreach ($permission as $perm) {
+                $this->revokePermissionTo($perm);
+            }
+            return;
+        }
+
+        // Remove from direct permissions if exists
+        $this->permissions()->detach($permission);
+
+        // Add to revoked permissions to override role permissions
+        $this->revokedPermissions()->syncWithoutDetaching($permission);
+    }
+
+    public function restorePermissionTo($permission): void
+    {
+        if (is_string($permission)) {
+            $permission = Permission::where('slug', $permission)->firstOrFail();
+        } elseif (is_array($permission)) {
+            // Handle array of permissions
+            foreach ($permission as $perm) {
+                $this->restorePermissionTo($perm);
+            }
+            return;
+        }
+
+        // Remove from revoked permissions
+        $this->revokedPermissions()->detach($permission);
     }
 
     public function isSuperAdmin(): bool

@@ -102,6 +102,31 @@ class UserController extends Controller
             if ($request->has('permissions')) {
                 $user->permissions()->sync($request->permissions ?? []);
             }
+
+            // Handle revoked permissions - check for the indicator field instead of the array itself
+            if ($request->has('revoked_permissions_submitted')) {
+                $revokedPermissionIds = $request->revoked_permissions ?? [];
+
+                // Debug logging
+                \Log::info('Updating revoked permissions', [
+                    'user_id' => $user->id,
+                    'user_name' => $user->name,
+                    'revoked_permission_ids' => $revokedPermissionIds,
+                    'previous_revoked_count' => $user->revokedPermissions()->count()
+                ]);
+
+                $user->revokedPermissions()->sync($revokedPermissionIds);
+
+                // Force refresh the relationship
+                $user->load('revokedPermissions');
+
+                // Debug logging after sync
+                \Log::info('Revoked permissions updated', [
+                    'user_id' => $user->id,
+                    'new_revoked_count' => $user->revokedPermissions()->count(),
+                    'revoked_permission_slugs' => $user->revokedPermissions->pluck('slug')->toArray()
+                ]);
+            }
         }
 
         return redirect()->route('users.index')->with('success', 'User updated successfully');
