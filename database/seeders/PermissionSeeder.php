@@ -73,6 +73,14 @@ class PermissionSeeder extends Seeder
             ['name' => 'Edit Guru', 'slug' => 'edit-guru', 'description' => 'Edit guru'],
             ['name' => 'Delete Guru', 'slug' => 'delete-guru', 'description' => 'Delete guru'],
 
+            // Silabus Management
+            ['name' => 'Manage Silabus', 'slug' => 'manage-silabus', 'description' => 'Full access to silabus management'],
+            ['name' => 'View Silabus', 'slug' => 'view-silabus', 'description' => 'View silabus list'],
+            ['name' => 'Create Silabus', 'slug' => 'create-silabus', 'description' => 'Create new silabus'],
+            ['name' => 'Edit Silabus', 'slug' => 'edit-silabus', 'description' => 'Edit silabus'],
+            ['name' => 'Delete Silabus', 'slug' => 'delete-silabus', 'description' => 'Delete silabus'],
+            ['name' => 'Approve Silabus', 'slug' => 'approve-silabus', 'description' => 'Approve or reject silabus'],
+
             // Teacher-Subject-Class Management (Guru Mapel Kelas)
             ['name' => 'Manage Guru Mapel Kelas', 'slug' => 'manage-guru-mapel-kelas', 'description' => 'Full access to guru mapel kelas management'],
             ['name' => 'View Guru Mapel Kelas', 'slug' => 'view-guru-mapel-kelas', 'description' => 'View guru mapel kelas list'],
@@ -180,6 +188,9 @@ class PermissionSeeder extends Seeder
                 'create-guru-mapel-kelas',
                 'edit-guru-mapel-kelas',
                 'generate-guru-mapel-kelas',
+                'manage-silabus',
+                'view-silabus',
+                'approve-silabus',
                 'view-grades',
                 'view-attendance',
             ])->get();
@@ -197,6 +208,9 @@ class PermissionSeeder extends Seeder
                 'view-guru-mapel-kelas',
                 'view-jadwal-pelajaran',
                 'view-schedules',
+                'create-silabus',
+                'edit-silabus',
+                'view-silabus',
                 'manage-grades',
                 'view-grades',
                 'manage-attendance',
@@ -209,6 +223,7 @@ class PermissionSeeder extends Seeder
         if ($siswa) {
             $siswaPermissions = Permission::whereIn('slug', [
                 'view-dashboard',
+                'view-silabus',
                 'view-own-grades',
                 'view-attendance',
             ])->get();

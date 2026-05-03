@@ -71,6 +71,7 @@ class User extends Authenticatable
 
     public function hasPermission(string $permission): bool
     {
+
         return $this->hasPermissionThroughRole($permission) ||
                $this->hasPermissionDirect($permission);
     }

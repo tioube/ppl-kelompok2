@@ -72,6 +72,11 @@ class MenuHelper
     {
         return $user->hasPermission('view-mata-pelajaran') ||
                $user->hasPermission('manage-mata-pelajaran') ||
+               $user->hasPermission('view-silabus') ||
+               $user->hasPermission('manage-silabus') ||
+               $user->hasPermission('create-silabus') ||
+               $user->hasPermission('edit-silabus') ||
+               $user->hasPermission('approve-silabus') ||
                $user->hasPermission('view-siswa') ||
                $user->hasPermission('manage-siswa') ||
                $user->hasPermission('view-guru') ||
@@ -134,6 +139,13 @@ class MenuHelper
             $academicSubItems[] = [
                 'name' => 'List Mata Pelajaran',
                 'path' => route('mata-pelajaran.index', absolute: false),
+            ];
+        }
+
+        if ($user->hasPermission('view-silabus') || $user->hasPermission('manage-silabus') || $user->hasPermission('create-silabus')) {
+            $academicSubItems[] = [
+                'name' => 'Silabus',
+                'path' => route('silabus.index', absolute: false),
             ];
         }
 
