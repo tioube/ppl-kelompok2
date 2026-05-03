@@ -22,6 +22,7 @@ class User extends Authenticatable
         'mata_pelajaran_id',
         'photo_profile',
         'nisn',
+        'nip',
         'address',
         'phone',
         'birth_date',

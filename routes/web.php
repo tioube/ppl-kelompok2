@@ -211,8 +211,29 @@ Route::middleware(['auth'])->group(function () {
             ->name('schedules.update');
     });
 
-    Route::middleware('permission:view-guru,manage-guru')->group(function () {
+    // Guru Routes with Granular Permissions (COMPLETE CRUD)
+    Route::middleware('permission:manage-guru,view-guru')->group(function () {
         Route::get('/guru', [GuruController::class, 'index'])->name('guru.index');
+    });
+
+    Route::middleware('permission:manage-guru,create-guru')->group(function () {
+        Route::get('/guru/create', [GuruController::class, 'create'])->name('guru.create');
+        Route::post('/guru', [GuruController::class, 'store'])->name('guru.store');
+    });
+
+    Route::middleware('permission:manage-guru,edit-guru')->group(function () {
+        Route::get('/guru/{guru}/edit', [GuruController::class, 'edit'])->name('guru.edit');
+        Route::put('/guru/{guru}', [GuruController::class, 'update'])->name('guru.update');
+        Route::patch('/guru/{guru}', [GuruController::class, 'update']);
+    });
+
+    Route::middleware('permission:manage-guru,delete-guru')->group(function () {
+        Route::delete('/guru/{guru}', [GuruController::class, 'destroy'])->name('guru.destroy');
+    });
+
+    // Move show route AFTER specific routes to prevent collision
+    Route::middleware('permission:manage-guru,view-guru')->group(function () {
+        Route::get('/guru/{guru}', [GuruController::class, 'show'])->name('guru.show');
     });
 
     // Users Routes with Granular Permissions
