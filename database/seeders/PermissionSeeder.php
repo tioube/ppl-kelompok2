@@ -223,7 +223,6 @@ class PermissionSeeder extends Seeder
         if ($siswa) {
             $siswaPermissions = Permission::whereIn('slug', [
                 'view-dashboard',
-                'view-silabus',
                 'view-own-grades',
                 'view-attendance',
             ])->get();
