@@ -52,7 +52,7 @@ class SiswaTahunAjaran extends Model
 
     public function scopeTahunAjaranAktif($query)
     {
-        return $query->whereHas('tahunAjaran', fn($q) => $q->where('is_active', true));
+        return $query->whereHas('tahunAjaran', fn ($q) => $q->where('is_active', true));
     }
 
     public function scopeByKelas($query, $kelasId)
@@ -82,4 +82,3 @@ class SiswaTahunAjaran extends Model
         ];
     }
 }
-

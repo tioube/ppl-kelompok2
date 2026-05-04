@@ -82,13 +82,13 @@ class Silabus extends Model
 
     public function scopeTahunAjaranAktif($query)
     {
-        return $query->whereHas('tahunAjaran', fn($q) => $q->where('is_active', true));
+        return $query->whereHas('tahunAjaran', fn ($q) => $q->where('is_active', true));
     }
 
     public function scopeForMapelAndTahunAjaran($query, $mataPelajaranId, $tahunAjaranId)
     {
         return $query->where('mata_pelajaran_id', $mataPelajaranId)
-                     ->where('tahun_ajaran_id', $tahunAjaranId);
+            ->where('tahun_ajaran_id', $tahunAjaranId);
     }
 
     public function canBeEdited()

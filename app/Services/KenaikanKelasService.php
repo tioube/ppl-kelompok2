@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\SiswaTahunAjaran;
-use App\Models\TahunAjaran;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -44,6 +43,7 @@ class KenaikanKelasService
 
                 if ($existingEntry) {
                     $result['skipped']++;
+
                     continue;
                 }
 
@@ -161,8 +161,9 @@ class KenaikanKelasService
             ->where('tahun_ajaran_id', $tahunAjaranLamaId)
             ->first();
 
-        if (!$siswaTahunAjaranLama) {
+        if (! $siswaTahunAjaranLama) {
             $result['message'] = 'Siswa tidak ditemukan di tahun ajaran lama.';
+
             return $result;
         }
 
@@ -172,6 +173,7 @@ class KenaikanKelasService
 
         if ($existingEntry) {
             $result['message'] = 'Siswa sudah terdaftar di tahun ajaran baru.';
+
             return $result;
         }
 
@@ -194,10 +196,9 @@ class KenaikanKelasService
             $result['message'] = 'Siswa berhasil dinaikkelaskan.';
         } catch (\Exception $e) {
             DB::rollBack();
-            $result['message'] = 'Gagal menaikkelaskan siswa: ' . $e->getMessage();
+            $result['message'] = 'Gagal menaikkelaskan siswa: '.$e->getMessage();
         }
 
         return $result;
     }
 }
-

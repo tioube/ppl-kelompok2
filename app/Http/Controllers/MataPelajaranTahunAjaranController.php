@@ -31,7 +31,7 @@ class MataPelajaranTahunAjaranController extends Controller
         }
 
         $mappings = MataPelajaranTahunAjaran::with(['mataPelajaran', 'tahunAjaran'])
-            ->when($selectedTahunAjaran, fn($q) => $q->where('tahun_ajaran_id', $selectedTahunAjaran))
+            ->when($selectedTahunAjaran, fn ($q) => $q->where('tahun_ajaran_id', $selectedTahunAjaran))
             ->orderBy('is_active', 'desc')
             ->get();
 
@@ -93,8 +93,9 @@ class MataPelajaranTahunAjaranController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+
             return redirect()->back()
-                ->with('error', 'Gagal memperbarui mapping: ' . $e->getMessage());
+                ->with('error', 'Gagal memperbarui mapping: '.$e->getMessage());
         }
     }
 
@@ -122,7 +123,7 @@ class MataPelajaranTahunAjaranController extends Controller
                     ->where('mata_pelajaran_id', $mapping->mata_pelajaran_id)
                     ->exists();
 
-                if (!$exists) {
+                if (! $exists) {
                     MataPelajaranTahunAjaran::create([
                         'tahun_ajaran_id' => $validated['target_tahun_ajaran_id'],
                         'mata_pelajaran_id' => $mapping->mata_pelajaran_id,
@@ -141,8 +142,9 @@ class MataPelajaranTahunAjaranController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+
             return redirect()->back()
-                ->with('error', 'Gagal menyalin mapping: ' . $e->getMessage());
+                ->with('error', 'Gagal menyalin mapping: '.$e->getMessage());
         }
     }
 
@@ -152,7 +154,7 @@ class MataPelajaranTahunAjaranController extends Controller
             abort(403, 'You do not have permission to manage subject mappings.');
         }
 
-        $mapping->update(['is_active' => !$mapping->is_active]);
+        $mapping->update(['is_active' => ! $mapping->is_active]);
 
         $status = $mapping->is_active ? 'diaktifkan' : 'dinonaktifkan';
 
@@ -160,4 +162,3 @@ class MataPelajaranTahunAjaranController extends Controller
             ->with('success', "Mata pelajaran berhasil {$status} untuk tahun ajaran ini.");
     }
 }
-

@@ -10,7 +10,6 @@ use App\Models\MataPelajaran;
 use App\Models\Silabus;
 use App\Models\SiswaTahunAjaran;
 use App\Models\TahunAjaran;
-use App\Models\User;
 use Illuminate\Http\Request;
 
 class JurnalMengajarController extends Controller
@@ -30,7 +29,7 @@ class JurnalMengajarController extends Controller
         ]);
 
         if ($selectedTahunAjaran) {
-            $query->whereHas('guruMapelKelas', fn($q) => $q->where('tahun_ajaran_id', $selectedTahunAjaran));
+            $query->whereHas('guruMapelKelas', fn ($q) => $q->where('tahun_ajaran_id', $selectedTahunAjaran));
         }
 
         if (auth()->user()->hasRole('guru')) {
@@ -78,11 +77,11 @@ class JurnalMengajarController extends Controller
         if (auth()->user()->hasRole('guru')) {
             $guruMapelKelas = GuruMapelKelas::with(['kelas', 'mataPelajaran', 'tahunAjaran'])
                 ->where('guru_id', auth()->id())
-                ->when($tahunAjaranAktif, fn($q) => $q->where('tahun_ajaran_id', $tahunAjaranAktif->id))
+                ->when($tahunAjaranAktif, fn ($q) => $q->where('tahun_ajaran_id', $tahunAjaranAktif->id))
                 ->get();
         } else {
             $guruMapelKelas = GuruMapelKelas::with(['kelas', 'mataPelajaran', 'guru', 'tahunAjaran'])
-                ->when($tahunAjaranAktif, fn($q) => $q->where('tahun_ajaran_id', $tahunAjaranAktif->id))
+                ->when($tahunAjaranAktif, fn ($q) => $q->where('tahun_ajaran_id', $tahunAjaranAktif->id))
                 ->get();
         }
 
@@ -267,7 +266,7 @@ class JurnalMengajarController extends Controller
         $guruMapelKelas = GuruMapelKelas::findOrFail($id);
 
         $silabus = Silabus::where('mata_pelajaran_id', $guruMapelKelas->mata_pelajaran_id)
-            ->when($guruMapelKelas->tahun_ajaran_id, fn($q) => $q->where('tahun_ajaran_id', $guruMapelKelas->tahun_ajaran_id))
+            ->when($guruMapelKelas->tahun_ajaran_id, fn ($q) => $q->where('tahun_ajaran_id', $guruMapelKelas->tahun_ajaran_id))
             ->approved()
             ->active()
             ->select('id', 'tujuan_pembelajaran', 'kategori')
@@ -285,7 +284,7 @@ class JurnalMengajarController extends Controller
             ->where('status', 'aktif')
             ->with('siswa:id,name,nisn')
             ->get()
-            ->map(fn($sta) => [
+            ->map(fn ($sta) => [
                 'id' => $sta->siswa->id,
                 'name' => $sta->siswa->name,
                 'nisn' => $sta->siswa->nisn,

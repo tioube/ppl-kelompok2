@@ -15,4 +15,3 @@ return new class extends Migration
         DB::statement("ALTER TABLE siswa_tahun_ajaran MODIFY COLUMN status ENUM('aktif', 'naik_kelas', 'lulus', 'pindah', 'dikeluarkan', 'cuti') DEFAULT 'aktif'");
     }
 };
-

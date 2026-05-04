@@ -156,7 +156,6 @@ class SilabusController extends Controller
             'urutan' => 'nullable|integer|min:0',
         ]);
 
-
         $validated['updated_by'] = auth()->id();
 
         // Reset approval if content changed

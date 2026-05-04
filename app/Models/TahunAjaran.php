@@ -60,8 +60,8 @@ class TahunAjaran extends Model
             'tahun_ajaran_id',
             'mata_pelajaran_id'
         )
-        ->withPivot(['is_active', 'jam_pelajaran_override', 'catatan'])
-        ->withTimestamps();
+            ->withPivot(['is_active', 'jam_pelajaran_override', 'catatan'])
+            ->withTimestamps();
     }
 
     public function mataPelajaranAktif()

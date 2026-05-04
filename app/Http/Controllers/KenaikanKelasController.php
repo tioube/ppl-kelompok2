@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kelas;
 use App\Models\Jurusan;
+use App\Models\Kelas;
+use App\Models\SiswaTahunAjaran;
 use App\Models\TahunAjaran;
 use App\Services\KenaikanKelasService;
 use Illuminate\Http\Request;
@@ -86,7 +87,7 @@ class KenaikanKelasController extends Controller
 
         $siswaIds = $validated['siswa_ids'] ?? [];
 
-        $allSiswaCount = \App\Models\SiswaTahunAjaran::where('tahun_ajaran_id', $validated['tahun_ajaran_lama_id'])
+        $allSiswaCount = SiswaTahunAjaran::where('tahun_ajaran_id', $validated['tahun_ajaran_lama_id'])
             ->where('kelas_id', $validated['kelas_lama_id'])
             ->whereIn('status', ['aktif', 'naik_kelas'])
             ->count();
@@ -107,7 +108,7 @@ class KenaikanKelasController extends Controller
         $kelasLama = Kelas::find($validated['kelas_lama_id']);
         $kelasBaru = Kelas::find($validated['kelas_baru_id']);
 
-        $processedSiswa = \App\Models\SiswaTahunAjaran::where('tahun_ajaran_id', $validated['tahun_ajaran_baru_id'])
+        $processedSiswa = SiswaTahunAjaran::where('tahun_ajaran_id', $validated['tahun_ajaran_baru_id'])
             ->where('kelas_id', $validated['kelas_baru_id'])
             ->with(['siswa', 'kelas', 'jurusan'])
             ->orderBy('created_at', 'desc')
@@ -204,13 +205,13 @@ class KenaikanKelasController extends Controller
         $tahunAjaran = TahunAjaran::find($validated['tahun_ajaran_id']);
         $kelas = Kelas::find($validated['kelas_id']);
 
-        $graduatedSiswa = \App\Models\SiswaTahunAjaran::where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
+        $graduatedSiswa = SiswaTahunAjaran::where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
             ->where('kelas_id', $validated['kelas_id'])
             ->where('status', 'lulus')
             ->with(['siswa', 'kelas', 'jurusan'])
             ->get();
 
-        $tinggalKelasSiswa = \App\Models\SiswaTahunAjaran::where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
+        $tinggalKelasSiswa = SiswaTahunAjaran::where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
             ->where('kelas_id', $validated['kelas_id'])
             ->where('status', 'tinggal_kelas')
             ->with(['siswa', 'kelas', 'jurusan'])
@@ -226,4 +227,3 @@ class KenaikanKelasController extends Controller
         ]);
     }
 }
-

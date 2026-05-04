@@ -90,7 +90,7 @@ class ScheduleController extends Controller
 
         $query = Schedule::where('kelas_id', $validated['kelas_id']);
 
-        if (!empty($validated['tahun_ajaran_id'])) {
+        if (! empty($validated['tahun_ajaran_id'])) {
             $query->where('tahun_ajaran_id', $validated['tahun_ajaran_id']);
         }
 

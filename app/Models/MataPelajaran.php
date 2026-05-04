@@ -48,8 +48,8 @@ class MataPelajaran extends Model
             'mata_pelajaran_id',
             'tahun_ajaran_id'
         )
-        ->withPivot(['is_active', 'jam_pelajaran_override', 'catatan'])
-        ->withTimestamps();
+            ->withPivot(['is_active', 'jam_pelajaran_override', 'catatan'])
+            ->withTimestamps();
     }
 
     public function isActiveInTahunAjaran($tahunAjaranId): bool
@@ -73,16 +73,17 @@ class MataPelajaran extends Model
     {
         return $query->whereHas('tahunAjaranPivot', function ($q) use ($tahunAjaranId) {
             $q->where('tahun_ajaran_id', $tahunAjaranId)
-              ->where('is_active', true);
+                ->where('is_active', true);
         });
     }
 
     public function scopeActiveInCurrentTahunAjaran($query)
     {
         $tahunAjaranAktif = TahunAjaran::getAktif();
-        if (!$tahunAjaranAktif) {
+        if (! $tahunAjaranAktif) {
             return $query->whereRaw('1 = 0');
         }
+
         return $query->activeInTahunAjaran($tahunAjaranAktif->id);
     }
 

@@ -18,7 +18,7 @@ class GuruMapelKelasGeneratorService
         try {
             $tahunAjaranAktif = TahunAjaran::getAktif();
 
-            if (!$tahunAjaranAktif) {
+            if (! $tahunAjaranAktif) {
                 DB::rollBack();
 
                 return [

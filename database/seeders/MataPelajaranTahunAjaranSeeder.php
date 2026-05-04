@@ -13,8 +13,9 @@ class MataPelajaranTahunAjaranSeeder extends Seeder
     {
         $tahunAjaranAktif = TahunAjaran::where('is_active', true)->first();
 
-        if (!$tahunAjaranAktif) {
+        if (! $tahunAjaranAktif) {
             $this->command->warn('No active tahun ajaran found. Please run AkademikSeeder first.');
+
             return;
         }
 
@@ -22,6 +23,7 @@ class MataPelajaranTahunAjaranSeeder extends Seeder
 
         if ($mataPelajaranList->isEmpty()) {
             $this->command->warn('No mata pelajaran found. Please run MataPelajaranSeeder first.');
+
             return;
         }
 
@@ -31,7 +33,7 @@ class MataPelajaranTahunAjaranSeeder extends Seeder
                 ->where('tahun_ajaran_id', $tahunAjaranAktif->id)
                 ->exists();
 
-            if (!$exists) {
+            if (! $exists) {
                 MataPelajaranTahunAjaran::create([
                     'mata_pelajaran_id' => $mapel->id,
                     'tahun_ajaran_id' => $tahunAjaranAktif->id,
@@ -46,4 +48,3 @@ class MataPelajaranTahunAjaranSeeder extends Seeder
         $this->command->info("Created {$created} mata pelajaran mappings for tahun ajaran {$tahunAjaranAktif->tahun}!");
     }
 }
-

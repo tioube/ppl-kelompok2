@@ -20,11 +20,13 @@ class SiswaSeeder extends Seeder
 
         if ($kelasList->isEmpty()) {
             $this->command->warn('No classes found. Please run AkademikSeeder first.');
+
             return;
         }
 
-        if (!$tahunAjaran) {
+        if (! $tahunAjaran) {
             $this->command->warn('No tahun ajaran found. Please run AkademikSeeder first.');
+
             return;
         }
 
@@ -78,7 +80,7 @@ class SiswaSeeder extends Seeder
                 'kelas_id' => $kelas->id,
                 'jurusan_id' => $kelas->jurusan_id,
                 'status' => 'aktif',
-                'nomor_induk_sekolah' => 'NIS-' . str_pad($i, 5, '0', STR_PAD_LEFT),
+                'nomor_induk_sekolah' => 'NIS-'.str_pad($i, 5, '0', STR_PAD_LEFT),
             ]);
         }
 

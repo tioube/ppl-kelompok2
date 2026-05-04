@@ -198,7 +198,7 @@ class User extends Authenticatable
     public function getCurrentSiswaTahunAjaran(): ?SiswaTahunAjaran
     {
         return $this->siswaTahunAjaran()
-            ->whereHas('tahunAjaran', fn($q) => $q->where('is_active', true))
+            ->whereHas('tahunAjaran', fn ($q) => $q->where('is_active', true))
             ->where('status', 'aktif')
             ->with(['tahunAjaran', 'kelas', 'jurusan'])
             ->first();
@@ -261,8 +261,8 @@ class User extends Authenticatable
     {
         return $query->whereHas('siswaTahunAjaran', function ($q) use ($kelasId, $tahunAjaranId) {
             $q->where('kelas_id', $kelasId)
-              ->where('tahun_ajaran_id', $tahunAjaranId)
-              ->aktif();
+                ->where('tahun_ajaran_id', $tahunAjaranId)
+                ->aktif();
         });
     }
 }

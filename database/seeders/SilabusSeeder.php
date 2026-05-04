@@ -22,8 +22,9 @@ class SilabusSeeder extends Seeder
             return;
         }
 
-        if (!$tahunAjaranAktif) {
+        if (! $tahunAjaranAktif) {
             $this->command->warn('No active tahun ajaran found.');
+
             return;
         }
 
