@@ -211,4 +211,28 @@ class User extends Authenticatable
     {
         return $this->hasMany(Schedule::class, 'guru_id');
     }
+
+    public function absensi()
+    {
+        return $this->hasMany(Absensi::class, 'siswa_id');
+    }
+
+    public function scopeSiswa($query)
+    {
+        return $query->whereHas('roles', function ($q) {
+            $q->where('slug', 'siswa');
+        });
+    }
+
+    public function scopeByKelas($query, $kelasId)
+    {
+        return $query->where('kelas_id', $kelasId);
+    }
+
+    public function scopeTahunAjaranAktif($query)
+    {
+        return $query->whereHas('tahunAjaran', function ($q) {
+            $q->where('is_active', true);
+        });
+    }
 }

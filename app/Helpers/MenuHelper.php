@@ -94,7 +94,10 @@ class MenuHelper
                $user->hasPermission('view-schedules') ||
                $user->hasPermission('manage-schedules') ||
                $user->hasPermission('view-jadwal-pelajaran') ||
-               $user->hasPermission('manage-jadwal-pelajaran');
+               $user->hasPermission('manage-jadwal-pelajaran') ||
+               $user->hasPermission('view-jurnal-mengajar') ||
+               $user->hasPermission('manage-jurnal-mengajar') ||
+               $user->hasPermission('create-jurnal-mengajar');
     }
 
     protected static function canAccessAdministration($user): bool
@@ -174,6 +177,13 @@ class MenuHelper
             $academicSubItems[] = [
                 'name' => 'Jadwal Pelajaran',
                 'path' => route('schedules.index', absolute: false),
+            ];
+        }
+
+        if ($user->hasPermission('view-jurnal-mengajar') || $user->hasPermission('manage-jurnal-mengajar') || $user->hasPermission('create-jurnal-mengajar')) {
+            $academicSubItems[] = [
+                'name' => 'Jurnal Mengajar',
+                'path' => route('jurnal-mengajar.index', absolute: false),
             ];
         }
 
