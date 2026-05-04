@@ -79,7 +79,21 @@
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white">Filter & Pencarian</h3>
             </div>
             <form method="GET" class="p-6">
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
+                    <div>
+                        <label for="tahun_ajaran_id" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Tahun Ajaran</label>
+                        <select name="tahun_ajaran_id" id="tahun_ajaran_id"
+                                class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                onchange="this.form.submit()">
+                            <option value="">Semua Tahun Ajaran</option>
+                            @foreach($tahunAjaranList as $ta)
+                                <option value="{{ $ta->id }}" {{ $selectedTahunAjaran == $ta->id ? 'selected' : '' }}>
+                                    {{ $ta->tahun }} {{ $ta->is_active ? '(Aktif)' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div>
                         <label for="search" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Pencarian</label>
                         <input type="text" name="search" id="search" value="{{ request('search') }}"

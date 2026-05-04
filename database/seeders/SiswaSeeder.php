@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Kelas;
 use App\Models\Role;
+use App\Models\SiswaTahunAjaran;
 use App\Models\TahunAjaran;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -14,12 +15,16 @@ class SiswaSeeder extends Seeder
     public function run(): void
     {
         $siswaRole = Role::where('slug', 'siswa')->first();
-        $tahunAjaran = TahunAjaran::where('tahun', '2024-2025')->first();
+        $tahunAjaran = TahunAjaran::where('is_active', true)->first() ?? TahunAjaran::first();
         $kelasList = Kelas::all();
 
         if ($kelasList->isEmpty()) {
             $this->command->warn('No classes found. Please run AkademikSeeder first.');
+            return;
+        }
 
+        if (!$tahunAjaran) {
+            $this->command->warn('No tahun ajaran found. Please run AkademikSeeder first.');
             return;
         }
 
@@ -56,9 +61,6 @@ class SiswaSeeder extends Seeder
                 'name' => $fullName,
                 'email' => strtolower(str_replace(' ', '.', $fullName)).$i.'@student.school.id',
                 'password' => Hash::make('password'),
-                'kelas_id' => $kelas->id,
-                'jurusan_id' => $kelas->jurusan_id,
-                'tahun_ajaran_id' => $tahunAjaran?->id,
                 'nisn' => $nisn,
                 'gender' => $gender,
                 'birth_date' => $birthDate,
@@ -69,8 +71,17 @@ class SiswaSeeder extends Seeder
             if ($siswaRole) {
                 $user->roles()->attach($siswaRole->id);
             }
+
+            SiswaTahunAjaran::create([
+                'user_id' => $user->id,
+                'tahun_ajaran_id' => $tahunAjaran->id,
+                'kelas_id' => $kelas->id,
+                'jurusan_id' => $kelas->jurusan_id,
+                'status' => 'aktif',
+                'nomor_induk_sekolah' => 'NIS-' . str_pad($i, 5, '0', STR_PAD_LEFT),
+            ]);
         }
 
-        $this->command->info('Created 30 students successfully!');
+        $this->command->info('Created 30 students with SiswaTahunAjaran records successfully!');
     }
 }

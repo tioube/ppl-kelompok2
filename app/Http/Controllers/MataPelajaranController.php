@@ -3,15 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\MataPelajaran;
+use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
 
 class MataPelajaranController extends Controller
 {
     public function index(Request $request)
     {
+        $tahunAjaranAktif = TahunAjaran::getAktif();
+        $selectedTahunAjaran = $request->input('tahun_ajaran_id');
+
         $query = MataPelajaran::query();
 
-        // Search functionality
+        if ($selectedTahunAjaran) {
+            $query->activeInTahunAjaran($selectedTahunAjaran);
+        }
+
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('kode', 'like', "%{$search}%")
@@ -20,12 +27,10 @@ class MataPelajaranController extends Controller
             });
         }
 
-        // Filter by kategori
         if ($kategori = $request->get('kategori')) {
             $query->where('kategori', $kategori);
         }
 
-        // Filter by jam_pelajaran range
         if ($minJam = $request->get('min_jam')) {
             $query->where('jam_pelajaran', '>=', $minJam);
         }
@@ -33,7 +38,6 @@ class MataPelajaranController extends Controller
             $query->where('jam_pelajaran', '<=', $maxJam);
         }
 
-        // Sorting
         $sortBy = $request->get('sort', 'kategori');
         $sortDirection = $request->get('direction', 'asc');
 
@@ -42,14 +46,13 @@ class MataPelajaranController extends Controller
             $query->orderBy($sortBy, $sortDirection);
         }
 
-        // Secondary sort
         if ($sortBy !== 'nama') {
             $query->orderBy('nama');
         }
 
         $mataPelajaran = $query->paginate(15)->withQueryString();
+        $tahunAjaranList = TahunAjaran::orderBy('tahun', 'desc')->get();
 
-        // Get statistics for filters
         $stats = [
             'total' => MataPelajaran::count(),
             'wajib' => MataPelajaran::where('kategori', 'Wajib')->count(),
@@ -60,31 +63,48 @@ class MataPelajaranController extends Controller
         return view('pages.mata-pelajaran.index', [
             'title' => 'List Mata Pelajaran',
             'mataPelajaran' => $mataPelajaran,
+            'tahunAjaranList' => $tahunAjaranList,
+            'selectedTahunAjaran' => $selectedTahunAjaran,
             'stats' => $stats,
-            'filters' => $request->only(['search', 'kategori', 'min_jam', 'max_jam', 'sort', 'direction']),
+            'filters' => $request->only(['search', 'kategori', 'min_jam', 'max_jam', 'sort', 'direction', 'tahun_ajaran_id']),
         ]);
     }
 
-    public function show(MataPelajaran $mataPelajaran)
+    public function show(MataPelajaran $mataPelajaran, Request $request)
     {
+        $tahunAjaranAktif = TahunAjaran::getAktif();
+        $selectedTahunAjaran = $request->input('tahun_ajaran_id', $tahunAjaranAktif?->id);
+
         $mataPelajaran->load([
-            'silabusAktif' => function ($query) {
-                $query->with(['createdBy', 'approvedBy'])
-                    ->orderBy('kategori')
+            'silabusAktif' => function ($query) use ($selectedTahunAjaran) {
+                $query->with(['createdBy', 'approvedBy', 'tahunAjaran']);
+                if ($selectedTahunAjaran) {
+                    $query->where('tahun_ajaran_id', $selectedTahunAjaran);
+                }
+                $query->orderBy('kategori')
                     ->orderBy('urutan');
             },
         ]);
 
+        $silabusStatsQuery = $mataPelajaran->silabus();
+        if ($selectedTahunAjaran) {
+            $silabusStatsQuery->where('tahun_ajaran_id', $selectedTahunAjaran);
+        }
+
         $silabusStats = [
-            'total' => $mataPelajaran->silabusAktif->count(),
-            'formatif' => $mataPelajaran->silabusFormatif->count(),
-            'sumatif' => $mataPelajaran->silabusSumatif->count(),
+            'total' => (clone $silabusStatsQuery)->approved()->active()->count(),
+            'formatif' => (clone $silabusStatsQuery)->approved()->active()->where('kategori', 'formatif')->count(),
+            'sumatif' => (clone $silabusStatsQuery)->approved()->active()->where('kategori', 'sumatif')->count(),
         ];
+
+        $tahunAjaranList = TahunAjaran::orderBy('tahun', 'desc')->get();
 
         return view('pages.mata-pelajaran.show', [
             'title' => 'Detail Mata Pelajaran',
             'mataPelajaran' => $mataPelajaran,
             'silabusStats' => $silabusStats,
+            'tahunAjaranList' => $tahunAjaranList,
+            'selectedTahunAjaran' => $selectedTahunAjaran,
         ]);
     }
 

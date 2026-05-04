@@ -14,6 +14,11 @@ class TahunAjaranController extends Controller
         return view('akademik.tahun-ajaran.index', compact('tahunAjarans'));
     }
 
+    public function show(TahunAjaran $tahunAjaran)
+    {
+        return view('akademik.tahun-ajaran.show', compact('tahunAjaran'));
+    }
+
     public function create()
     {
         return view('akademik.tahun-ajaran.create');

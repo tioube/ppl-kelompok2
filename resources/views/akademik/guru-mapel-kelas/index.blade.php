@@ -157,6 +157,19 @@
                         </div>
                     </div>
 
+                    <!-- Tahun Ajaran Filter -->
+                    <div>
+                        <label for="tahun_ajaran_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tahun Ajaran</label>
+                        <select name="tahun_ajaran_id" id="tahun_ajaran_id" class="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-blue-500 focus:border-blue-500" onchange="this.form.submit()">
+                            <option value="">Semua Tahun Ajaran</option>
+                            @foreach($tahunAjaranList as $ta)
+                                <option value="{{ $ta->id }}" {{ ($selectedTahunAjaran ?? '') == $ta->id ? 'selected' : '' }}>
+                                    {{ $ta->tahun }} {{ $ta->is_active ? '(Aktif)' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <!-- Guru Filter -->
                     <div>
                         <label for="guru_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Guru</label>

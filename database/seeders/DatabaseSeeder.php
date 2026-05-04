@@ -12,6 +12,13 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             PermissionSeeder::class,
             SuperAdminSeeder::class,
+            AkademikSeeder::class,
+            MataPelajaranSeeder::class,
+            MataPelajaranTahunAjaranSeeder::class,
+            GuruSeeder::class,
+            SiswaSeeder::class,
+            TimeSlotSeeder::class,
+            SilabusSeeder::class,
         ]);
     }
 }

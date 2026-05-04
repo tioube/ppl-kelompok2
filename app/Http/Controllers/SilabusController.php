@@ -4,22 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\MataPelajaran;
 use App\Models\Silabus;
+use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
 
 class SilabusController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Silabus::with(['mataPelajaran', 'createdBy', 'approvedBy']);
+        $tahunAjaranAktif = TahunAjaran::getAktif();
+        $selectedTahunAjaran = $request->input('tahun_ajaran_id', $tahunAjaranAktif?->id);
 
-        // Role-based filtering
+        $query = Silabus::with(['mataPelajaran', 'tahunAjaran', 'createdBy', 'approvedBy']);
+
+        if ($selectedTahunAjaran) {
+            $query->where('tahun_ajaran_id', $selectedTahunAjaran);
+        }
+
         if (auth()->user()->hasRole('guru')) {
             $query->where('created_by', auth()->id());
         } elseif (! auth()->user()->hasRole(['super-admin', 'akademik'])) {
             $query->approved()->active();
         }
 
-        // Search functionality
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('tujuan_pembelajaran', 'like', "%{$search}%")
@@ -30,27 +36,22 @@ class SilabusController extends Controller
             });
         }
 
-        // Filter by mata pelajaran
         if ($request->mata_pelajaran_id) {
             $query->where('mata_pelajaran_id', $request->mata_pelajaran_id);
         }
 
-        // Filter by kategori
         if ($request->kategori) {
             $query->where('kategori', $request->kategori);
         }
 
-        // Filter by status
         if ($request->status) {
             $query->where('status', $request->status);
         }
 
-        // Filter by approval status
         if ($request->approval_status) {
             $query->where('approval_status', $request->approval_status);
         }
 
-        // Sorting
         $sortBy = $request->get('sort', 'created_at');
         $sortDirection = $request->get('direction', 'desc');
         $allowedSorts = ['urutan', 'kategori', 'status', 'approval_status', 'created_at'];
@@ -63,9 +64,12 @@ class SilabusController extends Controller
 
         $silabus = $query->paginate(15)->withQueryString();
         $mataPelajaran = MataPelajaran::orderBy('nama')->get();
+        $tahunAjaranList = TahunAjaran::orderBy('tahun', 'desc')->get();
 
-        // Calculate statistics based on user role
         $baseStatsQuery = Silabus::query();
+        if ($selectedTahunAjaran) {
+            $baseStatsQuery->where('tahun_ajaran_id', $selectedTahunAjaran);
+        }
         if (auth()->user()->hasRole('guru')) {
             $baseStatsQuery->where('created_by', auth()->id());
         } elseif (! auth()->user()->hasRole(['super-admin', 'akademik'])) {
@@ -83,23 +87,24 @@ class SilabusController extends Controller
             'aktif' => (clone $baseStatsQuery)->where('status', 'aktif')->count(),
         ];
 
-        return view('silabus.index', compact('silabus', 'mataPelajaran', 'stats'));
+        return view('silabus.index', compact('silabus', 'mataPelajaran', 'tahunAjaranList', 'selectedTahunAjaran', 'stats'));
     }
 
     public function create(Request $request)
     {
-
         $mataPelajaran = MataPelajaran::orderBy('nama')->get();
+        $tahunAjaranList = TahunAjaran::orderBy('tahun', 'desc')->get();
+        $tahunAjaranAktif = TahunAjaran::getAktif();
         $selectedMataPelajaranId = $request->mata_pelajaran_id;
 
-        return view('silabus.create', compact('mataPelajaran', 'selectedMataPelajaranId'));
+        return view('silabus.create', compact('mataPelajaran', 'tahunAjaranList', 'tahunAjaranAktif', 'selectedMataPelajaranId'));
     }
 
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
+            'tahun_ajaran_id' => 'required|exists:tahun_ajaran,id',
             'tujuan_pembelajaran' => 'required|string|min:10',
             'kategori' => 'required|in:formatif,sumatif',
             'urutan' => 'nullable|integer|min:0',
@@ -118,27 +123,26 @@ class SilabusController extends Controller
 
     public function show(Silabus $silabus)
     {
-        $silabus->load(['mataPelajaran', 'createdBy', 'approvedBy']);
+        $silabus->load(['mataPelajaran', 'tahunAjaran', 'createdBy', 'approvedBy']);
 
         return view('silabus.show', compact('silabus'));
     }
 
     public function edit(Silabus $silabus)
     {
-
         if (! $silabus->canBeEdited()) {
             return redirect()->route('silabus.index')
                 ->with('error', 'Silabus yang sudah disetujui tidak dapat diedit.');
         }
 
         $mataPelajaran = MataPelajaran::orderBy('nama')->get();
+        $tahunAjaranList = TahunAjaran::orderBy('tahun', 'desc')->get();
 
-        return view('silabus.edit', compact('silabus', 'mataPelajaran'));
+        return view('silabus.edit', compact('silabus', 'mataPelajaran', 'tahunAjaranList'));
     }
 
     public function update(Request $request, Silabus $silabus)
     {
-
         if (! $silabus->canBeEdited()) {
             return redirect()->route('silabus.index')
                 ->with('error', 'Silabus yang sudah disetujui tidak dapat diedit.');
@@ -146,10 +150,12 @@ class SilabusController extends Controller
 
         $validated = $request->validate([
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
+            'tahun_ajaran_id' => 'required|exists:tahun_ajaran,id',
             'tujuan_pembelajaran' => 'required|string|min:10',
             'kategori' => 'required|in:formatif,sumatif',
             'urutan' => 'nullable|integer|min:0',
         ]);
+
 
         $validated['updated_by'] = auth()->id();
 

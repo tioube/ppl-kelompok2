@@ -7,11 +7,12 @@ use App\Http\Controllers\Dashboard\SiswaDashboardController;
 use App\Http\Controllers\Dashboard\SuperAdminDashboardController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\GuruMapelKelasController;
-use App\Http\Controllers\JadwalPelajaranController;
 use App\Http\Controllers\JurnalMengajarController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KelasController;
+use App\Http\Controllers\KenaikanKelasController;
 use App\Http\Controllers\MataPelajaranController;
+use App\Http\Controllers\MataPelajaranTahunAjaranController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SilabusController;
 use App\Http\Controllers\SiswaController;
@@ -97,6 +98,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/siswa/{siswa}/edit', [SiswaController::class, 'edit'])->name('siswa.edit');
         Route::put('/siswa/{siswa}', [SiswaController::class, 'update'])->name('siswa.update');
         Route::patch('/siswa/{siswa}', [SiswaController::class, 'update']);
+        Route::post('/siswa/{siswa}/reaktivasi', [SiswaController::class, 'reaktivasi'])->name('siswa.reaktivasi');
     });
 
     Route::middleware('permission:manage-siswa,delete-siswa')->group(function () {
@@ -109,14 +111,15 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Tahun Ajaran Routes with Granular Permissions
-    Route::middleware('permission:manage-tahun-ajaran,view-tahun-ajaran')->group(function () {
-        Route::get('/tahun-ajaran', [TahunAjaranController::class, 'index'])->name('tahun-ajaran.index');
-        Route::get('/tahun-ajaran/{tahun_ajaran}', [TahunAjaranController::class, 'show'])->name('tahun-ajaran.show');
-    });
-
+    // Create routes MUST come before show route to prevent {tahun_ajaran} matching "create"
     Route::middleware('permission:manage-tahun-ajaran,create-tahun-ajaran')->group(function () {
         Route::get('/tahun-ajaran/create', [TahunAjaranController::class, 'create'])->name('tahun-ajaran.create');
         Route::post('/tahun-ajaran', [TahunAjaranController::class, 'store'])->name('tahun-ajaran.store');
+    });
+
+    Route::middleware('permission:manage-tahun-ajaran,view-tahun-ajaran')->group(function () {
+        Route::get('/tahun-ajaran', [TahunAjaranController::class, 'index'])->name('tahun-ajaran.index');
+        Route::get('/tahun-ajaran/{tahun_ajaran}', [TahunAjaranController::class, 'show'])->name('tahun-ajaran.show');
     });
 
     Route::middleware('permission:manage-tahun-ajaran,edit-tahun-ajaran')->group(function () {
@@ -171,8 +174,35 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/kelas/{kela}', [KelasController::class, 'destroy'])->name('kelas.destroy');
     });
 
-    Route::middleware('permission:manage-jadwal-pelajaran,view-jadwal-pelajaran')->group(function () {
-        Route::resource('jadwal-pelajaran', JadwalPelajaranController::class);
+    // Kenaikan Kelas Routes
+    Route::middleware('permission:manage-kenaikan-kelas,view-kenaikan-kelas')->group(function () {
+        Route::get('/kenaikan-kelas', [KenaikanKelasController::class, 'index'])->name('kenaikan-kelas.index');
+        Route::post('/kenaikan-kelas/preview', [KenaikanKelasController::class, 'preview'])
+            ->middleware('permission:manage-kenaikan-kelas,process-kenaikan-kelas')
+            ->name('kenaikan-kelas.preview');
+        Route::post('/kenaikan-kelas/process', [KenaikanKelasController::class, 'process'])
+            ->middleware('permission:manage-kenaikan-kelas,process-kenaikan-kelas')
+            ->name('kenaikan-kelas.process');
+        Route::post('/kenaikan-kelas/preview-luluskan', [KenaikanKelasController::class, 'previewLuluskan'])
+            ->middleware('permission:manage-kenaikan-kelas,manage-kelulusan')
+            ->name('kenaikan-kelas.preview-luluskan');
+        Route::post('/kenaikan-kelas/luluskan', [KenaikanKelasController::class, 'luluskan'])
+            ->middleware('permission:manage-kenaikan-kelas,manage-kelulusan')
+            ->name('kenaikan-kelas.luluskan');
+    });
+
+    // Mata Pelajaran Tahun Ajaran Mapping Routes
+    Route::middleware('permission:manage-mapel-tahun-ajaran,view-mapel-tahun-ajaran')->group(function () {
+        Route::get('/mata-pelajaran-tahun-ajaran', [MataPelajaranTahunAjaranController::class, 'index'])->name('mata-pelajaran-tahun-ajaran.index');
+        Route::post('/mata-pelajaran-tahun-ajaran', [MataPelajaranTahunAjaranController::class, 'store'])
+            ->middleware('permission:manage-mapel-tahun-ajaran')
+            ->name('mata-pelajaran-tahun-ajaran.store');
+        Route::post('/mata-pelajaran-tahun-ajaran/copy', [MataPelajaranTahunAjaranController::class, 'copyFromPrevious'])
+            ->middleware('permission:manage-mapel-tahun-ajaran')
+            ->name('mata-pelajaran-tahun-ajaran.copy');
+        Route::post('/mata-pelajaran-tahun-ajaran/{mapping}/toggle', [MataPelajaranTahunAjaranController::class, 'toggle'])
+            ->middleware('permission:manage-mapel-tahun-ajaran')
+            ->name('mata-pelajaran-tahun-ajaran.toggle');
     });
 
     Route::middleware('permission:manage-guru-mapel-kelas,view-guru-mapel-kelas')->group(function () {

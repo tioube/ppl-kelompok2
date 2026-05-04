@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -182,37 +183,61 @@ class User extends Authenticatable
         return $this->hasRole('super-admin');
     }
 
-    public function kelas()
+    public function siswaTahunAjaran(): HasMany
     {
-        return $this->belongsTo(Kelas::class);
+        return $this->hasMany(SiswaTahunAjaran::class, 'user_id');
     }
 
-    public function jurusan()
+    public function tahunAjaranList(): BelongsToMany
     {
-        return $this->belongsTo(Jurusan::class);
+        return $this->belongsToMany(TahunAjaran::class, 'siswa_tahun_ajaran', 'user_id', 'tahun_ajaran_id')
+            ->withPivot(['kelas_id', 'jurusan_id', 'status', 'nomor_induk_sekolah', 'catatan'])
+            ->withTimestamps();
     }
 
-    public function tahunAjaran()
+    public function getCurrentSiswaTahunAjaran(): ?SiswaTahunAjaran
     {
-        return $this->belongsTo(TahunAjaran::class);
+        return $this->siswaTahunAjaran()
+            ->whereHas('tahunAjaran', fn($q) => $q->where('is_active', true))
+            ->where('status', 'aktif')
+            ->with(['tahunAjaran', 'kelas', 'jurusan'])
+            ->first();
     }
 
-    public function mataPelajaran()
+    public function getSiswaTahunAjaranFor($tahunAjaranId): ?SiswaTahunAjaran
+    {
+        return $this->siswaTahunAjaran()
+            ->where('tahun_ajaran_id', $tahunAjaranId)
+            ->with(['tahunAjaran', 'kelas', 'jurusan'])
+            ->first();
+    }
+
+    public function getCurrentKelas(): ?Kelas
+    {
+        return $this->getCurrentSiswaTahunAjaran()?->kelas;
+    }
+
+    public function getCurrentJurusan(): ?Jurusan
+    {
+        return $this->getCurrentSiswaTahunAjaran()?->jurusan;
+    }
+
+    public function mataPelajaran(): BelongsTo
     {
         return $this->belongsTo(MataPelajaran::class);
     }
 
-    public function guruMapelKelas()
+    public function guruMapelKelas(): HasMany
     {
         return $this->hasMany(GuruMapelKelas::class, 'guru_id');
     }
 
-    public function schedules()
+    public function schedules(): HasMany
     {
         return $this->hasMany(Schedule::class, 'guru_id');
     }
 
-    public function absensi()
+    public function absensi(): HasMany
     {
         return $this->hasMany(Absensi::class, 'siswa_id');
     }
@@ -224,15 +249,20 @@ class User extends Authenticatable
         });
     }
 
-    public function scopeByKelas($query, $kelasId)
+    public function scopeSiswaAktif($query)
     {
-        return $query->where('kelas_id', $kelasId);
+        return $query->siswa()
+            ->whereHas('siswaTahunAjaran', function ($q) {
+                $q->tahunAjaranAktif()->aktif();
+            });
     }
 
-    public function scopeTahunAjaranAktif($query)
+    public function scopeByKelasAndTahunAjaran($query, $kelasId, $tahunAjaranId)
     {
-        return $query->whereHas('tahunAjaran', function ($q) {
-            $q->where('is_active', true);
+        return $query->whereHas('siswaTahunAjaran', function ($q) use ($kelasId, $tahunAjaranId) {
+            $q->where('kelas_id', $kelasId)
+              ->where('tahun_ajaran_id', $tahunAjaranId)
+              ->aktif();
         });
     }
 }

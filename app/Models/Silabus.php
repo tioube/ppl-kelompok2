@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Silabus extends Model
 {
@@ -10,6 +11,7 @@ class Silabus extends Model
 
     protected $fillable = [
         'mata_pelajaran_id',
+        'tahun_ajaran_id',
         'tujuan_pembelajaran',
         'kategori',
         'status',
@@ -23,28 +25,31 @@ class Silabus extends Model
         'approved_at' => 'datetime',
     ];
 
-    // Relationships
-    public function mataPelajaran()
+    public function mataPelajaran(): BelongsTo
     {
         return $this->belongsTo(MataPelajaran::class);
     }
 
-    public function approvedBy()
+    public function tahunAjaran(): BelongsTo
+    {
+        return $this->belongsTo(TahunAjaran::class);
+    }
+
+    public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
     }
 
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function updatedBy()
+    public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    // Scopes
     public function scopeApproved($query)
     {
         return $query->where('approval_status', 'approved');
@@ -70,7 +75,22 @@ class Silabus extends Model
         return $query->where('kategori', 'sumatif');
     }
 
-    // Helper methods
+    public function scopeByTahunAjaran($query, $tahunAjaranId)
+    {
+        return $query->where('tahun_ajaran_id', $tahunAjaranId);
+    }
+
+    public function scopeTahunAjaranAktif($query)
+    {
+        return $query->whereHas('tahunAjaran', fn($q) => $q->where('is_active', true));
+    }
+
+    public function scopeForMapelAndTahunAjaran($query, $mataPelajaranId, $tahunAjaranId)
+    {
+        return $query->where('mata_pelajaran_id', $mataPelajaranId)
+                     ->where('tahun_ajaran_id', $tahunAjaranId);
+    }
+
     public function canBeEdited()
     {
         return in_array($this->approval_status, ['draft', 'rejected']);

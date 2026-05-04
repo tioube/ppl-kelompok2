@@ -69,25 +69,48 @@
                 @csrf
                 @method('PUT')
 
-                <!-- Mata Pelajaran -->
-                <div>
-                    <label for="mata_pelajaran_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Mata Pelajaran <span class="text-red-500">*</span>
-                    </label>
-                    <select name="mata_pelajaran_id"
-                            id="mata_pelajaran_id"
-                            required
-                            class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('mata_pelajaran_id') border-red-300 focus:border-red-500 focus:ring-red-500 @enderror">
-                        <option value="">Pilih Mata Pelajaran</option>
-                        @foreach($mataPelajaran as $mapel)
-                            <option value="{{ $mapel->id }}" {{ (old('mata_pelajaran_id', $silabus->mata_pelajaran_id) == $mapel->id) ? 'selected' : '' }}>
-                                {{ $mapel->nama }} ({{ $mapel->kode }})
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('mata_pelajaran_id')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    <!-- Tahun Ajaran -->
+                    <div>
+                        <label for="tahun_ajaran_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Tahun Ajaran <span class="text-red-500">*</span>
+                        </label>
+                        <select name="tahun_ajaran_id"
+                                id="tahun_ajaran_id"
+                                required
+                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('tahun_ajaran_id') border-red-300 focus:border-red-500 focus:ring-red-500 @enderror">
+                            <option value="">Pilih Tahun Ajaran</option>
+                            @foreach($tahunAjaranList as $ta)
+                                <option value="{{ $ta->id }}" {{ old('tahun_ajaran_id', $silabus->tahun_ajaran_id) == $ta->id ? 'selected' : '' }}>
+                                    {{ $ta->tahun }} {{ $ta->is_active ? '(Aktif)' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('tahun_ajaran_id')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Mata Pelajaran -->
+                    <div>
+                        <label for="mata_pelajaran_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Mata Pelajaran <span class="text-red-500">*</span>
+                        </label>
+                        <select name="mata_pelajaran_id"
+                                id="mata_pelajaran_id"
+                                required
+                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('mata_pelajaran_id') border-red-300 focus:border-red-500 focus:ring-red-500 @enderror">
+                            <option value="">Pilih Mata Pelajaran</option>
+                            @foreach($mataPelajaran as $mapel)
+                                <option value="{{ $mapel->id }}" {{ (old('mata_pelajaran_id', $silabus->mata_pelajaran_id) == $mapel->id) ? 'selected' : '' }}>
+                                    {{ $mapel->nama }} ({{ $mapel->kode }})
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('mata_pelajaran_id')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
                 <!-- Kategori -->

@@ -93,11 +93,13 @@ class MenuHelper
                $user->hasPermission('manage-guru-mapel-kelas') ||
                $user->hasPermission('view-schedules') ||
                $user->hasPermission('manage-schedules') ||
-               $user->hasPermission('view-jadwal-pelajaran') ||
-               $user->hasPermission('manage-jadwal-pelajaran') ||
                $user->hasPermission('view-jurnal-mengajar') ||
                $user->hasPermission('manage-jurnal-mengajar') ||
-               $user->hasPermission('create-jurnal-mengajar');
+               $user->hasPermission('create-jurnal-mengajar') ||
+               $user->hasPermission('view-kenaikan-kelas') ||
+               $user->hasPermission('manage-kenaikan-kelas') ||
+               $user->hasPermission('view-mapel-tahun-ajaran') ||
+               $user->hasPermission('manage-mapel-tahun-ajaran');
     }
 
     protected static function canAccessAdministration($user): bool
@@ -173,10 +175,24 @@ class MenuHelper
             ];
         }
 
-        if ($user->hasPermission('view-schedules') || $user->hasPermission('manage-schedules') || $user->hasPermission('view-jadwal-pelajaran')) {
+        if ($user->hasPermission('view-schedules') || $user->hasPermission('manage-schedules')) {
             $academicSubItems[] = [
                 'name' => 'Jadwal Pelajaran',
                 'path' => route('schedules.index', absolute: false),
+            ];
+        }
+
+        if ($user->hasPermission('view-kenaikan-kelas') || $user->hasPermission('manage-kenaikan-kelas')) {
+            $academicSubItems[] = [
+                'name' => 'Kenaikan Kelas',
+                'path' => route('kenaikan-kelas.index', absolute: false),
+            ];
+        }
+
+        if ($user->hasPermission('view-mapel-tahun-ajaran') || $user->hasPermission('manage-mapel-tahun-ajaran')) {
+            $academicSubItems[] = [
+                'name' => 'Mapel per Tahun Ajaran',
+                'path' => route('mata-pelajaran-tahun-ajaran.index', absolute: false),
             ];
         }
 
