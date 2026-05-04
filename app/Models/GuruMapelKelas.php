@@ -28,4 +28,22 @@ class GuruMapelKelas extends Model
     {
         return $this->belongsTo(Kelas::class);
     }
+
+    public function jurnalMengajar()
+    {
+        return $this->hasMany(JurnalMengajar::class);
+    }
+
+    public function getSiswaInKelas()
+    {
+        return User::where('kelas_id', $this->kelas_id)
+            ->whereHas('roles', function ($q) {
+                $q->where('slug', 'siswa');
+            })
+            ->whereHas('tahunAjaran', function ($q) {
+                $q->where('is_active', true);
+            })
+            ->orderBy('name')
+            ->get();
+    }
 }

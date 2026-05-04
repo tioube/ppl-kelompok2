@@ -111,6 +111,13 @@ class PermissionSeeder extends Seeder
             // Attendance Management
             ['name' => 'Manage Attendance', 'slug' => 'manage-attendance', 'description' => 'Manage attendance'],
             ['name' => 'View Attendance', 'slug' => 'view-attendance', 'description' => 'View attendance'],
+
+            // Jurnal Mengajar Management
+            ['name' => 'Manage Jurnal Mengajar', 'slug' => 'manage-jurnal-mengajar', 'description' => 'Full access to jurnal mengajar management'],
+            ['name' => 'View Jurnal Mengajar', 'slug' => 'view-jurnal-mengajar', 'description' => 'View jurnal mengajar list'],
+            ['name' => 'Create Jurnal Mengajar', 'slug' => 'create-jurnal-mengajar', 'description' => 'Create new jurnal mengajar'],
+            ['name' => 'Edit Jurnal Mengajar', 'slug' => 'edit-jurnal-mengajar', 'description' => 'Edit jurnal mengajar'],
+            ['name' => 'Delete Jurnal Mengajar', 'slug' => 'delete-jurnal-mengajar', 'description' => 'Delete jurnal mengajar'],
         ];
 
         foreach ($permissions as $permission) {
@@ -193,6 +200,8 @@ class PermissionSeeder extends Seeder
                 'approve-silabus',
                 'view-grades',
                 'view-attendance',
+                'manage-jurnal-mengajar',
+                'view-jurnal-mengajar',
             ])->get();
             $akademik->permissions()->sync($akademikPermissions);
         }
@@ -215,6 +224,9 @@ class PermissionSeeder extends Seeder
                 'view-grades',
                 'manage-attendance',
                 'view-attendance',
+                'create-jurnal-mengajar',
+                'edit-jurnal-mengajar',
+                'view-jurnal-mengajar',
             ])->get();
             $guru->permissions()->sync($guruPermissions);
         }

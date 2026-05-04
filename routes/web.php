@@ -8,6 +8,7 @@ use App\Http\Controllers\Dashboard\SuperAdminDashboardController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\GuruMapelKelasController;
 use App\Http\Controllers\JadwalPelajaranController;
+use App\Http\Controllers\JurnalMengajarController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MataPelajaranController;
@@ -290,6 +291,34 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/silabus/{silabus}/reject', [SilabusController::class, 'reject'])->name('silabus.reject');
         Route::patch('/silabus/{silabus}/toggle-status', [SilabusController::class, 'toggleStatus'])->name('silabus.toggle-status');
     });
+
+    // Jurnal Mengajar Routes
+    Route::middleware('permission:manage-jurnal-mengajar,view-jurnal-mengajar')->group(function () {
+        Route::get('/jurnal-mengajar', [JurnalMengajarController::class, 'index'])->name('jurnal-mengajar.index');
+    });
+
+    Route::middleware('permission:manage-jurnal-mengajar,create-jurnal-mengajar')->group(function () {
+        Route::get('/jurnal-mengajar/create', [JurnalMengajarController::class, 'create'])->name('jurnal-mengajar.create');
+        Route::post('/jurnal-mengajar', [JurnalMengajarController::class, 'store'])->name('jurnal-mengajar.store');
+    });
+
+    Route::middleware('permission:manage-jurnal-mengajar,edit-jurnal-mengajar')->group(function () {
+        Route::get('/jurnal-mengajar/{jurnal_mengajar}/edit', [JurnalMengajarController::class, 'edit'])->name('jurnal-mengajar.edit');
+        Route::put('/jurnal-mengajar/{jurnal_mengajar}', [JurnalMengajarController::class, 'update'])->name('jurnal-mengajar.update');
+        Route::patch('/jurnal-mengajar/{jurnal_mengajar}', [JurnalMengajarController::class, 'update']);
+    });
+
+    Route::middleware('permission:manage-jurnal-mengajar,delete-jurnal-mengajar')->group(function () {
+        Route::delete('/jurnal-mengajar/{jurnal_mengajar}', [JurnalMengajarController::class, 'destroy'])->name('jurnal-mengajar.destroy');
+    });
+
+    Route::middleware('permission:manage-jurnal-mengajar,view-jurnal-mengajar')->group(function () {
+        Route::get('/jurnal-mengajar/{jurnal_mengajar}', [JurnalMengajarController::class, 'show'])->name('jurnal-mengajar.show');
+    });
+
+    // API routes for Jurnal Mengajar dynamic form
+    Route::get('/api/guru-mapel-kelas/{id}/silabus', [JurnalMengajarController::class, 'getSilabusByGuruMapelKelas'])->name('api.guru-mapel-kelas.silabus');
+    Route::get('/api/guru-mapel-kelas/{id}/siswa', [JurnalMengajarController::class, 'getSiswaByGuruMapelKelas'])->name('api.guru-mapel-kelas.siswa');
 });
 
 require __DIR__.'/auth.php';
