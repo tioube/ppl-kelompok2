@@ -267,4 +267,3 @@ class JurnalMengajarController extends Controller
         return response()->json($siswa);
     }
 }
-

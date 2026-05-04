@@ -88,4 +88,3 @@ class JurnalMengajar extends Model
         return $query->whereBetween('tanggal', [$startDate, $endDate]);
     }
 }
-
