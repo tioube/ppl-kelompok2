@@ -31,6 +31,7 @@ return new class extends Migration
                 'pindah',
                 'dikeluarkan',
                 'cuti',
+                'tinggal_kelas',
             ])->default('aktif');
             $table->string('nomor_induk_sekolah')->nullable();
             $table->text('catatan')->nullable();
