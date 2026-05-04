@@ -81,8 +81,34 @@
                 @csrf
 
                 <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    <!-- Tahun Ajaran Selection -->
+                    <div>
+                        <label for="tahun_ajaran_id" class="mb-3 block text-sm font-medium text-gray-900 dark:text-white">
+                            <div class="flex items-center">
+                                <svg class="mr-2 h-5 w-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                Tahun Ajaran <span class="text-red-500">*</span>
+                            </div>
+                        </label>
+                        <select name="tahun_ajaran_id"
+                                id="tahun_ajaran_id"
+                                required
+                                class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white @error('tahun_ajaran_id') border-red-500 dark:border-red-500 @enderror">
+                            <option value="">Pilih Tahun Ajaran</option>
+                            @foreach($tahunAjaranList as $ta)
+                                <option value="{{ $ta->id }}" {{ old('tahun_ajaran_id', $tahunAjaranAktif?->id) == $ta->id ? 'selected' : '' }}>
+                                    {{ $ta->tahun }} {{ $ta->is_active ? '(Aktif)' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('tahun_ajaran_id')
+                            <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <!-- Mata Pelajaran Selection -->
-                    <div class="lg:col-span-2">
+                    <div>
                         <label for="mata_pelajaran_id" class="mb-3 block text-sm font-medium text-gray-900 dark:text-white">
                             <div class="flex items-center">
                                 <svg class="mr-2 h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,9 +133,6 @@
                         @error('mata_pelajaran_id')
                             <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
-                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                            Total {{ count($mataPelajaran) }} mata pelajaran tersedia. Pilih sesuai dengan kurikulum yang berlaku.
-                        </p>
                     </div>
 
                     <!-- Kategori Assessment -->

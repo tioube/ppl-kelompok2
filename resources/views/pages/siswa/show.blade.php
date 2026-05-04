@@ -45,11 +45,26 @@
                                 </span>
                             @endforeach
                         </div>
+
+                        @if($currentSiswaTahunAjaran)
+                        <div class="mt-4 w-full pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div class="text-center">
+                                <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium
+                                    @if($currentSiswaTahunAjaran->status === 'aktif') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                                    @elseif($currentSiswaTahunAjaran->status === 'lulus') bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400
+                                    @elseif($currentSiswaTahunAjaran->status === 'naik_kelas') bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400
+                                    @else bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
+                                    @endif">
+                                    {{ ucfirst(str_replace('_', ' ', $currentSiswaTahunAjaran->status)) }}
+                                </span>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-2">
+            <div class="lg:col-span-2 space-y-6">
                 <div class="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
                     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Informasi Siswa</h3>
@@ -92,9 +107,10 @@
                     </div>
                 </div>
 
-                <div class="mt-6 rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                @if($currentSiswaTahunAjaran)
+                <div class="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
                     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Informasi Akademik</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Informasi Akademik Saat Ini</h3>
                     </div>
 
                     <div class="p-6">
@@ -102,22 +118,21 @@
                             <div>
                                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Tahun Ajaran</dt>
                                 <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                                    @if($siswa->tahunAjaran)
-                                        <span class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                            {{ $siswa->tahunAjaran->tahun }}
-                                        </span>
-                                    @else
-                                        -
-                                    @endif
+                                    <span class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                        {{ $currentSiswaTahunAjaran->tahunAjaran->tahun }}
+                                        @if($currentSiswaTahunAjaran->tahunAjaran->is_active)
+                                            (Aktif)
+                                        @endif
+                                    </span>
                                 </dd>
                             </div>
 
                             <div>
                                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Kelas</dt>
                                 <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                                    @if($siswa->kelas)
+                                    @if($currentSiswaTahunAjaran->kelas)
                                         <span class="inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                                            {{ $siswa->kelas->nama }}
+                                            {{ $currentSiswaTahunAjaran->kelas->nama }}
                                         </span>
                                     @else
                                         -
@@ -128,11 +143,29 @@
                             <div>
                                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Jurusan</dt>
                                 <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                                    @if($siswa->jurusan)
-                                        {{ $siswa->jurusan->nama }}
-                                    @else
-                                        -
-                                    @endif
+                                    {{ $currentSiswaTahunAjaran->jurusan->nama ?? '-' }}
+                                </dd>
+                            </div>
+
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">NIS</dt>
+                                <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                    {{ $currentSiswaTahunAjaran->nomor_induk_sekolah ?? '-' }}
+                                </dd>
+                            </div>
+
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Status</dt>
+                                <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium
+                                        @if($currentSiswaTahunAjaran->status === 'aktif') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                                        @elseif($currentSiswaTahunAjaran->status === 'lulus') bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400
+                                        @elseif($currentSiswaTahunAjaran->status === 'naik_kelas') bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400
+                                        @elseif($currentSiswaTahunAjaran->status === 'pindah') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400
+                                        @else bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
+                                        @endif">
+                                        {{ ucfirst(str_replace('_', ' ', $currentSiswaTahunAjaran->status)) }}
+                                    </span>
                                 </dd>
                             </div>
 
@@ -143,8 +176,73 @@
                                 </dd>
                             </div>
                         </dl>
+
+                        @if($currentSiswaTahunAjaran->catatan)
+                        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Catatan</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $currentSiswaTahunAjaran->catatan }}</dd>
+                        </div>
+                        @endif
                     </div>
                 </div>
+                @endif
+
+                @if($riwayatAkademik && $riwayatAkademik->count() > 0)
+                <div class="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Riwayat Akademik</h3>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Riwayat kelas dan tahun ajaran siswa</p>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tahun Ajaran</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Kelas</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Jurusan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">NIS</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                @foreach($riwayatAkademik as $riwayat)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm text-gray-900 dark:text-white">{{ $riwayat->tahunAjaran->tahun }}</span>
+                                            @if($riwayat->tahunAjaran->is_active)
+                                                <span class="inline-flex rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">Aktif</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-900 dark:text-white">{{ $riwayat->kelas->nama ?? '-' }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ $riwayat->jurusan->nama ?? '-' }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ $riwayat->nomor_induk_sekolah ?? '-' }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                                            @if($riwayat->status === 'aktif') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                                            @elseif($riwayat->status === 'lulus') bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400
+                                            @elseif($riwayat->status === 'naik_kelas') bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400
+                                            @elseif($riwayat->status === 'pindah') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400
+                                            @else bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
+                                            @endif">
+                                            {{ ucfirst(str_replace('_', ' ', $riwayat->status)) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
     </div>

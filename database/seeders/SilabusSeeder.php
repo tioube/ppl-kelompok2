@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\MataPelajaran;
 use App\Models\Silabus;
+use App\Models\TahunAjaran;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -12,11 +13,18 @@ class SilabusSeeder extends Seeder
     public function run(): void
     {
         $mataPelajaran = MataPelajaran::all();
+        $tahunAjaranAktif = TahunAjaran::where('is_active', true)->first();
         $users = User::whereHas('roles', function ($query) {
             $query->whereIn('slug', ['super-admin', 'guru']);
         })->get();
 
         if ($mataPelajaran->isEmpty() || $users->isEmpty()) {
+            return;
+        }
+
+        if (! $tahunAjaranAktif) {
+            $this->command->warn('No active tahun ajaran found.');
+
             return;
         }
 
@@ -40,14 +48,12 @@ class SilabusSeeder extends Seeder
         ];
 
         foreach ($mataPelajaran as $mapel) {
-            // Create 3-5 silabus per mata pelajaran
             for ($i = 0; $i < rand(3, 5); $i++) {
                 $kategori = ['formatif', 'sumatif'][array_rand(['formatif', 'sumatif'])];
                 $creator = $users->random();
 
-                // Random approval and status based on realistic distribution
                 $approvalStatuses = ['draft', 'pending_approval', 'approved', 'rejected'];
-                $approvalWeights = [0.2, 0.3, 0.4, 0.1]; // 20% draft, 30% pending, 40% approved, 10% rejected
+                $approvalWeights = [0.2, 0.3, 0.4, 0.1];
                 $approvalStatus = $this->weightedRandom($approvalStatuses, $approvalWeights);
 
                 $status = 'pending';
@@ -59,6 +65,7 @@ class SilabusSeeder extends Seeder
 
                 $silabus = Silabus::create([
                     'mata_pelajaran_id' => $mapel->id,
+                    'tahun_ajaran_id' => $tahunAjaranAktif->id,
                     'tujuan_pembelajaran' => $tujuanPembelajaranSamples[$kategori][array_rand($tujuanPembelajaranSamples[$kategori])],
                     'kategori' => $kategori,
                     'status' => $status,

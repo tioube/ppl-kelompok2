@@ -91,11 +91,6 @@ class PermissionSeeder extends Seeder
             ['name' => 'Clear Guru Mapel Kelas', 'slug' => 'clear-guru-mapel-kelas', 'description' => 'Clear all guru mapel kelas'],
 
             // Schedule Management
-            ['name' => 'Manage Jadwal Pelajaran', 'slug' => 'manage-jadwal-pelajaran', 'description' => 'Full access to jadwal pelajaran management'],
-            ['name' => 'View Jadwal Pelajaran', 'slug' => 'view-jadwal-pelajaran', 'description' => 'View jadwal pelajaran list'],
-            ['name' => 'Create Jadwal Pelajaran', 'slug' => 'create-jadwal-pelajaran', 'description' => 'Create new jadwal pelajaran'],
-            ['name' => 'Edit Jadwal Pelajaran', 'slug' => 'edit-jadwal-pelajaran', 'description' => 'Edit jadwal pelajaran'],
-            ['name' => 'Delete Jadwal Pelajaran', 'slug' => 'delete-jadwal-pelajaran', 'description' => 'Delete jadwal pelajaran'],
             ['name' => 'Manage Schedules', 'slug' => 'manage-schedules', 'description' => 'Full access to schedule management'],
             ['name' => 'View Schedules', 'slug' => 'view-schedules', 'description' => 'View schedules'],
             ['name' => 'Create Schedules', 'slug' => 'create-schedules', 'description' => 'Create new schedules'],
@@ -118,6 +113,16 @@ class PermissionSeeder extends Seeder
             ['name' => 'Create Jurnal Mengajar', 'slug' => 'create-jurnal-mengajar', 'description' => 'Create new jurnal mengajar'],
             ['name' => 'Edit Jurnal Mengajar', 'slug' => 'edit-jurnal-mengajar', 'description' => 'Edit jurnal mengajar'],
             ['name' => 'Delete Jurnal Mengajar', 'slug' => 'delete-jurnal-mengajar', 'description' => 'Delete jurnal mengajar'],
+
+            // Kenaikan Kelas Management
+            ['name' => 'Manage Kenaikan Kelas', 'slug' => 'manage-kenaikan-kelas', 'description' => 'Full access to kenaikan kelas management'],
+            ['name' => 'View Kenaikan Kelas', 'slug' => 'view-kenaikan-kelas', 'description' => 'View kenaikan kelas'],
+            ['name' => 'Process Kenaikan Kelas', 'slug' => 'process-kenaikan-kelas', 'description' => 'Process kenaikan kelas'],
+            ['name' => 'Manage Kelulusan', 'slug' => 'manage-kelulusan', 'description' => 'Manage student graduation'],
+
+            // Mata Pelajaran Tahun Ajaran Mapping
+            ['name' => 'Manage Mapel Tahun Ajaran', 'slug' => 'manage-mapel-tahun-ajaran', 'description' => 'Manage mata pelajaran per tahun ajaran mapping'],
+            ['name' => 'View Mapel Tahun Ajaran', 'slug' => 'view-mapel-tahun-ajaran', 'description' => 'View mata pelajaran tahun ajaran mapping'],
         ];
 
         foreach ($permissions as $permission) {
@@ -150,12 +155,13 @@ class PermissionSeeder extends Seeder
                 'view-kelas',
                 'view-guru',
                 'view-guru-mapel-kelas',
-                'view-jadwal-pelajaran',
                 'view-schedules',
                 'manage-grades',
                 'view-grades',
                 'manage-attendance',
                 'view-attendance',
+                'view-kenaikan-kelas',
+                'view-mapel-tahun-ajaran',
             ])->get();
             $admin->permissions()->sync($adminPermissions);
         }
@@ -202,6 +208,15 @@ class PermissionSeeder extends Seeder
                 'view-attendance',
                 'manage-jurnal-mengajar',
                 'view-jurnal-mengajar',
+                'manage-kenaikan-kelas',
+                'view-kenaikan-kelas',
+                'process-kenaikan-kelas',
+                'manage-kelulusan',
+                'manage-mapel-tahun-ajaran',
+                'view-mapel-tahun-ajaran',
+                'manage-schedules',
+                'view-schedules',
+                'generate-schedules',
             ])->get();
             $akademik->permissions()->sync($akademikPermissions);
         }
@@ -215,7 +230,6 @@ class PermissionSeeder extends Seeder
                 'view-siswa',
                 'view-kelas',
                 'view-guru-mapel-kelas',
-                'view-jadwal-pelajaran',
                 'view-schedules',
                 'create-silabus',
                 'edit-silabus',

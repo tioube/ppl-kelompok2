@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Kelas extends Model
 {
@@ -13,23 +15,23 @@ class Kelas extends Model
         'jurusan_id',
     ];
 
-    public function jurusan()
+    public function jurusan(): BelongsTo
     {
         return $this->belongsTo(Jurusan::class);
     }
 
-    public function jadwalPelajaran()
-    {
-        return $this->hasMany(JadwalPelajaran::class);
-    }
-
-    public function guruMapelKelas()
+    public function guruMapelKelas(): HasMany
     {
         return $this->hasMany(GuruMapelKelas::class);
     }
 
-    public function schedules()
+    public function schedules(): HasMany
     {
         return $this->hasMany(Schedule::class);
+    }
+
+    public function siswaTahunAjaran(): HasMany
+    {
+        return $this->hasMany(SiswaTahunAjaran::class);
     }
 }

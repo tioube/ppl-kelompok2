@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GuruMapelKelas extends Model
 {
@@ -12,38 +14,56 @@ class GuruMapelKelas extends Model
         'guru_id',
         'mata_pelajaran_id',
         'kelas_id',
+        'tahun_ajaran_id',
     ];
 
-    public function guru()
+    public function guru(): BelongsTo
     {
         return $this->belongsTo(User::class, 'guru_id');
     }
 
-    public function mataPelajaran()
+    public function mataPelajaran(): BelongsTo
     {
         return $this->belongsTo(MataPelajaran::class);
     }
 
-    public function kelas()
+    public function kelas(): BelongsTo
     {
         return $this->belongsTo(Kelas::class);
     }
 
-    public function jurnalMengajar()
+    public function tahunAjaran(): BelongsTo
+    {
+        return $this->belongsTo(TahunAjaran::class);
+    }
+
+    public function jurnalMengajar(): HasMany
     {
         return $this->hasMany(JurnalMengajar::class);
     }
 
     public function getSiswaInKelas()
     {
-        return User::where('kelas_id', $this->kelas_id)
-            ->whereHas('roles', function ($q) {
-                $q->where('slug', 'siswa');
-            })
-            ->whereHas('tahunAjaran', function ($q) {
-                $q->where('is_active', true);
-            })
-            ->orderBy('name')
-            ->get();
+        return SiswaTahunAjaran::where('kelas_id', $this->kelas_id)
+            ->where('tahun_ajaran_id', $this->tahun_ajaran_id)
+            ->where('status', 'aktif')
+            ->with('siswa')
+            ->get()
+            ->pluck('siswa');
+    }
+
+    public function scopeByTahunAjaran($query, $tahunAjaranId)
+    {
+        return $query->where('tahun_ajaran_id', $tahunAjaranId);
+    }
+
+    public function scopeTahunAjaranAktif($query)
+    {
+        return $query->whereHas('tahunAjaran', fn ($q) => $q->where('is_active', true));
+    }
+
+    public function scopeByGuru($query, $guruId)
+    {
+        return $query->where('guru_id', $guruId);
     }
 }

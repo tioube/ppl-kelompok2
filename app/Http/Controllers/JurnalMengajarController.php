@@ -8,20 +8,29 @@ use App\Models\JurnalMengajar;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use App\Models\Silabus;
-use App\Models\User;
+use App\Models\SiswaTahunAjaran;
+use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
 
 class JurnalMengajarController extends Controller
 {
     public function index(Request $request)
     {
+        $tahunAjaranAktif = TahunAjaran::getAktif();
+        $selectedTahunAjaran = $request->input('tahun_ajaran_id', $tahunAjaranAktif?->id);
+
         $query = JurnalMengajar::with([
             'guruMapelKelas.guru',
             'guruMapelKelas.kelas',
             'guruMapelKelas.mataPelajaran',
+            'guruMapelKelas.tahunAjaran',
             'silabus',
             'absensi',
         ]);
+
+        if ($selectedTahunAjaran) {
+            $query->whereHas('guruMapelKelas', fn ($q) => $q->where('tahun_ajaran_id', $selectedTahunAjaran));
+        }
 
         if (auth()->user()->hasRole('guru')) {
             $query->whereHas('guruMapelKelas', function ($q) {
@@ -56,18 +65,23 @@ class JurnalMengajarController extends Controller
 
         $kelasList = Kelas::orderBy('nama')->get();
         $mataPelajaranList = MataPelajaran::orderBy('nama')->get();
+        $tahunAjaranList = TahunAjaran::orderBy('tahun', 'desc')->get();
 
-        return view('jurnal-mengajar.index', compact('jurnalMengajar', 'kelasList', 'mataPelajaranList'));
+        return view('jurnal-mengajar.index', compact('jurnalMengajar', 'kelasList', 'mataPelajaranList', 'tahunAjaranList', 'selectedTahunAjaran'));
     }
 
     public function create()
     {
+        $tahunAjaranAktif = TahunAjaran::getAktif();
+
         if (auth()->user()->hasRole('guru')) {
-            $guruMapelKelas = GuruMapelKelas::with(['kelas', 'mataPelajaran'])
+            $guruMapelKelas = GuruMapelKelas::with(['kelas', 'mataPelajaran', 'tahunAjaran'])
                 ->where('guru_id', auth()->id())
+                ->when($tahunAjaranAktif, fn ($q) => $q->where('tahun_ajaran_id', $tahunAjaranAktif->id))
                 ->get();
         } else {
-            $guruMapelKelas = GuruMapelKelas::with(['kelas', 'mataPelajaran', 'guru'])
+            $guruMapelKelas = GuruMapelKelas::with(['kelas', 'mataPelajaran', 'guru', 'tahunAjaran'])
+                ->when($tahunAjaranAktif, fn ($q) => $q->where('tahun_ajaran_id', $tahunAjaranAktif->id))
                 ->get();
         }
 
@@ -150,27 +164,34 @@ class JurnalMengajarController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $jurnalMengajar->load(['absensi']);
+        $jurnalMengajar->load(['absensi', 'guruMapelKelas.tahunAjaran']);
+
+        $tahunAjaranId = $jurnalMengajar->guruMapelKelas->tahun_ajaran_id;
 
         if (auth()->user()->hasRole('guru')) {
-            $guruMapelKelas = GuruMapelKelas::with(['kelas', 'mataPelajaran'])
+            $guruMapelKelas = GuruMapelKelas::with(['kelas', 'mataPelajaran', 'tahunAjaran'])
                 ->where('guru_id', auth()->id())
+                ->where('tahun_ajaran_id', $tahunAjaranId)
                 ->get();
         } else {
-            $guruMapelKelas = GuruMapelKelas::with(['kelas', 'mataPelajaran', 'guru'])
+            $guruMapelKelas = GuruMapelKelas::with(['kelas', 'mataPelajaran', 'guru', 'tahunAjaran'])
+                ->where('tahun_ajaran_id', $tahunAjaranId)
                 ->get();
         }
 
         $silabusList = Silabus::where('mata_pelajaran_id', $jurnalMengajar->guruMapelKelas->mata_pelajaran_id)
+            ->where('tahun_ajaran_id', $tahunAjaranId)
             ->approved()
             ->active()
             ->get();
 
-        $siswaList = User::siswa()
-            ->byKelas($jurnalMengajar->guruMapelKelas->kelas_id)
-            ->tahunAjaranAktif()
-            ->orderBy('name')
-            ->get();
+        $siswaList = SiswaTahunAjaran::where('kelas_id', $jurnalMengajar->guruMapelKelas->kelas_id)
+            ->where('tahun_ajaran_id', $tahunAjaranId)
+            ->where('status', 'aktif')
+            ->with('siswa')
+            ->get()
+            ->pluck('siswa')
+            ->sortBy('name');
 
         $existingAbsensi = $jurnalMengajar->absensi->keyBy('siswa_id');
 
@@ -245,6 +266,7 @@ class JurnalMengajarController extends Controller
         $guruMapelKelas = GuruMapelKelas::findOrFail($id);
 
         $silabus = Silabus::where('mata_pelajaran_id', $guruMapelKelas->mata_pelajaran_id)
+            ->when($guruMapelKelas->tahun_ajaran_id, fn ($q) => $q->where('tahun_ajaran_id', $guruMapelKelas->tahun_ajaran_id))
             ->approved()
             ->active()
             ->select('id', 'tujuan_pembelajaran', 'kategori')
@@ -257,12 +279,18 @@ class JurnalMengajarController extends Controller
     {
         $guruMapelKelas = GuruMapelKelas::findOrFail($id);
 
-        $siswa = User::siswa()
-            ->byKelas($guruMapelKelas->kelas_id)
-            ->tahunAjaranAktif()
-            ->select('id', 'name', 'nisn')
-            ->orderBy('name')
-            ->get();
+        $siswa = SiswaTahunAjaran::where('kelas_id', $guruMapelKelas->kelas_id)
+            ->where('tahun_ajaran_id', $guruMapelKelas->tahun_ajaran_id)
+            ->where('status', 'aktif')
+            ->with('siswa:id,name,nisn')
+            ->get()
+            ->map(fn ($sta) => [
+                'id' => $sta->siswa->id,
+                'name' => $sta->siswa->name,
+                'nisn' => $sta->siswa->nisn,
+            ])
+            ->sortBy('name')
+            ->values();
 
         return response()->json($siswa);
     }

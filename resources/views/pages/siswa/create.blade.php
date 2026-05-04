@@ -108,18 +108,30 @@
 
                     <div>
                         <label for="tahun_ajaran_id" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-                            Tahun Ajaran
+                            Tahun Ajaran <span class="text-red-500">*</span>
                         </label>
-                        <select name="tahun_ajaran_id" id="tahun_ajaran_id"
+                        <select name="tahun_ajaran_id" id="tahun_ajaran_id" required
                             class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-700 dark:bg-gray-800 dark:text-white @error('tahun_ajaran_id') border-red-500 @enderror">
                             <option value="">Pilih Tahun Ajaran</option>
                             @foreach($tahunAjaranList as $ta)
-                                <option value="{{ $ta->id }}" {{ old('tahun_ajaran_id') == $ta->id ? 'selected' : '' }}>
-                                    {{ $ta->tahun }}
+                                <option value="{{ $ta->id }}" {{ old('tahun_ajaran_id', $tahunAjaranAktif?->id) == $ta->id ? 'selected' : '' }}>
+                                    {{ $ta->tahun }} {{ $ta->is_active ? '(Aktif)' : '' }}
                                 </option>
                             @endforeach
                         </select>
                         @error('tahun_ajaran_id')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="nomor_induk_sekolah" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+                            Nomor Induk Sekolah (NIS)
+                        </label>
+                        <input type="text" name="nomor_induk_sekolah" id="nomor_induk_sekolah" value="{{ old('nomor_induk_sekolah') }}"
+                            placeholder="Nomor Induk Sekolah"
+                            class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-700 dark:bg-gray-800 dark:text-white @error('nomor_induk_sekolah') border-red-500 @enderror">
+                        @error('nomor_induk_sekolah')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                         @enderror
                     </div>

@@ -16,16 +16,25 @@ class ScheduleGeneratorService
 
     private $timeSlotsCache = [];
 
-    public function generateScheduleForKelas(Kelas $kelas)
+    public function generateScheduleForKelas(Kelas $kelas, ?int $tahunAjaranId = null)
     {
         DB::beginTransaction();
 
         try {
-            Schedule::where('kelas_id', $kelas->id)->delete();
+            $deleteQuery = Schedule::where('kelas_id', $kelas->id);
+            if ($tahunAjaranId) {
+                $deleteQuery->where('tahun_ajaran_id', $tahunAjaranId);
+            }
+            $deleteQuery->delete();
 
-            $assignments = GuruMapelKelas::where('kelas_id', $kelas->id)
-                ->with(['mataPelajaran', 'guru'])
-                ->get();
+            $assignmentsQuery = GuruMapelKelas::where('kelas_id', $kelas->id)
+                ->with(['mataPelajaran', 'guru']);
+
+            if ($tahunAjaranId) {
+                $assignmentsQuery->where('tahun_ajaran_id', $tahunAjaranId);
+            }
+
+            $assignments = $assignmentsQuery->get();
 
             $allTimeSlots = TimeSlot::all()->keyBy('id');
             $this->timeSlotsCache = $allTimeSlots;
@@ -88,6 +97,7 @@ class ScheduleGeneratorService
                                         'time_slot_id' => $slot->id,
                                         'mata_pelajaran_id' => $mapel->id,
                                         'guru_id' => $guru->id,
+                                        'tahun_ajaran_id' => $tahunAjaranId,
                                     ];
                                     $mapelWeeklyCount[$mapel->id]++;
                                 }
@@ -122,6 +132,7 @@ class ScheduleGeneratorService
                                         'time_slot_id' => $slot->id,
                                         'mata_pelajaran_id' => $mapel->id,
                                         'guru_id' => $guru->id,
+                                        'tahun_ajaran_id' => $tahunAjaranId,
                                     ];
                                     $mapelWeeklyCount[$mapel->id]++;
                                 }

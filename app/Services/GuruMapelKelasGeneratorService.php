@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\GuruMapelKelas;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
+use App\Models\TahunAjaran;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +16,18 @@ class GuruMapelKelasGeneratorService
         DB::beginTransaction();
 
         try {
-            GuruMapelKelas::query()->delete();
+            $tahunAjaranAktif = TahunAjaran::getAktif();
+
+            if (! $tahunAjaranAktif) {
+                DB::rollBack();
+
+                return [
+                    'success' => false,
+                    'message' => 'Tidak ada tahun ajaran aktif. Silakan aktifkan tahun ajaran terlebih dahulu.',
+                ];
+            }
+
+            GuruMapelKelas::where('tahun_ajaran_id', $tahunAjaranAktif->id)->delete();
 
             $gurus = User::whereHas('roles', function ($query) {
                 $query->where('slug', 'guru');
@@ -45,6 +57,7 @@ class GuruMapelKelasGeneratorService
                         'guru_id' => $guru->id,
                         'mata_pelajaran_id' => $mapel->id,
                         'kelas_id' => $kelas->id,
+                        'tahun_ajaran_id' => $tahunAjaranAktif->id,
                     ]);
 
                     $assignmentData[] = [
@@ -61,7 +74,7 @@ class GuruMapelKelasGeneratorService
 
             return [
                 'success' => true,
-                'message' => 'Berhasil generate '.count($assignmentData).' penugasan guru otomatis.',
+                'message' => 'Berhasil generate '.count($assignmentData).' penugasan guru otomatis untuk tahun ajaran '.$tahunAjaranAktif->nama.'.',
                 'total' => count($assignmentData),
             ];
 

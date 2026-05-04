@@ -6,6 +6,7 @@ use App\Models\GuruMapelKelas;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use App\Models\Schedule;
+use App\Models\TahunAjaran;
 use App\Models\TimeSlot;
 use App\Models\User;
 use App\Services\ScheduleGeneratorService;
@@ -22,17 +23,25 @@ class ScheduleController extends Controller
 
     public function index(Request $request)
     {
+        $tahunAjaranAktif = TahunAjaran::getAktif();
+        $selectedTahunAjaran = $request->input('tahun_ajaran_id', $tahunAjaranAktif?->id);
+
         $kelasList = Kelas::orderBy('nama')->get();
+        $tahunAjaranList = TahunAjaran::orderBy('tahun', 'desc')->get();
         $selectedKelasId = $request->get('kelas_id');
 
         $schedules = null;
         $timeSlotsByDay = null;
 
         if ($selectedKelasId) {
-            $schedules = Schedule::where('kelas_id', $selectedKelasId)
-                ->with(['timeSlot', 'mataPelajaran', 'guru'])
-                ->get()
-                ->keyBy('time_slot_id');
+            $query = Schedule::where('kelas_id', $selectedKelasId)
+                ->with(['timeSlot', 'mataPelajaran', 'guru']);
+
+            if ($selectedTahunAjaran) {
+                $query->where('tahun_ajaran_id', $selectedTahunAjaran);
+            }
+
+            $schedules = $query->get()->keyBy('time_slot_id');
 
             $timeSlotsByDay = TimeSlot::orderBy('day')
                 ->orderBy('slot_index')
@@ -43,6 +52,8 @@ class ScheduleController extends Controller
         return view('akademik.schedules.index', [
             'title' => 'Jadwal Pelajaran Baru',
             'kelasList' => $kelasList,
+            'tahunAjaranList' => $tahunAjaranList,
+            'selectedTahunAjaran' => $selectedTahunAjaran,
             'selectedKelasId' => $selectedKelasId,
             'schedules' => $schedules,
             'timeSlotsByDay' => $timeSlotsByDay,
@@ -53,13 +64,16 @@ class ScheduleController extends Controller
     {
         $validated = $request->validate([
             'kelas_id' => 'required|exists:kelas,id',
+            'tahun_ajaran_id' => 'nullable|exists:tahun_ajaran,id',
         ]);
 
+        $tahunAjaranId = $validated['tahun_ajaran_id'] ?? TahunAjaran::getAktif()?->id;
+
         $kelas = Kelas::findOrFail($validated['kelas_id']);
-        $result = $this->generator->generateScheduleForKelas($kelas);
+        $result = $this->generator->generateScheduleForKelas($kelas, $tahunAjaranId);
 
         if ($result['success']) {
-            return redirect()->route('schedules.index', ['kelas_id' => $kelas->id])
+            return redirect()->route('schedules.index', ['kelas_id' => $kelas->id, 'tahun_ajaran_id' => $tahunAjaranId])
                 ->with('success', $result['message']);
         } else {
             return redirect()->back()
@@ -71,9 +85,16 @@ class ScheduleController extends Controller
     {
         $validated = $request->validate([
             'kelas_id' => 'required|exists:kelas,id',
+            'tahun_ajaran_id' => 'nullable|exists:tahun_ajaran,id',
         ]);
 
-        Schedule::where('kelas_id', $validated['kelas_id'])->delete();
+        $query = Schedule::where('kelas_id', $validated['kelas_id']);
+
+        if (! empty($validated['tahun_ajaran_id'])) {
+            $query->where('tahun_ajaran_id', $validated['tahun_ajaran_id']);
+        }
+
+        $query->delete();
 
         return redirect()->route('schedules.index')
             ->with('success', 'Jadwal berhasil dihapus.');

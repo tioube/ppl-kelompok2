@@ -9,8 +9,22 @@
                 <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Generate Jadwal Otomatis</h2>
 
                 <form action="{{ route('schedules.index') }}" method="GET" class="mb-4">
-                    <div class="flex items-end gap-3">
-                        <div class="flex-1">
+                    <div class="flex flex-wrap items-end gap-3">
+                        <div class="flex-1 min-w-[200px]">
+                            <label for="tahun_ajaran_id" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+                                Tahun Ajaran
+                            </label>
+                            <select name="tahun_ajaran_id" id="tahun_ajaran_id"
+                                class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                <option value="">-- Pilih Tahun Ajaran --</option>
+                                @foreach($tahunAjaranList as $ta)
+                                    <option value="{{ $ta->id }}" {{ $selectedTahunAjaran == $ta->id ? 'selected' : '' }}>
+                                        {{ $ta->tahun }} {{ $ta->is_active ? '(Aktif)' : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="flex-1 min-w-[200px]">
                             <label for="kelas_id" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                                 Pilih Kelas
                             </label>
@@ -37,6 +51,7 @@
                         <form action="{{ route('schedules.generate') }}" method="POST">
                             @csrf
                             <input type="hidden" name="kelas_id" value="{{ $selectedKelasId }}">
+                            <input type="hidden" name="tahun_ajaran_id" value="{{ $selectedTahunAjaran }}">
                             <button type="submit"
                                 onclick="return confirm('Generate ulang jadwal? Jadwal lama akan dihapus!')"
                                 class="bg-blue-600 hover:bg-blue-700 rounded-lg px-5 py-2.5 text-sm font-medium text-white dark:bg-blue-600 dark:hover:bg-blue-700 transition">
@@ -58,6 +73,7 @@
                                 @csrf
                                 @method('DELETE')
                                 <input type="hidden" name="kelas_id" value="{{ $selectedKelasId }}">
+                                <input type="hidden" name="tahun_ajaran_id" value="{{ $selectedTahunAjaran }}">
                                 <button type="submit"
                                     onclick="return confirm('Yakin ingin menghapus semua jadwal kelas ini?')"
                                     class="rounded-lg border border-red-300 bg-white px-5 py-2.5 text-sm font-medium text-red-700 transition hover:bg-red-50 dark:border-red-700 dark:bg-gray-800 dark:text-red-400">

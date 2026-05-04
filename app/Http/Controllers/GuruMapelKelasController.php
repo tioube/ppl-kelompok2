@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\GuruMapelKelas;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
+use App\Models\TahunAjaran;
 use App\Models\User;
 use App\Services\GuruMapelKelasGeneratorService;
 use Illuminate\Http\Request;
@@ -20,14 +21,16 @@ class GuruMapelKelasController extends Controller
 
     public function index(Request $request)
     {
-        // Debug: Log request parameters
-        \Log::info('GuruMapelKelas Filter Request:', $request->all());
+        $tahunAjaranAktif = TahunAjaran::getAktif();
+        $selectedTahunAjaran = $request->input('tahun_ajaran_id', $tahunAjaranAktif?->id);
 
-        $query = GuruMapelKelas::with(['guru', 'mataPelajaran', 'kelas']);
+        $query = GuruMapelKelas::with(['guru', 'mataPelajaran', 'kelas', 'tahunAjaran']);
 
-        // Search functionality
+        if ($selectedTahunAjaran) {
+            $query->where('tahun_ajaran_id', $selectedTahunAjaran);
+        }
+
         if ($search = $request->get('search')) {
-            \Log::info('Search parameter:', ['search' => $search]);
             $query->where(function ($q) use ($search) {
                 $q->whereHas('guru', function ($guruQuery) use ($search) {
                     $guruQuery->where('name', 'like', "%{$search}%");
@@ -42,25 +45,18 @@ class GuruMapelKelasController extends Controller
             });
         }
 
-        // Filter by guru
         if ($guruId = $request->get('guru_id')) {
-            \Log::info('Guru filter:', ['guru_id' => $guruId]);
             $query->where('guru_id', $guruId);
         }
 
-        // Filter by mata pelajaran
         if ($mataPelajaranId = $request->get('mata_pelajaran_id')) {
-            \Log::info('Mapel filter:', ['mata_pelajaran_id' => $mataPelajaranId]);
             $query->where('mata_pelajaran_id', $mataPelajaranId);
         }
 
-        // Filter by kelas
         if ($kelasId = $request->get('kelas_id')) {
-            \Log::info('Kelas filter:', ['kelas_id' => $kelasId]);
             $query->where('kelas_id', $kelasId);
         }
 
-        // Sorting
         $sortBy = $request->get('sort', 'kelas_id');
         $sortDirection = $request->get('direction', 'asc');
 
@@ -87,20 +83,24 @@ class GuruMapelKelasController extends Controller
 
         $assignments = $query->paginate(15)->withQueryString();
 
-        // Get filter options
         $gurus = User::whereHas('roles', function ($query) {
             $query->where('slug', 'guru');
         })->orderBy('name')->get();
 
         $mataPelajarans = MataPelajaran::orderBy('nama')->get();
         $kelas = Kelas::orderBy('nama')->get();
+        $tahunAjaranList = TahunAjaran::orderBy('tahun', 'desc')->get();
 
-        // Get statistics
+        $statsQuery = GuruMapelKelas::query();
+        if ($selectedTahunAjaran) {
+            $statsQuery->where('tahun_ajaran_id', $selectedTahunAjaran);
+        }
+
         $stats = [
-            'total' => GuruMapelKelas::count(),
-            'gurus_assigned' => GuruMapelKelas::distinct('guru_id')->count('guru_id'),
-            'mapel_assigned' => GuruMapelKelas::distinct('mata_pelajaran_id')->count('mata_pelajaran_id'),
-            'kelas_covered' => GuruMapelKelas::distinct('kelas_id')->count('kelas_id'),
+            'total' => (clone $statsQuery)->count(),
+            'gurus_assigned' => (clone $statsQuery)->distinct('guru_id')->count('guru_id'),
+            'mapel_assigned' => (clone $statsQuery)->distinct('mata_pelajaran_id')->count('mata_pelajaran_id'),
+            'kelas_covered' => (clone $statsQuery)->distinct('kelas_id')->count('kelas_id'),
         ];
 
         return view('akademik.guru-mapel-kelas.index', [
@@ -109,8 +109,10 @@ class GuruMapelKelasController extends Controller
             'gurus' => $gurus,
             'mataPelajarans' => $mataPelajarans,
             'kelas' => $kelas,
+            'tahunAjaranList' => $tahunAjaranList,
+            'selectedTahunAjaran' => $selectedTahunAjaran,
             'stats' => $stats,
-            'filters' => $request->only(['search', 'guru_id', 'mata_pelajaran_id', 'kelas_id', 'sort', 'direction']),
+            'filters' => $request->only(['search', 'guru_id', 'mata_pelajaran_id', 'kelas_id', 'tahun_ajaran_id', 'sort', 'direction']),
         ]);
     }
 
@@ -122,12 +124,16 @@ class GuruMapelKelasController extends Controller
 
         $mataPelajarans = MataPelajaran::orderBy('nama')->get();
         $kelas = Kelas::orderBy('nama')->get();
+        $tahunAjaranList = TahunAjaran::orderBy('tahun', 'desc')->get();
+        $tahunAjaranAktif = TahunAjaran::getAktif();
 
         return view('akademik.guru-mapel-kelas.create', [
             'title' => 'Tambah Penugasan Guru',
             'gurus' => $gurus,
             'mataPelajarans' => $mataPelajarans,
             'kelas' => $kelas,
+            'tahunAjaranList' => $tahunAjaranList,
+            'tahunAjaranAktif' => $tahunAjaranAktif,
         ]);
     }
 
@@ -137,11 +143,13 @@ class GuruMapelKelasController extends Controller
             'guru_id' => 'required|exists:users,id',
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
             'kelas_id' => 'required|exists:kelas,id',
+            'tahun_ajaran_id' => 'required|exists:tahun_ajaran,id',
         ]);
 
         $exists = GuruMapelKelas::where('guru_id', $validated['guru_id'])
             ->where('mata_pelajaran_id', $validated['mata_pelajaran_id'])
             ->where('kelas_id', $validated['kelas_id'])
+            ->where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
             ->exists();
 
         if ($exists) {
@@ -163,6 +171,7 @@ class GuruMapelKelasController extends Controller
 
         $mataPelajarans = MataPelajaran::orderBy('nama')->get();
         $kelas = Kelas::orderBy('nama')->get();
+        $tahunAjaranList = TahunAjaran::orderBy('tahun', 'desc')->get();
 
         return view('akademik.guru-mapel-kelas.edit', [
             'title' => 'Edit Penugasan Guru',
@@ -170,6 +179,7 @@ class GuruMapelKelasController extends Controller
             'gurus' => $gurus,
             'mataPelajarans' => $mataPelajarans,
             'kelas' => $kelas,
+            'tahunAjaranList' => $tahunAjaranList,
         ]);
     }
 
@@ -179,11 +189,13 @@ class GuruMapelKelasController extends Controller
             'guru_id' => 'required|exists:users,id',
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
             'kelas_id' => 'required|exists:kelas,id',
+            'tahun_ajaran_id' => 'required|exists:tahun_ajaran,id',
         ]);
 
         $exists = GuruMapelKelas::where('guru_id', $validated['guru_id'])
             ->where('mata_pelajaran_id', $validated['mata_pelajaran_id'])
             ->where('kelas_id', $validated['kelas_id'])
+            ->where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
             ->where('id', '!=', $guruMapelKela->id)
             ->exists();
 
