@@ -64,14 +64,15 @@ Route::middleware(['auth'])->group(function () {
         ->name('dashboard.siswa');
 
     // Mata Pelajaran Routes with Granular Permissions
-    Route::middleware('permission:manage-mata-pelajaran,view-mata-pelajaran')->group(function () {
-        Route::get('/mata-pelajaran', [MataPelajaranController::class, 'index'])->name('mata-pelajaran.index');
-        Route::get('/mata-pelajaran/{mata_pelajaran}', [MataPelajaranController::class, 'show'])->name('mata-pelajaran.show');
-    });
-
+    // IMPORTANT: Create route must be defined BEFORE show route to avoid parameter matching conflict
     Route::middleware('permission:manage-mata-pelajaran,create-mata-pelajaran')->group(function () {
         Route::get('/mata-pelajaran/create', [MataPelajaranController::class, 'create'])->name('mata-pelajaran.create');
         Route::post('/mata-pelajaran', [MataPelajaranController::class, 'store'])->name('mata-pelajaran.store');
+    });
+
+    Route::middleware('permission:manage-mata-pelajaran,view-mata-pelajaran')->group(function () {
+        Route::get('/mata-pelajaran', [MataPelajaranController::class, 'index'])->name('mata-pelajaran.index');
+        Route::get('/mata-pelajaran/{mata_pelajaran}', [MataPelajaranController::class, 'show'])->name('mata-pelajaran.show');
     });
 
     Route::middleware('permission:manage-mata-pelajaran,edit-mata-pelajaran')->group(function () {
@@ -133,14 +134,15 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Jurusan Routes with Granular Permissions
-    Route::middleware('permission:manage-jurusan,view-jurusan')->group(function () {
-        Route::get('/jurusan', [JurusanController::class, 'index'])->name('jurusan.index');
-        Route::get('/jurusan/{jurusan}', [JurusanController::class, 'show'])->name('jurusan.show');
-    });
-
+    // IMPORTANT: Create route must be defined BEFORE show route to avoid parameter matching conflict
     Route::middleware('permission:manage-jurusan,create-jurusan')->group(function () {
         Route::get('/jurusan/create', [JurusanController::class, 'create'])->name('jurusan.create');
         Route::post('/jurusan', [JurusanController::class, 'store'])->name('jurusan.store');
+    });
+
+    Route::middleware('permission:manage-jurusan,view-jurusan')->group(function () {
+        Route::get('/jurusan', [JurusanController::class, 'index'])->name('jurusan.index');
+        Route::get('/jurusan/{jurusan}', [JurusanController::class, 'show'])->name('jurusan.show');
     });
 
     Route::middleware('permission:manage-jurusan,edit-jurusan')->group(function () {
@@ -154,14 +156,15 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Kelas Routes with Granular Permissions
-    Route::middleware('permission:manage-kelas,view-kelas')->group(function () {
-        Route::get('/kelas', [KelasController::class, 'index'])->name('kelas.index');
-        Route::get('/kelas/{kela}', [KelasController::class, 'show'])->name('kelas.show');
-    });
-
+    // IMPORTANT: Create route must be defined BEFORE show route to avoid parameter matching conflict
     Route::middleware('permission:manage-kelas,create-kelas')->group(function () {
         Route::get('/kelas/create', [KelasController::class, 'create'])->name('kelas.create');
         Route::post('/kelas', [KelasController::class, 'store'])->name('kelas.store');
+    });
+
+    Route::middleware('permission:manage-kelas,view-kelas')->group(function () {
+        Route::get('/kelas', [KelasController::class, 'index'])->name('kelas.index');
+        Route::get('/kelas/{kela}', [KelasController::class, 'show'])->name('kelas.show');
     });
 
     Route::middleware('permission:manage-kelas,edit-kelas')->group(function () {
@@ -269,14 +272,15 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Users Routes with Granular Permissions
-    Route::middleware('permission:manage-users,view-users')->group(function () {
-        Route::get('/users', [UserController::class, 'index'])->name('users.index');
-        Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-    });
-
+    // IMPORTANT: Create route must be defined BEFORE show route to avoid parameter matching conflict
     Route::middleware('permission:manage-users,create-users')->group(function () {
         Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
         Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    });
+
+    Route::middleware('permission:manage-users,view-users')->group(function () {
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
     });
 
     Route::middleware('permission:manage-users,edit-users')->group(function () {

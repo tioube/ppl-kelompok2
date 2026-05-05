@@ -16,6 +16,10 @@ class RoleMiddleware
 
         $user = auth()->user();
 
+        if ($user->hasRole('super-admin')) {
+            return $next($request);
+        }
+
         foreach ($roles as $role) {
             if ($user->hasRole($role)) {
                 return $next($request);

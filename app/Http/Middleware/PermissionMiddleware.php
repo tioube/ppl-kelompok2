@@ -16,7 +16,10 @@ class PermissionMiddleware
 
         $user = auth()->user();
 
-        // If user has ANY of the required permissions, grant access
+        if ($user->hasRole('super-admin')) {
+            return $next($request);
+        }
+
         foreach ($permissions as $permission) {
             if ($user->hasPermission($permission)) {
                 return $next($request);
