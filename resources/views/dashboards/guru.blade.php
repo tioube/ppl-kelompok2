@@ -121,34 +121,44 @@
     </div>
 
     <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-        <h3 class="mb-4 text-xl font-semibold text-black dark:text-white">Today's Schedule</h3>
+        <h3 class="mb-4 text-xl font-semibold text-black dark:text-white">
+            Today's Schedule
+        </h3>
+
         <div class="space-y-3">
+        @forelse ($schedules as $schedule)
             <div class="rounded-lg border border-stroke p-4 dark:border-strokedark">
+                
                 <div class="mb-2 flex items-center justify-between">
-                    <span class="text-sm font-medium text-meta-3">08:00 - 09:30</span>
-                    <span class="rounded-full bg-success bg-opacity-10 px-2.5 py-0.5 text-xs font-medium text-success">Active</span>
-                </div>
-                <h5 class="mb-1 font-medium text-black dark:text-white">Mathematics - Class X-A</h5>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Room 101 • 30 Students</p>
-            </div>
+                    <span class="text-sm font-medium text-meta-3">
+                        {{ $schedule->timeSlot->start_time }} - {{ $schedule->timeSlot->end_time }}
+                    </span>
 
-            <div class="rounded-lg border border-stroke p-4 dark:border-strokedark">
-                <div class="mb-2 flex items-center justify-between">
-                    <span class="text-sm font-medium text-meta-3">10:00 - 11:30</span>
-                    <span class="rounded-full bg-warning bg-opacity-10 px-2.5 py-0.5 text-xs font-medium text-warning">Upcoming</span>
-                </div>
-                <h5 class="mb-1 font-medium text-black dark:text-white">Mathematics - Class X-B</h5>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Room 102 • 28 Students</p>
-            </div>
+                    @php
+                        $statusColors = [
+                            'active' => 'bg-success text-success',
+                            'upcoming' => 'bg-warning text-warning',
+                            'finished' => 'bg-gray-2 text-gray-600'
+                        ];
+                    @endphp
 
-            <div class="rounded-lg border border-stroke p-4 dark:border-strokedark">
-                <div class="mb-2 flex items-center justify-between">
-                    <span class="text-sm font-medium text-meta-3">13:00 - 14:30</span>
-                    <span class="rounded-full bg-gray-2 bg-opacity-10 px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-meta-4 dark:text-gray-400">Scheduled</span>
+                    <span class="rounded-full bg-opacity-10 px-2.5 py-0.5 text-xs font-medium {{ $statusColors[$schedule->status] }}">
+                        {{ ucfirst($schedule->status) }}
+                    </span>
                 </div>
-                <h5 class="mb-1 font-medium text-black dark:text-white">Mathematics - Class X-C</h5>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Room 103 • 32 Students</p>
+
+                <h5 class="mb-1 font-medium text-black dark:text-white">
+                    {{ $schedule->mataPelajaran->nama }} - {{ $schedule->kelas->nama }}
+                </h5>
+
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    {{-- Optional extras --}}
+                    Room ??? • {{ $schedule->kelas->siswaTahunAjaran->count() }} Students
+                </p>
             </div>
+        @empty
+            <p class="text-gray-500">No schedule for today</p>
+        @endforelse
         </div>
     </div>
 </div>
