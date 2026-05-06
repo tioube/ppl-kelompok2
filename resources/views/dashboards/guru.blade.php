@@ -7,19 +7,21 @@
 </div>
 
 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
-    <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div class="flex items-center justify-between">
-            <div>
-                <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['my_classes'] }}</h4>
-                <span class="text-sm font-medium">My Classes</span>
-            </div>
-            <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
-                <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none">
-                    <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
-                </svg>
+    <a href="{{ route('guru-mapel-kelas.index', absolute: false) }}">
+        <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['my_classes'] }}</h4>
+                    <span class="text-sm font-medium">Total Penugasan/Mata Pelajaran</span>
+                </div>
+                <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
+                    <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                        <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
+                    </svg>
+                </div>
             </div>
         </div>
-    </div>
+    </a>
 
     <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
         <div class="flex items-center justify-between">
