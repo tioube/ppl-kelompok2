@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -53,5 +54,21 @@ class Schedule extends Model
     public function scopeByKelas($query, $kelasId)
     {
         return $query->where('kelas_id', $kelasId);
+    }
+
+    public function getStatusAttribute()
+    {
+        $now = now();
+        $start = Carbon::parse($this->timeSlot->start_time);
+        $end = Carbon::parse($this->timeSlot->end_time);
+
+        if ($now->between($start, $end)) {
+            return 'active';
+        }
+        if ($now->lt($start)) {
+            return 'upcoming';
+        }
+
+        return 'finished';
     }
 }
