@@ -32,8 +32,10 @@ class GuruDashboardController extends Controller
             ->sortBy(fn ($s) => $s->timeSlot->start_time)
             ->values();
 
+        $totalClasses = GuruMapelKelas::where('guru_id', auth()->id())->count();
+
         $stats = [
-            'my_classes' => GuruMapelKelas::where('guru_id', auth()->id())->count(),
+            'my_classes' => $totalClasses,
             'total_students' => 0,
             'pending_grades' => 0,
             'attendance_today' => 0,
