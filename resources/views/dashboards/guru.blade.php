@@ -129,35 +129,42 @@
 
         <div class="space-y-3">
         @forelse ($schedules as $schedule)
-            <div class="rounded-lg border border-stroke p-4 dark:border-strokedark">
-                
-                <div class="mb-2 flex items-center justify-between">
-                    <span class="text-sm font-medium text-meta-3">
-                        {{ $schedule->timeSlot->start_time }} - {{ $schedule->timeSlot->end_time }}
-                    </span>
+            <a 
+                href="{{ route('schedules.index', [
+                    'tahun_ajaran_id' => $schedule->tahun_ajaran_id,
+                    'kelas_id' => $schedule->kelas_id,
+                ]) }}"
+                class="block"
+            >
+                <div class="rounded-lg border border-stroke p-4 transition hover:border-primary hover:shadow-md dark:border-strokedark">
+                    
+                    <div class="mb-2 flex items-center justify-between">
+                        <span class="text-sm font-medium text-meta-3">
+                            {{ $schedule->timeSlot->start_time }} - {{ $schedule->timeSlot->end_time }}
+                        </span>
 
-                    @php
-                        $statusColors = [
-                            'active' => 'bg-success text-success',
-                            'upcoming' => 'bg-warning text-warning',
-                            'finished' => 'bg-gray-2 text-gray-600'
-                        ];
-                    @endphp
+                        @php
+                            $statusColors = [
+                                'active' => 'bg-success text-success',
+                                'upcoming' => 'bg-warning text-warning',
+                                'finished' => 'bg-gray-2 text-gray-600'
+                            ];
+                        @endphp
 
-                    <span class="rounded-full bg-opacity-10 px-2.5 py-0.5 text-xs font-medium {{ $statusColors[$schedule->status] }}">
-                        {{ ucfirst($schedule->status) }}
-                    </span>
+                        <span class="rounded-full bg-opacity-10 px-2.5 py-0.5 text-xs font-medium {{ $statusColors[$schedule->status] }}">
+                            {{ ucfirst($schedule->status) }}
+                        </span>
+                    </div>
+
+                    <h5 class="mb-1 font-medium text-black dark:text-white">
+                        {{ $schedule->mataPelajaran->nama }} - {{ $schedule->kelas->nama }}
+                    </h5>
+
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        {{ $schedule->kelas->siswaTahunAjaran->count() }} Students
+                    </p>
                 </div>
-
-                <h5 class="mb-1 font-medium text-black dark:text-white">
-                    {{ $schedule->mataPelajaran->nama }} - {{ $schedule->kelas->nama }}
-                </h5>
-
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                    {{-- Optional extras --}}
-                    Room ??? • {{ $schedule->kelas->siswaTahunAjaran->count() }} Students
-                </p>
-            </div>
+            </a>
         @empty
             <p class="text-gray-500">No schedule for today</p>
         @endforelse
