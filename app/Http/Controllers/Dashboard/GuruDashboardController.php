@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\GuruMapelKelas;
 use App\Models\Schedule;
+use App\Models\SiswaTahunAjaran;
+use App\Models\TahunAjaran;
 use Illuminate\View\View;
 
 class GuruDashboardController extends Controller
@@ -34,9 +36,21 @@ class GuruDashboardController extends Controller
 
         $totalClasses = GuruMapelKelas::where('guru_id', auth()->id())->count();
 
+        $tahunAjaranAktif = TahunAjaran::getAktif();
+
+        $totalSiswa = SiswaTahunAjaran::whereIn(
+            'kelas_id',
+            auth()->user()
+                ->guruMapelKelas
+                ->pluck('kelas_id')
+        )
+            ->where('tahun_ajaran_id', $tahunAjaranAktif->id)
+            ->where('status', 'aktif')
+            ->count();
+
         $stats = [
             'my_classes' => $totalClasses,
-            'total_students' => 0,
+            'total_students' => $totalSiswa,
             'pending_grades' => 0,
             'attendance_today' => 0,
         ];
