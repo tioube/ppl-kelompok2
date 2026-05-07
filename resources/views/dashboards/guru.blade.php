@@ -8,7 +8,7 @@
 
 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
     <a href="{{ route('guru-mapel-kelas.index', absolute: false) }}">
-        <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+        <div class=" transition hover:border-primary hover:shadow-md rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
             <div class="flex items-center justify-between">
                 <div>
                     <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['my_classes'] }}</h4>
@@ -24,7 +24,7 @@
     </a>
 
     <a href="{{ route('siswa.index', absolute: false) }}">
-        <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark h-full">
+        <div class="transition hover:border-primary hover:shadow-md rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark h-full">
             <div class="flex items-center justify-between">
                 <div>
                     <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['total_students'] }}</h4>
@@ -39,7 +39,7 @@
         </div>
     </a>
 
-    <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div class="transition hover:border-primary hover:shadow-md rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
         <div class="flex items-center justify-between">
             <div>
                 <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['pending_grades'] }}</h4>
@@ -53,7 +53,7 @@
         </div>
     </div>
 
-    <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div class="transition hover:border-primary hover:shadow-md rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
         <div class="flex items-center justify-between">
             <div>
                 <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['attendance_today'] }}</h4>
@@ -72,7 +72,7 @@
     <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
         <h3 class="mb-4 text-xl font-semibold text-black dark:text-white">Teaching Tools</h3>
         <div class="space-y-3">
-            <a href="#" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4">
+            <a href="#" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:border-primary hover:shadow-md ">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
                     <svg class="fill-white" width="18" height="18" viewBox="0 0 22 22" fill="none">
                         <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
@@ -84,7 +84,7 @@
                 </div>
             </a>
 
-            <a href="#" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4">
+            <a href="#" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:border-primary hover:shadow-md ">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-meta-3">
                     <svg class="fill-white" width="18" height="18" viewBox="0 0 22 22" fill="none">
                         <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
@@ -96,7 +96,7 @@
                 </div>
             </a>
 
-            <a href="#" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4">
+            <a href="#" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:border-primary hover:shadow-md ">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-meta-5">
                     <svg class="fill-white" width="18" height="18" viewBox="0 0 22 22" fill="none">
                         <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
@@ -108,7 +108,7 @@
                 </div>
             </a>
 
-            <a href="#" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4">
+            <a href="#" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:border-primary hover:shadow-md ">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-warning">
                     <svg class="fill-white" width="18" height="18" viewBox="0 0 22 22" fill="none">
                         <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
