@@ -39,19 +39,21 @@
         </div>
     </a>
 
-    <div class="transition hover:border-primary hover:shadow-md rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div class="flex items-center justify-between">
-            <div>
-                <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['pending_grades'] }}</h4>
-                <span class="text-sm font-medium">Pending Grades</span>
-            </div>
-            <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-warning dark:bg-meta-4">
-                <svg class="fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none">
-                    <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
-                </svg>
+    <a href="{{ route('silabus.index', absolute: false) }}">
+        <div class="transition hover:border-primary hover:shadow-md rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark h-full">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['total_syllabus'] }}</h4>
+                    <span class="text-sm font-medium">Total Silabus</span>
+                </div>
+                <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-warning dark:bg-meta-4">
+                    <svg class="fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                        <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
+                    </svg>
+                </div>
             </div>
         </div>
-    </div>
+    </a>
 
     <div class="transition hover:border-primary hover:shadow-md rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
         <div class="flex items-center justify-between">

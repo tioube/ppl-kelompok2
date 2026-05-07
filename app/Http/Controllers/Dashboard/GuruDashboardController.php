@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\GuruMapelKelas;
 use App\Models\Schedule;
+use App\Models\Silabus;
 use App\Models\SiswaTahunAjaran;
 use App\Models\TahunAjaran;
 use Illuminate\View\View;
@@ -48,10 +49,15 @@ class GuruDashboardController extends Controller
             ->where('status', 'aktif')
             ->count();
 
+        $totalSilabus = Silabus::active()
+            ->approved()
+            ->where('created_by', auth()->id())
+            ->count();
+
         $stats = [
             'my_classes' => $totalClasses,
             'total_students' => $totalSiswa,
-            'pending_grades' => 0,
+            'total_syllabus' => $totalSilabus,
             'attendance_today' => 0,
         ];
 
