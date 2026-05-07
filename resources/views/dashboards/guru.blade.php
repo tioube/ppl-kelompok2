@@ -28,7 +28,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['total_students'] }}</h4>
-                    <span class="text-sm font-medium">My Students</span>
+                    <span class="text-sm font-medium">Total Siswa Saya</span>
                 </div>
                 <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-3 dark:bg-meta-4">
                     <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none">
