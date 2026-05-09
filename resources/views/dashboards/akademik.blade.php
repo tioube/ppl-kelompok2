@@ -6,6 +6,24 @@
     <p class="text-gray-600 dark:text-gray-400">Academic staff management and oversight</p>
 </div>
 
+<div class="mb-6">
+    <a href="{{ route('silabus.index', $stats['need_review_silabus_params']) }}">
+        <div class="transition hover:border-primary hover:shadow-md rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+            <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-yellow-100 dark:bg-yellow-900/30">
+                    <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['need_review_silabus'] }}</h4>
+                    <span class="font-medium">Silabus Yang Butuh Direview</span>
+                </div>
+            </div>
+        </div>
+    </a>
+</div>
+
 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
     <a href="{{ route('siswa.index', absolute: false) }}">
         <div class="transition hover:border-primary hover:shadow-md rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
