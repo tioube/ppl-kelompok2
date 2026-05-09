@@ -7,61 +7,69 @@
 </div>
 
 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
-    <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div class="flex items-center justify-between">
-            <div>
-                <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['total_students'] }}</h4>
-                <span class="text-sm font-medium">Total Students</span>
-            </div>
-            <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
-                <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none">
-                    <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
-                </svg>
+    <a href="{{ route('siswa.index', absolute: false) }}">
+        <div class="transition hover:border-primary hover:shadow-md rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['total_students'] }}</h4>
+                    <span class="text-sm font-medium">Total Siswa</span>
+                </div>
+                <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
+                    <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                        <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
+                    </svg>
+                </div>
             </div>
         </div>
-    </div>
+    </a>
 
-    <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div class="flex items-center justify-between">
-            <div>
-                <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['total_teachers'] }}</h4>
-                <span class="text-sm font-medium">Total Teachers</span>
-            </div>
-            <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-3 dark:bg-meta-4">
-                <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none">
-                    <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
-                </svg>
+    <a href="{{ route('guru.index', absolute: false) }}">
+        <div class="transition hover:border-primary hover:shadow-md rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['total_teachers'] }}</h4>
+                    <span class="text-sm font-medium">Total Guru</span>
+                </div>
+                <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-3 dark:bg-meta-4">
+                    <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                        <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
+                    </svg>
+                </div>
             </div>
         </div>
-    </div>
+    </a>
 
-    <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div class="flex items-center justify-between">
-            <div>
-                <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['total_classes'] }}</h4>
-                <span class="text-sm font-medium">Total Classes</span>
-            </div>
-            <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-5 dark:bg-meta-4">
-                <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none">
-                    <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
-                </svg>
+    <a href="{{ route('kelas.index', absolute: false) }}">
+        <div class="transition hover:border-primary hover:shadow-md rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['total_classes'] }}</h4>
+                    <span class="text-sm font-medium">Total Kelas</span>
+                </div>
+                <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-5 dark:bg-meta-4">
+                    <svg class="fill-primary dark:fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                        <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
+                    </svg>
+                </div>
             </div>
         </div>
-    </div>
+    </a>
 
-    <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div class="flex items-center justify-between">
-            <div>
-                <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['active_academic_year'] }}</h4>
-                <span class="text-sm font-medium">Academic Year</span>
-            </div>
-            <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-warning dark:bg-meta-4">
-                <svg class="fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none">
-                    <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
-                </svg>
+    <a href="{{ route('tahun-ajaran.index', absolute: false) }}">
+        <div class="transition hover:border-primary hover:shadow-md rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="text-xl font-bold text-black dark:text-white">{{ $stats['active_academic_year'] }}</h4>
+                    <span class="text-sm font-medium">Tahun Ajaran Saat Ini</span>
+                </div>
+                <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-warning dark:bg-meta-4">
+                    <svg class="fill-white" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                        <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
+                    </svg>
+                </div>
             </div>
         </div>
-    </div>
+    </a>
 </div>
 
 <div class="grid grid-cols-1 gap-4 md:gap-6 xl:grid-cols-2">
