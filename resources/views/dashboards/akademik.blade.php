@@ -90,79 +90,98 @@
     </a>
 </div>
 
-<div class="grid grid-cols-1 gap-4 md:gap-6 xl:grid-cols-2">
+<div class="gap-4 md:gap-6">
     <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-        <h3 class="mb-4 text-xl font-semibold text-black dark:text-white">Academic Management</h3>
+        <h3 class="mb-4 text-xl font-semibold text-black dark:text-white">Pengolahan Akademik</h3>
         <div class="space-y-3">
-            <a href="#" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4">
+            <a href="{{ route('jurusan.index', absolute: false) }}" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:border-primary hover:shadow-md ">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
                     <svg class="fill-white" width="18" height="18" viewBox="0 0 22 22" fill="none">
                         <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
                     </svg>
                 </div>
                 <div>
-                    <h4 class="font-medium text-black dark:text-white">Manage Classes</h4>
-                    <span class="text-sm">Create and manage class schedules</span>
+                    <h4 class="font-medium text-black dark:text-white">Kelola Jurusan</h4>
+                    <span class="text-sm">Buat dan kelola jurusan</span>
                 </div>
             </a>
-
-            <a href="#" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4">
+            <a href="{{ route('guru-mapel-kelas.index', absolute: false) }}" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:border-primary hover:shadow-md ">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-meta-3">
                     <svg class="fill-white" width="18" height="18" viewBox="0 0 22 22" fill="none">
                         <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
                     </svg>
                 </div>
                 <div>
-                    <h4 class="font-medium text-black dark:text-white">Academic Data</h4>
-                    <span class="text-sm">View and manage academic records</span>
+                    <h4 class="font-medium text-black dark:text-white">Kelola Penugasan Guru</h4>
+                    <span class="text-sm">Buat dan kelola penugasan guru</span>
                 </div>
             </a>
-
-            <a href="#" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4">
+            <a href="{{ route('schedules.index', absolute: false) }}" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:border-primary hover:shadow-md ">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-meta-5">
                     <svg class="fill-white" width="18" height="18" viewBox="0 0 22 22" fill="none">
                         <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
                     </svg>
                 </div>
                 <div>
-                    <h4 class="font-medium text-black dark:text-white">View Grades</h4>
-                    <span class="text-sm">Monitor student performance</span>
+                    <h4 class="font-medium text-black dark:text-white">Lihat Jadwal Pelajaran</h4>
+                    <span class="text-sm">Lihat jadwal pelajaran</span>
                 </div>
             </a>
-
-            <a href="{{ route('users.index') }}" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4">
+            <a href="{{ route('kenaikan-kelas.index', absolute: false) }}" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:border-primary hover:shadow-md ">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-warning">
                     <svg class="fill-white" width="18" height="18" viewBox="0 0 22 22" fill="none">
                         <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
                     </svg>
                 </div>
                 <div>
-                    <h4 class="font-medium text-black dark:text-white">View Users</h4>
-                    <span class="text-sm">View system users</span>
+                    <h4 class="font-medium text-black dark:text-white">Kelola Kenaikan Kelas</h4>
+                    <span class="text-sm">Kelola kenaikan kelas siswa</span>
                 </div>
             </a>
-        </div>
-    </div>
-
-    <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-        <h3 class="mb-4 text-xl font-semibold text-black dark:text-white">Quick Statistics</h3>
-        <div class="space-y-4">
-            <div class="flex items-center justify-between border-b border-stroke pb-3 dark:border-strokedark">
-                <span class="text-sm font-medium">Students Enrolled</span>
-                <span class="text-lg font-bold text-black dark:text-white">{{ $stats['total_students'] }}</span>
-            </div>
-            <div class="flex items-center justify-between border-b border-stroke pb-3 dark:border-strokedark">
-                <span class="text-sm font-medium">Active Teachers</span>
-                <span class="text-lg font-bold text-black dark:text-white">{{ $stats['total_teachers'] }}</span>
-            </div>
-            <div class="flex items-center justify-between border-b border-stroke pb-3 dark:border-strokedark">
-                <span class="text-sm font-medium">Total Classes</span>
-                <span class="text-lg font-bold text-black dark:text-white">{{ $stats['total_classes'] }}</span>
-            </div>
-            <div class="flex items-center justify-between">
-                <span class="text-sm font-medium">Current Year</span>
-                <span class="text-lg font-bold text-success">{{ $stats['active_academic_year'] }}</span>
-            </div>
+            <a href="{{ route('kenaikan-kelas.index', absolute: false) }}" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:border-primary hover:shadow-md ">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-warning">
+                    <svg class="fill-white" width="18" height="18" viewBox="0 0 22 22" fill="none">
+                        <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="font-medium text-black dark:text-white">Kelola Kenaikan Kelas</h4>
+                    <span class="text-sm">Kelola kenaikan kelas siswa</span>
+                </div>
+            </a>
+            <a href="{{ route('mata-pelajaran.index', absolute: false) }}" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:border-primary hover:shadow-md ">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-warning">
+                    <svg class="fill-white" width="18" height="18" viewBox="0 0 22 22" fill="none">
+                        <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="font-medium text-black dark:text-white">Kelola Mata Pelajaran</h4>
+                    <span class="text-sm">Kelola mata pelajaran</span>
+                </div>
+            </a>
+            <a href="{{ route('mata-pelajaran-tahun-ajaran.index', absolute: false) }}" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:border-primary hover:shadow-md ">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-warning">
+                    <svg class="fill-white" width="18" height="18" viewBox="0 0 22 22" fill="none">
+                        <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="font-medium text-black dark:text-white">Kelola Mapel per Tahun Ajaran</h4>
+                    <span class="text-sm">Kelola mata pelajaran per tahun ajaran</span>
+                </div>
+            </a>
+            <a href="{{ route('jurnal-mengajar.index', absolute: false) }}" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:border-primary hover:shadow-md ">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-warning">
+                    <svg class="fill-white" width="18" height="18" viewBox="0 0 22 22" fill="none">
+                        <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="font-medium text-black dark:text-white">Tambah/Edit Jurnal Mengajar</h4>
+                    <span class="text-sm">Kelola jurnal mengajar</span>
+                </div>
+            </a>
         </div>
     </div>
 </div>
