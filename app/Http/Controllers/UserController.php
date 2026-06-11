@@ -12,7 +12,10 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('roles')->paginate(10);
+        $users = User::with('roles')
+            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
 
         return view('users.index', compact('users'));
     }
@@ -99,15 +102,29 @@ class UserController extends Controller
                 $user->roles()->sync($request->roles ?? []);
             }
 
-            if ($request->has('permissions')) {
-                $user->permissions()->sync($request->permissions ?? []);
+            if ($request->has('permissions_submitted')) {
+                $permissionIds = $request->permissions ?? [];
+
+                \Log::info('Updating direct permissions', [
+                    'user_id' => $user->id,
+                    'user_name' => $user->name,
+                    'permission_ids' => $permissionIds,
+                    'previous_permission_count' => $user->permissions()->count(),
+                ]);
+
+                $user->permissions()->sync($permissionIds);
+                $user->load('permissions');
+
+                \Log::info('Direct permissions updated', [
+                    'user_id' => $user->id,
+                    'new_permission_count' => $user->permissions()->count(),
+                    'permission_slugs' => $user->permissions->pluck('slug')->toArray(),
+                ]);
             }
 
-            // Handle revoked permissions - check for the indicator field instead of the array itself
             if ($request->has('revoked_permissions_submitted')) {
                 $revokedPermissionIds = $request->revoked_permissions ?? [];
 
-                // Debug logging
                 \Log::info('Updating revoked permissions', [
                     'user_id' => $user->id,
                     'user_name' => $user->name,
@@ -116,11 +133,8 @@ class UserController extends Controller
                 ]);
 
                 $user->revokedPermissions()->sync($revokedPermissionIds);
-
-                // Force refresh the relationship
                 $user->load('revokedPermissions');
 
-                // Debug logging after sync
                 \Log::info('Revoked permissions updated', [
                     'user_id' => $user->id,
                     'new_revoked_count' => $user->revokedPermissions()->count(),

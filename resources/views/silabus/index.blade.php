@@ -419,7 +419,7 @@
                                         <!-- Actions Dropdown Menu -->
                                         <div id="actionMenu-{{ $item->id }}" class="hidden absolute right-0 z-10 mt-2 w-48 rounded-lg bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-gray-800 dark:ring-gray-700">
                                             <!-- View Action -->
-                                            @can('view', $item)
+                                            @if(auth()->user()->hasPermission('manage-silabus') || auth()->user()->hasPermission('view-silabus'))
                                                 <a href="{{ route('silabus.show', $item) }}"
                                                    class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
                                                     <svg class="h-4 w-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -428,10 +428,10 @@
                                                     </svg>
                                                     Lihat Detail
                                                 </a>
-                                            @endcan
+                                            @endif
 
                                             <!-- Edit Action -->
-                                            @can('update', $item)
+                                            @if(auth()->user()->hasPermission('manage-silabus') || auth()->user()->hasPermission('edit-silabus'))
                                                 @if($item->canBeEdited())
                                                     <a href="{{ route('silabus.edit', $item) }}"
                                                        class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
@@ -441,10 +441,10 @@
                                                         Edit Silabus
                                                     </a>
                                                 @endif
-                                            @endcan
+                                            @endif
 
                                             <!-- Submit for Approval -->
-                                            @can('update', $item)
+                                            @if(auth()->user()->hasPermission('manage-silabus') || auth()->user()->hasPermission('approve-silabus'))
                                                 @if($item->approval_status === 'draft')
                                                     <button type="button"
                                                             onclick="submitForApproval({{ $item->id }})"
@@ -455,10 +455,10 @@
                                                         Ajukan Persetujuan
                                                     </button>
                                                 @endif
-                                            @endcan
+                                            @endif
 
                                             <!-- Approval Actions -->
-                                            @can('approve', $item)
+                                            @if(auth()->user()->hasPermission('manage-silabus') || auth()->user()->hasPermission('approve-silabus'))
                                                 @if($item->approval_status === 'pending_approval')
                                                     <div class="border-t border-gray-100 dark:border-gray-700">
                                                         <button type="button"
@@ -500,10 +500,10 @@
                                                         </button>
                                                     </div>
                                                 @endif
-                                            @endcan
+                                            @endif
 
                                             <!-- Delete Action -->
-                                            @can('delete', $item)
+                                            @if(auth()->user()->hasPermission('manage-silabus') || auth()->user()->hasPermission('delete-silabus'))
                                                 @if($item->canBeDeleted())
                                                     <div class="border-t border-gray-100 dark:border-gray-700">
                                                         <button type="button"
@@ -516,7 +516,7 @@
                                                         </button>
                                                     </div>
                                                 @endif
-                                            @endcan
+                                            @endif
                                         </div>
                                     </div>
                                 </td>
@@ -563,11 +563,18 @@
     </div>
 
     <!-- Reject Modal -->
-    <div id="rejectModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-        <div class="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="hideRejectModal()"></div>
+    <div id="rejectModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <div class="relative overflow-hidden rounded-2xl bg-white p-6 shadow-2xl border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                <!-- Close Button -->
+                <button type="button"
+                        onclick="hideRejectModal()"
+                        class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
 
-            <div class="inline-block w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all dark:bg-gray-800">
                 <div class="flex items-center">
                     <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
                         <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -692,16 +699,37 @@
             filterSection.classList.toggle('hidden');
         }
 
-        // Reject modal
         function showRejectModal(silabusId) {
-            document.getElementById('rejectForm').action = `/silabus/${silabusId}/reject`;
-            document.getElementById('rejectModal').classList.remove('hidden');
-            document.getElementById('rejection_reason').focus();
+            console.log('showRejectModal called with ID:', silabusId);
+
+            const rejectForm = document.getElementById('rejectForm');
+            const rejectModal = document.getElementById('rejectModal');
+            const rejectionReason = document.getElementById('rejection_reason');
+
+            if (!rejectForm || !rejectModal || !rejectionReason) {
+                console.error('Reject modal elements not found');
+                return;
+            }
+
+            rejectForm.action = `/silabus/${silabusId}/reject`;
+            rejectModal.classList.remove('hidden');
+
+            setTimeout(() => {
+                rejectionReason.focus();
+            }, 100);
         }
 
         function hideRejectModal() {
-            document.getElementById('rejectModal').classList.add('hidden');
-            document.getElementById('rejection_reason').value = '';
+            const rejectModal = document.getElementById('rejectModal');
+            const rejectionReason = document.getElementById('rejection_reason');
+
+            if (rejectModal) {
+                rejectModal.classList.add('hidden');
+            }
+
+            if (rejectionReason) {
+                rejectionReason.value = '';
+            }
         }
 
         // Close modals on Escape key
