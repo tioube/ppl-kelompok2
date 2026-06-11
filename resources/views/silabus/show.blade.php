@@ -328,37 +328,65 @@
     </div>
 
     <!-- Reject Modal -->
-    <div id="rejectModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onclick="hideRejectModal()"></div>
+    <div id="rejectModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <div class="relative overflow-hidden rounded-2xl bg-white p-6 shadow-2xl border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                <!-- Close Button -->
+                <button type="button"
+                        onclick="hideRejectModal()"
+                        class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
 
-            <div class="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 shadow-xl rounded-2xl">
-                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white mb-4">
-                    Tolak Silabus
-                </h3>
+                <div class="flex items-center">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+                        <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Tolak Silabus</h3>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            Berikan alasan penolakan yang jelas untuk membantu penulis memperbaiki silabus
+                        </p>
+                    </div>
+                </div>
 
-                <form action="{{ route('silabus.reject', $silabus) }}" method="POST">
+                <form id="rejectForm" action="{{ route('silabus.reject', $silabus) }}" method="POST" class="mt-6">
                     @csrf
+
+                    @if($errors->has('rejection_reason'))
+                        <div class="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-800 dark:bg-red-900/20 dark:text-red-400">
+                            {{ $errors->first('rejection_reason') }}
+                        </div>
+                    @endif
+
                     <div class="mb-4">
-                        <label for="rejection_reason" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label for="rejection_reason" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Alasan Penolakan <span class="text-red-500">*</span>
                         </label>
                         <textarea name="rejection_reason"
                                   id="rejection_reason"
                                   rows="4"
                                   required
-                                  placeholder="Berikan alasan penolakan yang jelas..."
-                                  class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"></textarea>
+                                  minlength="10"
+                                  placeholder="Contoh: Tujuan pembelajaran belum mengikuti format ABCD yang ditetapkan Kemendikbud..."
+                                  class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-red-500 focus:ring-red-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm @error('rejection_reason') border-red-500 @enderror"></textarea>
+                        @error('rejection_reason')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div class="flex justify-end space-x-3">
                         <button type="button"
                                 onclick="hideRejectModal()"
-                                class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
                             Batal
                         </button>
                         <button type="submit"
-                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700">
+                                class="inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700">
                             Tolak Silabus
                         </button>
                     </div>
@@ -370,13 +398,41 @@
     @push('scripts')
     <script>
         function showRejectModal() {
-            document.getElementById('rejectModal').classList.remove('hidden');
-            document.getElementById('rejection_reason').focus();
+            console.log('showRejectModal called');
+
+            const rejectForm = document.getElementById('rejectForm');
+            const rejectModal = document.getElementById('rejectModal');
+            const rejectionReason = document.getElementById('rejection_reason');
+
+            if (!rejectForm || !rejectModal || !rejectionReason) {
+                console.error('Reject modal elements not found');
+                console.log('rejectForm:', rejectForm);
+                console.log('rejectModal:', rejectModal);
+                console.log('rejectionReason:', rejectionReason);
+                return;
+            }
+
+            console.log('Form action:', rejectForm.action);
+            console.log('Form method:', rejectForm.method);
+
+            rejectModal.classList.remove('hidden');
+
+            setTimeout(() => {
+                rejectionReason.focus();
+            }, 100);
         }
 
         function hideRejectModal() {
-            document.getElementById('rejectModal').classList.add('hidden');
-            document.getElementById('rejection_reason').value = '';
+            const rejectModal = document.getElementById('rejectModal');
+            const rejectionReason = document.getElementById('rejection_reason');
+
+            if (rejectModal) {
+                rejectModal.classList.add('hidden');
+            }
+
+            if (rejectionReason) {
+                rejectionReason.value = '';
+            }
         }
 
         // Close modal on Escape key
@@ -384,6 +440,25 @@
             if (event.key === 'Escape') {
                 hideRejectModal();
             }
+        });
+
+        // Add form submission logging
+        document.addEventListener('DOMContentLoaded', function() {
+            const rejectForm = document.getElementById('rejectForm');
+            if (rejectForm) {
+                rejectForm.addEventListener('submit', function(e) {
+                    console.log('Form submitting...');
+                    console.log('Action:', this.action);
+                    console.log('Method:', this.method);
+                    console.log('Rejection reason:', document.getElementById('rejection_reason').value);
+                    // Let the form submit naturally
+                });
+            }
+
+            // Auto-show modal if there are validation errors
+            @if($errors->has('rejection_reason'))
+                showRejectModal();
+            @endif
         });
     </script>
     @endpush
