@@ -78,18 +78,163 @@ class User extends Authenticatable
 
     public function hasPermission(string $permission): bool
     {
-        // First, check if permission is explicitly revoked
         if ($this->hasRevokedPermission($permission)) {
             return false;
         }
 
         return $this->hasPermissionThroughRole($permission) ||
-               $this->hasPermissionDirect($permission);
+               $this->hasPermissionDirect($permission) ||
+               $this->hasPermissionThroughParent($permission);
+    }
+
+    public function hasPermissionThroughParent(string $permission): bool
+    {
+        $parentPermissions = $this->getParentPermissions($permission);
+
+        foreach ($parentPermissions as $parentSlug) {
+            if ($this->hasPermissionThroughRole($parentSlug) || $this->hasPermissionDirect($parentSlug)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function hasRevokedPermission(string $permission): bool
     {
-        return $this->revokedPermissions()->where('slug', $permission)->exists();
+        if ($this->revokedPermissions()->where('slug', $permission)->exists()) {
+            return true;
+        }
+
+        $parentPermissions = $this->getParentPermissions($permission);
+
+        foreach ($parentPermissions as $parentSlug) {
+            if ($this->revokedPermissions()->where('slug', $parentSlug)->exists()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function getParentPermissions(string $permission): array
+    {
+        $permissionHierarchy = [
+            'view-users' => ['manage-users'],
+            'create-users' => ['manage-users'],
+            'edit-users' => ['manage-users'],
+            'delete-users' => ['manage-users'],
+            'manage-roles' => ['manage-users'],
+            'manage-permissions' => ['manage-users'],
+
+            'view-mata-pelajaran' => ['manage-mata-pelajaran'],
+            'create-mata-pelajaran' => ['manage-mata-pelajaran'],
+            'edit-mata-pelajaran' => ['manage-mata-pelajaran'],
+            'delete-mata-pelajaran' => ['manage-mata-pelajaran'],
+
+            'view-silabus' => ['manage-silabus'],
+            'create-silabus' => ['manage-silabus'],
+            'edit-silabus' => ['manage-silabus'],
+            'delete-silabus' => ['manage-silabus'],
+            'approve-silabus' => ['manage-silabus'],
+
+            'view-siswa' => ['manage-siswa'],
+            'create-siswa' => ['manage-siswa'],
+            'edit-siswa' => ['manage-siswa'],
+            'delete-siswa' => ['manage-siswa'],
+
+            'view-guru' => ['manage-guru'],
+            'create-guru' => ['manage-guru'],
+            'edit-guru' => ['manage-guru'],
+            'delete-guru' => ['manage-guru'],
+
+            'view-tahun-ajaran' => ['manage-tahun-ajaran'],
+            'create-tahun-ajaran' => ['manage-tahun-ajaran'],
+            'edit-tahun-ajaran' => ['manage-tahun-ajaran'],
+            'delete-tahun-ajaran' => ['manage-tahun-ajaran'],
+
+            'view-jurusan' => ['manage-jurusan'],
+            'create-jurusan' => ['manage-jurusan'],
+            'edit-jurusan' => ['manage-jurusan'],
+            'delete-jurusan' => ['manage-jurusan'],
+
+            'view-kelas' => ['manage-kelas'],
+            'create-kelas' => ['manage-kelas'],
+            'edit-kelas' => ['manage-kelas'],
+            'delete-kelas' => ['manage-kelas'],
+
+            'view-classes' => ['manage-classes'],
+            'create-classes' => ['manage-classes'],
+            'edit-classes' => ['manage-classes'],
+            'delete-classes' => ['manage-classes'],
+
+            'view-guru-mapel-kelas' => ['manage-guru-mapel-kelas'],
+            'create-guru-mapel-kelas' => ['manage-guru-mapel-kelas'],
+            'edit-guru-mapel-kelas' => ['manage-guru-mapel-kelas'],
+            'delete-guru-mapel-kelas' => ['manage-guru-mapel-kelas'],
+
+            'view-schedules' => ['manage-schedules'],
+            'create-schedules' => ['manage-schedules'],
+            'edit-schedules' => ['manage-schedules'],
+            'delete-schedules' => ['manage-schedules'],
+            'generate-schedules' => ['manage-schedules'],
+            'swap-schedules' => ['manage-schedules'],
+            'move-schedules' => ['manage-schedules'],
+
+            'view-grades' => ['manage-grades'],
+            'view-own-grades' => ['view-grades', 'manage-grades'],
+
+            'view-attendance' => ['manage-attendance'],
+
+            'view-jurnal-mengajar' => ['manage-jurnal-mengajar'],
+            'create-jurnal-mengajar' => ['manage-jurnal-mengajar'],
+            'edit-jurnal-mengajar' => ['manage-jurnal-mengajar'],
+
+            'view-kenaikan-kelas' => ['manage-kenaikan-kelas'],
+
+            'view-mapel-tahun-ajaran' => ['manage-mapel-tahun-ajaran'],
+
+            'view-settings' => ['manage-settings'],
+
+            'view-academic' => ['manage-academic'],
+        ];
+
+        return $permissionHierarchy[$permission] ?? [];
+    }
+
+    public function getChildPermissions(string $parentPermission): array
+    {
+        $childPermissions = [];
+
+        $allPermissions = [
+            'view-users', 'create-users', 'edit-users', 'delete-users', 'manage-roles', 'manage-permissions',
+            'view-mata-pelajaran', 'create-mata-pelajaran', 'edit-mata-pelajaran', 'delete-mata-pelajaran',
+            'view-silabus', 'create-silabus', 'edit-silabus', 'delete-silabus', 'approve-silabus',
+            'view-siswa', 'create-siswa', 'edit-siswa', 'delete-siswa',
+            'view-guru', 'create-guru', 'edit-guru', 'delete-guru',
+            'view-tahun-ajaran', 'create-tahun-ajaran', 'edit-tahun-ajaran', 'delete-tahun-ajaran',
+            'view-jurusan', 'create-jurusan', 'edit-jurusan', 'delete-jurusan',
+            'view-kelas', 'create-kelas', 'edit-kelas', 'delete-kelas',
+            'view-classes', 'create-classes', 'edit-classes', 'delete-classes',
+            'view-guru-mapel-kelas', 'create-guru-mapel-kelas', 'edit-guru-mapel-kelas', 'delete-guru-mapel-kelas',
+            'view-schedules', 'create-schedules', 'edit-schedules', 'delete-schedules', 'generate-schedules', 'swap-schedules', 'move-schedules',
+            'view-grades', 'view-own-grades',
+            'view-attendance',
+            'view-jurnal-mengajar', 'create-jurnal-mengajar', 'edit-jurnal-mengajar',
+            'view-kenaikan-kelas',
+            'view-mapel-tahun-ajaran',
+            'view-settings',
+            'view-academic',
+        ];
+
+        foreach ($allPermissions as $perm) {
+            $parents = $this->getParentPermissions($perm);
+            if (in_array($parentPermission, $parents)) {
+                $childPermissions[] = $perm;
+            }
+        }
+
+        return $childPermissions;
     }
 
     public function hasPermissionThroughRole(string $permission): bool
