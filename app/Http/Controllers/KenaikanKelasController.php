@@ -13,16 +13,15 @@ class KenaikanKelasController extends Controller
 {
     public function __construct(
         private KenaikanKelasService $kenaikanKelasService
-    ) {
-    }
+    ) {}
 
     public function index()
     {
         if (
-            !auth()->user()->hasPermission('manage-kenaikan-kelas') &&
-            !auth()->user()->hasPermission('view-kenaikan-kelas') &&
-            !auth()->user()->hasPermission('process-kenaikan-kelas') &&
-            !auth()->user()->hasPermission('manage-kelulusan')
+            ! auth()->user()->hasPermission('manage-kenaikan-kelas') &&
+            ! auth()->user()->hasPermission('view-kenaikan-kelas') &&
+            ! auth()->user()->hasPermission('process-kenaikan-kelas') &&
+            ! auth()->user()->hasPermission('manage-kelulusan')
         ) {
             abort(403, 'You do not have permission to view class promotion.');
         }
@@ -41,7 +40,7 @@ class KenaikanKelasController extends Controller
 
     public function preview(Request $request)
     {
-        if (!auth()->user()->hasPermission('manage-kenaikan-kelas') && !auth()->user()->hasPermission('process-kenaikan-kelas')) {
+        if (! auth()->user()->hasPermission('manage-kenaikan-kelas') && ! auth()->user()->hasPermission('process-kenaikan-kelas')) {
             abort(403, 'You do not have permission to manage class promotion.');
         }
 
@@ -77,7 +76,7 @@ class KenaikanKelasController extends Controller
 
     public function process(Request $request)
     {
-        if (!auth()->user()->hasPermission('manage-kenaikan-kelas') && !auth()->user()->hasPermission('process-kenaikan-kelas')) {
+        if (! auth()->user()->hasPermission('manage-kenaikan-kelas') && ! auth()->user()->hasPermission('process-kenaikan-kelas')) {
             abort(403, 'You do not have permission to manage class promotion.');
         }
 
@@ -134,7 +133,7 @@ class KenaikanKelasController extends Controller
 
     public function previewLuluskan(Request $request)
     {
-        if (!auth()->user()->hasPermission('manage-kenaikan-kelas') && !auth()->user()->hasPermission('manage-kelulusan')) {
+        if (! auth()->user()->hasPermission('manage-kenaikan-kelas') && ! auth()->user()->hasPermission('manage-kelulusan')) {
             abort(403, 'You do not have permission to manage graduation.');
         }
 
@@ -167,7 +166,7 @@ class KenaikanKelasController extends Controller
 
     public function luluskan(Request $request)
     {
-        if (!auth()->user()->hasPermission('manage-kenaikan-kelas') && !auth()->user()->hasPermission('manage-kelulusan')) {
+        if (! auth()->user()->hasPermission('manage-kenaikan-kelas') && ! auth()->user()->hasPermission('manage-kelulusan')) {
             abort(403, 'You do not have permission to manage graduation.');
         }
 

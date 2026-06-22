@@ -22,7 +22,7 @@ class UserController extends Controller
 
     public function create()
     {
-        if (!auth()->user()->hasPermission('manage-users') && !auth()->user()->hasPermission('create-users')) {
+        if (! auth()->user()->hasPermission('manage-users') && ! auth()->user()->hasPermission('create-users')) {
             abort(403, 'You do not have permission to create users.');
         }
 
@@ -34,7 +34,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        if (!auth()->user()->hasPermission('manage-users') && !auth()->user()->hasPermission('create-users')) {
+        if (! auth()->user()->hasPermission('manage-users') && ! auth()->user()->hasPermission('create-users')) {
             abort(403, 'You do not have permission to create users.');
         }
 
@@ -54,11 +54,11 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        if (!empty($validated['roles'])) {
+        if (! empty($validated['roles'])) {
             $user->roles()->sync($validated['roles']);
         }
 
-        if (!empty($validated['permissions'])) {
+        if (! empty($validated['permissions'])) {
             $user->permissions()->sync($validated['permissions']);
         }
 
@@ -67,7 +67,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        if (!auth()->user()->hasPermission('manage-users') && !auth()->user()->hasPermission('edit-users')) {
+        if (! auth()->user()->hasPermission('manage-users') && ! auth()->user()->hasPermission('edit-users')) {
             abort(403, 'You do not have permission to edit users.');
         }
 
@@ -81,10 +81,10 @@ class UserController extends Controller
         // Collect all permission IDs the user effectively has:
         // direct permissions + permissions from all assigned roles, minus explicit revokes
         $directPermissionIds = $user->permissions->pluck('id')->toArray();
-        $rolePermissionIds = $user->roles->flatMap(fn($role) => $role->permissions->pluck('id'))->unique()->toArray();
+        $rolePermissionIds = $user->roles->flatMap(fn ($role) => $role->permissions->pluck('id'))->unique()->toArray();
         $parentImpliedPermissionSlugs = $permissions
             ->whereIn('id', array_unique(array_merge($directPermissionIds, $rolePermissionIds)))
-            ->flatMap(fn($permission) => $user->getChildPermissions($permission->slug))
+            ->flatMap(fn ($permission) => $user->getChildPermissions($permission->slug))
             ->unique()
             ->values()
             ->all();
@@ -100,13 +100,13 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        if (!auth()->user()->hasPermission('manage-users') && !auth()->user()->hasPermission('edit-users')) {
+        if (! auth()->user()->hasPermission('manage-users') && ! auth()->user()->hasPermission('edit-users')) {
             abort(403, 'You do not have permission to edit users.');
         }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:8|confirmed',
             'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,id',
@@ -121,29 +121,29 @@ class UserController extends Controller
         ]);
 
         if (auth()->user()->isSuperAdmin()) {
-            $roleIds = collect($request->input('roles', []))->map(fn($id) => (int) $id)->all();
+            $roleIds = collect($request->input('roles', []))->map(fn ($id) => (int) $id)->all();
             $user->roles()->sync($roleIds);
 
             if ($request->has('permissions_submitted')) {
                 $selectedPermissionIds = collect($request->input('permissions', []))
-                    ->map(fn($id) => (int) $id)
+                    ->map(fn ($id) => (int) $id)
                     ->unique()
                     ->values();
 
                 $rolePermissionIds = Role::with('permissions')
                     ->whereIn('id', $roleIds)
                     ->get()
-                    ->flatMap(fn($role) => $role->permissions->pluck('id'))
-                    ->map(fn($id) => (int) $id)
+                    ->flatMap(fn ($role) => $role->permissions->pluck('id'))
+                    ->map(fn ($id) => (int) $id)
                     ->unique()
                     ->values();
 
                 $parentImpliedPermissionIds = Permission::whereIn('id', $selectedPermissionIds->all())
                     ->get()
-                    ->flatMap(fn($permission) => $user->getChildPermissions($permission->slug))
+                    ->flatMap(fn ($permission) => $user->getChildPermissions($permission->slug))
                     ->unique()
-                    ->pipe(fn($slugs) => Permission::whereIn('slug', $slugs)->pluck('id'))
-                    ->map(fn($id) => (int) $id)
+                    ->pipe(fn ($slugs) => Permission::whereIn('slug', $slugs)->pluck('id'))
+                    ->map(fn ($id) => (int) $id)
                     ->unique()
                     ->values();
 
@@ -183,7 +183,7 @@ class UserController extends Controller
                 ]);
             } elseif ($request->has('revoked_permissions_submitted')) {
                 $revokedPermissionIds = collect($request->input('revoked_permissions', []))
-                    ->map(fn($id) => (int) $id)
+                    ->map(fn ($id) => (int) $id)
                     ->unique()
                     ->values()
                     ->all();
@@ -197,7 +197,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        if (!auth()->user()->hasPermission('manage-users') && !auth()->user()->hasPermission('delete-users')) {
+        if (! auth()->user()->hasPermission('manage-users') && ! auth()->user()->hasPermission('delete-users')) {
             abort(403, 'You do not have permission to delete users.');
         }
 

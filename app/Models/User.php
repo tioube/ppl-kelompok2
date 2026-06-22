@@ -48,7 +48,7 @@ class User extends Authenticatable
     {
         return Str::of($this->name)
             ->explode(' ')
-            ->map(fn(string $name) => Str::of($name)->substr(0, 1))
+            ->map(fn (string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
     }
 
@@ -396,7 +396,7 @@ class User extends Authenticatable
     public function getCurrentSiswaTahunAjaran(): ?SiswaTahunAjaran
     {
         return $this->siswaTahunAjaran()
-            ->whereHas('tahunAjaran', fn($q) => $q->where('is_active', true))
+            ->whereHas('tahunAjaran', fn ($q) => $q->where('is_active', true))
             ->where('status', 'aktif')
             ->with(['tahunAjaran', 'kelas', 'jurusan'])
             ->first();
