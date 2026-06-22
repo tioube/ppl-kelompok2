@@ -98,6 +98,8 @@ class MenuHelper
                $user->hasPermission('create-jurnal-mengajar') ||
                $user->hasPermission('view-kenaikan-kelas') ||
                $user->hasPermission('manage-kenaikan-kelas') ||
+               $user->hasPermission('process-kenaikan-kelas') ||
+               $user->hasPermission('manage-kelulusan') ||
                $user->hasPermission('view-mapel-tahun-ajaran') ||
                $user->hasPermission('manage-mapel-tahun-ajaran');
     }
@@ -182,7 +184,12 @@ class MenuHelper
             ];
         }
 
-        if ($user->hasPermission('view-kenaikan-kelas') || $user->hasPermission('manage-kenaikan-kelas')) {
+        if (
+            $user->hasPermission('view-kenaikan-kelas') ||
+            $user->hasPermission('manage-kenaikan-kelas') ||
+            $user->hasPermission('process-kenaikan-kelas') ||
+            $user->hasPermission('manage-kelulusan')
+        ) {
             $academicSubItems[] = [
                 'name' => 'Kenaikan Kelas',
                 'path' => route('kenaikan-kelas.index', absolute: false),

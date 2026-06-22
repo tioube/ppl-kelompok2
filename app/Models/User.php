@@ -48,7 +48,7 @@ class User extends Authenticatable
     {
         return Str::of($this->name)
             ->explode(' ')
-            ->map(fn (string $name) => Str::of($name)->substr(0, 1))
+            ->map(fn(string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
     }
 
@@ -83,8 +83,8 @@ class User extends Authenticatable
         }
 
         return $this->hasPermissionThroughRole($permission) ||
-               $this->hasPermissionDirect($permission) ||
-               $this->hasPermissionThroughParent($permission);
+            $this->hasPermissionDirect($permission) ||
+            $this->hasPermissionThroughParent($permission);
     }
 
     public function hasPermissionThroughParent(string $permission): bool
@@ -172,6 +172,8 @@ class User extends Authenticatable
             'create-guru-mapel-kelas' => ['manage-guru-mapel-kelas'],
             'edit-guru-mapel-kelas' => ['manage-guru-mapel-kelas'],
             'delete-guru-mapel-kelas' => ['manage-guru-mapel-kelas'],
+            'generate-guru-mapel-kelas' => ['manage-guru-mapel-kelas'],
+            'clear-guru-mapel-kelas' => ['manage-guru-mapel-kelas'],
 
             'view-schedules' => ['manage-schedules'],
             'create-schedules' => ['manage-schedules'],
@@ -189,8 +191,11 @@ class User extends Authenticatable
             'view-jurnal-mengajar' => ['manage-jurnal-mengajar'],
             'create-jurnal-mengajar' => ['manage-jurnal-mengajar'],
             'edit-jurnal-mengajar' => ['manage-jurnal-mengajar'],
+            'delete-jurnal-mengajar' => ['manage-jurnal-mengajar'],
 
             'view-kenaikan-kelas' => ['manage-kenaikan-kelas'],
+            'process-kenaikan-kelas' => ['manage-kenaikan-kelas'],
+            'manage-kelulusan' => ['manage-kenaikan-kelas'],
 
             'view-mapel-tahun-ajaran' => ['manage-mapel-tahun-ajaran'],
 
@@ -207,21 +212,68 @@ class User extends Authenticatable
         $childPermissions = [];
 
         $allPermissions = [
-            'view-users', 'create-users', 'edit-users', 'delete-users', 'manage-roles', 'manage-permissions',
-            'view-mata-pelajaran', 'create-mata-pelajaran', 'edit-mata-pelajaran', 'delete-mata-pelajaran',
-            'view-silabus', 'create-silabus', 'edit-silabus', 'delete-silabus', 'approve-silabus',
-            'view-siswa', 'create-siswa', 'edit-siswa', 'delete-siswa',
-            'view-guru', 'create-guru', 'edit-guru', 'delete-guru',
-            'view-tahun-ajaran', 'create-tahun-ajaran', 'edit-tahun-ajaran', 'delete-tahun-ajaran',
-            'view-jurusan', 'create-jurusan', 'edit-jurusan', 'delete-jurusan',
-            'view-kelas', 'create-kelas', 'edit-kelas', 'delete-kelas',
-            'view-classes', 'create-classes', 'edit-classes', 'delete-classes',
-            'view-guru-mapel-kelas', 'create-guru-mapel-kelas', 'edit-guru-mapel-kelas', 'delete-guru-mapel-kelas',
-            'view-schedules', 'create-schedules', 'edit-schedules', 'delete-schedules', 'generate-schedules', 'swap-schedules', 'move-schedules',
-            'view-grades', 'view-own-grades',
+            'view-users',
+            'create-users',
+            'edit-users',
+            'delete-users',
+            'manage-roles',
+            'manage-permissions',
+            'view-mata-pelajaran',
+            'create-mata-pelajaran',
+            'edit-mata-pelajaran',
+            'delete-mata-pelajaran',
+            'view-silabus',
+            'create-silabus',
+            'edit-silabus',
+            'delete-silabus',
+            'approve-silabus',
+            'view-siswa',
+            'create-siswa',
+            'edit-siswa',
+            'delete-siswa',
+            'view-guru',
+            'create-guru',
+            'edit-guru',
+            'delete-guru',
+            'view-tahun-ajaran',
+            'create-tahun-ajaran',
+            'edit-tahun-ajaran',
+            'delete-tahun-ajaran',
+            'view-jurusan',
+            'create-jurusan',
+            'edit-jurusan',
+            'delete-jurusan',
+            'view-kelas',
+            'create-kelas',
+            'edit-kelas',
+            'delete-kelas',
+            'view-classes',
+            'create-classes',
+            'edit-classes',
+            'delete-classes',
+            'view-guru-mapel-kelas',
+            'create-guru-mapel-kelas',
+            'edit-guru-mapel-kelas',
+            'delete-guru-mapel-kelas',
+            'generate-guru-mapel-kelas',
+            'clear-guru-mapel-kelas',
+            'view-schedules',
+            'create-schedules',
+            'edit-schedules',
+            'delete-schedules',
+            'generate-schedules',
+            'swap-schedules',
+            'move-schedules',
+            'view-grades',
+            'view-own-grades',
             'view-attendance',
-            'view-jurnal-mengajar', 'create-jurnal-mengajar', 'edit-jurnal-mengajar',
+            'view-jurnal-mengajar',
+            'create-jurnal-mengajar',
+            'edit-jurnal-mengajar',
+            'delete-jurnal-mengajar',
             'view-kenaikan-kelas',
+            'process-kenaikan-kelas',
+            'manage-kelulusan',
             'view-mapel-tahun-ajaran',
             'view-settings',
             'view-academic',
@@ -344,7 +396,7 @@ class User extends Authenticatable
     public function getCurrentSiswaTahunAjaran(): ?SiswaTahunAjaran
     {
         return $this->siswaTahunAjaran()
-            ->whereHas('tahunAjaran', fn ($q) => $q->where('is_active', true))
+            ->whereHas('tahunAjaran', fn($q) => $q->where('is_active', true))
             ->where('status', 'aktif')
             ->with(['tahunAjaran', 'kelas', 'jurusan'])
             ->first();
