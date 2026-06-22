@@ -71,10 +71,18 @@ class UserController extends Controller
             abort(403, 'You do not have permission to edit users.');
         }
 
-        $roles = Role::all();
+        // Eager-load roles (with their permissions) and direct permissions
+        $user->load('roles.permissions', 'permissions', 'revokedPermissions');
+
+        $roles = Role::with('permissions')->get();
         $permissions = Permission::all();
         $userRoles = $user->roles->pluck('id')->toArray();
-        $userPermissions = $user->permissions->pluck('id')->toArray();
+
+        // Collect all permission IDs the user effectively has:
+        // direct permissions + permissions from all assigned roles
+        $directPermissionIds = $user->permissions->pluck('id')->toArray();
+        $rolePermissionIds = $user->roles->flatMap(fn ($role) => $role->permissions->pluck('id'))->unique()->toArray();
+        $userPermissions = array_unique(array_merge($directPermissionIds, $rolePermissionIds));
 
         return view('users.edit', compact('user', 'roles', 'permissions', 'userRoles', 'userPermissions'));
     }
