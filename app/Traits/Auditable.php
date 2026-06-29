@@ -46,7 +46,7 @@ trait Auditable
         $displayName = $this->name ?? $this->nama ?? $this->tahun ?? $this->id;
 
         // Custom description based on activity
-        $description = "";
+        $description = '';
         switch ($activity) {
             case 'create':
                 $description = "Menambahkan {$modelName} baru: '{$displayName}'";
@@ -70,7 +70,7 @@ trait Auditable
             'old_values' => $oldValues,
             'new_values' => $newValues,
             'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent()
+            'user_agent' => request()->userAgent(),
         ]);
     }
 
@@ -78,6 +78,7 @@ trait Auditable
     {
         // Exclude sensitive columns
         $ignore = ['password', 'remember_token', 'created_at', 'updated_at'];
+
         return Arr::except($attributes, $ignore);
     }
 }
