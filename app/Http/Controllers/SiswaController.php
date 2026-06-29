@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Jurusan;
 use App\Models\Kelas;
+use App\Models\Nilai;
 use App\Models\Role;
 use App\Models\SiswaTahunAjaran;
 use App\Models\TahunAjaran;
@@ -182,11 +183,85 @@ class SiswaController extends Controller
             ? $siswa->getSiswaTahunAjaranFor($selectedTahunAjaran)
             : $siswa->getCurrentSiswaTahunAjaran();
 
+        // Fetch all grades for this student
+        $allGrades = Nilai::where('siswa_id', $siswa->id)
+            ->with(['guruMapelKelas.mataPelajaran', 'guruMapelKelas.tahunAjaran', 'silabus'])
+            ->get();
+
+        // Group grades by tahun_ajaran_id, then by mata_pelajaran_id
+        $gradesByYear = [];
+        foreach ($allGrades as $grade) {
+            if (! $grade->guruMapelKelas) {
+                continue;
+            }
+            $yearId = $grade->guruMapelKelas->tahun_ajaran_id;
+            $mapelId = $grade->guruMapelKelas->mata_pelajaran_id;
+            $mapelName = $grade->guruMapelKelas->mataPelajaran->nama ?? 'Unknown';
+            $kategori = $grade->silabus->kategori ?? 'formatif';
+
+            if (! isset($gradesByYear[$yearId])) {
+                $gradesByYear[$yearId] = [];
+            }
+            if (! isset($gradesByYear[$yearId][$mapelId])) {
+                $gradesByYear[$yearId][$mapelId] = [
+                    'name' => $mapelName,
+                    'formatif_scores' => [],
+                    'sumatif_scores' => [],
+                ];
+            }
+
+            if ($kategori === 'formatif') {
+                $gradesByYear[$yearId][$mapelId]['formatif_scores'][] = $grade->nilai;
+            } else {
+                $gradesByYear[$yearId][$mapelId]['sumatif_scores'][] = $grade->nilai;
+            }
+        }
+
+        // Calculate averages for each subject in each year
+        $raportByYear = [];
+        foreach ($gradesByYear as $yearId => $subjects) {
+            $subjectReports = [];
+            $totalYearScore = 0;
+            $subjectCount = 0;
+
+            foreach ($subjects as $mapelId => $data) {
+                $avgFormatif = count($data['formatif_scores']) > 0 ? round(array_sum($data['formatif_scores']) / count($data['formatif_scores']), 1) : null;
+                $avgSumatif = count($data['sumatif_scores']) > 0 ? round(array_sum($data['sumatif_scores']) / count($data['sumatif_scores']), 1) : null;
+
+                if ($avgFormatif !== null && $avgSumatif !== null) {
+                    $finalScore = round(($avgFormatif + $avgSumatif) / 2, 1);
+                } else {
+                    $finalScore = $avgFormatif ?? $avgSumatif ?? null;
+                }
+
+                if ($finalScore !== null) {
+                    $totalYearScore += $finalScore;
+                    $subjectCount++;
+                }
+
+                $subjectReports[] = [
+                    'name' => $data['name'],
+                    'avg_formatif' => $avgFormatif,
+                    'avg_sumatif' => $avgSumatif,
+                    'final_score' => $finalScore,
+                ];
+            }
+
+            // Sort subjects by name
+            usort($subjectReports, fn ($a, $b) => strcmp($a['name'], $b['name']));
+
+            $raportByYear[$yearId] = [
+                'subjects' => $subjectReports,
+                'overall_average' => $subjectCount > 0 ? round($totalYearScore / $subjectCount, 1) : null,
+            ];
+        }
+
         return view('pages.siswa.show', [
             'title' => 'Detail Siswa',
             'siswa' => $siswa,
             'riwayatAkademik' => $riwayatAkademik,
             'currentSiswaTahunAjaran' => $currentSiswaTahunAjaran,
+            'raportByYear' => $raportByYear,
         ]);
     }
 

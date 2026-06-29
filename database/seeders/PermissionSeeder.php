@@ -103,6 +103,9 @@ class PermissionSeeder extends Seeder
             ['name' => 'Manage Grades', 'slug' => 'manage-grades', 'description' => 'Input and edit grades'],
             ['name' => 'View Grades', 'slug' => 'view-grades', 'description' => 'View grades'],
             ['name' => 'View Own Grades', 'slug' => 'view-own-grades', 'description' => 'View own grades only'],
+            ['name' => 'Manage Nilai', 'slug' => 'manage-nilai', 'description' => 'Input dan edit nilai siswa'],
+            ['name' => 'View Nilai', 'slug' => 'view-nilai', 'description' => 'Melihat nilai siswa'],
+            ['name' => 'View Own Nilai', 'slug' => 'view-own-nilai', 'description' => 'Melihat nilai diri sendiri'],
 
             // Attendance Management
             ['name' => 'Manage Attendance', 'slug' => 'manage-attendance', 'description' => 'Manage attendance'],
@@ -159,6 +162,8 @@ class PermissionSeeder extends Seeder
                 'view-schedules',
                 'manage-grades',
                 'view-grades',
+                'manage-nilai',
+                'view-nilai',
                 'manage-attendance',
                 'view-attendance',
                 'view-kenaikan-kelas',
@@ -207,6 +212,8 @@ class PermissionSeeder extends Seeder
                 'view-silabus',
                 'approve-silabus',
                 'view-grades',
+                'manage-nilai',
+                'view-nilai',
                 'view-attendance',
                 'manage-jurnal-mengajar',
                 'view-jurnal-mengajar',
@@ -238,6 +245,8 @@ class PermissionSeeder extends Seeder
                 'view-silabus',
                 'manage-grades',
                 'view-grades',
+                'manage-nilai',
+                'view-nilai',
                 'manage-attendance',
                 'view-attendance',
                 'create-jurnal-mengajar',
@@ -252,6 +261,7 @@ class PermissionSeeder extends Seeder
             $siswaPermissions = Permission::whereIn('slug', [
                 'view-dashboard',
                 'view-own-grades',
+                'view-own-nilai',
                 'view-attendance',
             ])->get();
             $siswa->permissions()->sync($siswaPermissions);
