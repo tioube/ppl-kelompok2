@@ -7,8 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
+use App\Traits\Auditable;
+
 class TahunAjaran extends Model
 {
+    use Auditable;
+
     protected $table = 'tahun_ajaran';
 
     protected $fillable = [

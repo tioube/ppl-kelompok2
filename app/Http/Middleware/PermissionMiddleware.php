@@ -10,7 +10,7 @@ class PermissionMiddleware
 {
     public function handle(Request $request, Closure $next, string ...$permissions): Response
     {
-        if (! auth()->check()) {
+        if (!auth()->check()) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -26,6 +26,6 @@ class PermissionMiddleware
             }
         }
 
-        abort(403, 'You do not have the required permission to access this resource.');
+        abort(403, 'Anda tidak memiliki Akses ke Halaman ini ! ');
     }
 }

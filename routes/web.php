@@ -18,6 +18,7 @@ use App\Http\Controllers\SilabusController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\TahunAjaranController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuditLogController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -291,6 +292,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware('permission:manage-users,delete-users')->group(function () {
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    });
+
+    // Audit Logs Routes
+    Route::middleware('permission:view-audit-logs')->group(function () {
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
     });
 
     // Silabus Routes with Granular Permissions

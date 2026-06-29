@@ -15,6 +15,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'View Dashboard', 'slug' => 'view-dashboard', 'description' => 'Access dashboard'],
             ['name' => 'View Settings', 'slug' => 'view-settings', 'description' => 'View settings'],
             ['name' => 'Manage Settings', 'slug' => 'manage-settings', 'description' => 'Edit system settings'],
+            ['name' => 'View Audit Logs', 'slug' => 'view-audit-logs', 'description' => 'Access audit logs list'],
 
             // User Management
             ['name' => 'Manage Users', 'slug' => 'manage-users', 'description' => 'Full access to user management'],
@@ -162,6 +163,7 @@ class PermissionSeeder extends Seeder
                 'view-attendance',
                 'view-kenaikan-kelas',
                 'view-mapel-tahun-ajaran',
+                'view-audit-logs',
             ])->get();
             $admin->permissions()->sync($adminPermissions);
         }

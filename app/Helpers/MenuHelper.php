@@ -19,19 +19,29 @@ class MenuHelper
     {
         $user = auth()->user();
         $items = [];
+        $subItems = [];
 
-        // User Management submenu
         if ($user && ($user->hasPermission('view-users') || $user->hasPermission('manage-users'))) {
+            $subItems[] = [
+                'name' => 'Users',
+                'path' => route('users.index', absolute: false),
+                'pro' => false,
+            ];
+        }
+
+        if ($user && $user->hasPermission('view-audit-logs')) {
+            $subItems[] = [
+                'name' => 'Audit Logs',
+                'path' => route('audit-logs.index', absolute: false),
+                'pro' => false,
+            ];
+        }
+
+        if (!empty($subItems)) {
             $items[] = [
                 'icon' => 'charts',
                 'name' => 'User Management',
-                'subItems' => [
-                    [
-                        'name' => 'Users',
-                        'path' => route('users.index', absolute: false),
-                        'pro' => false,
-                    ],
-                ],
+                'subItems' => $subItems,
             ];
         }
 
@@ -107,7 +117,8 @@ class MenuHelper
     protected static function canAccessAdministration($user): bool
     {
         return $user->hasPermission('view-users') ||
-               $user->hasPermission('manage-users');
+               $user->hasPermission('manage-users') ||
+               $user->hasPermission('view-audit-logs');
     }
 
     public static function getAcademicManagementItems($user): array

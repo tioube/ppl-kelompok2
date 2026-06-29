@@ -6,8 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+use App\Traits\Auditable;
+
 class MataPelajaran extends Model
 {
+    use Auditable;
+
     protected $table = 'mata_pelajaran';
 
     protected $fillable = [
