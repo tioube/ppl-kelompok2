@@ -79,10 +79,21 @@ class UserController extends Controller
         $userRoles = $user->roles->pluck('id')->toArray();
 
         // Collect all permission IDs the user effectively has:
-        // direct permissions + permissions from all assigned roles
+        // direct permissions + permissions from all assigned roles, minus explicit revokes
         $directPermissionIds = $user->permissions->pluck('id')->toArray();
         $rolePermissionIds = $user->roles->flatMap(fn ($role) => $role->permissions->pluck('id'))->unique()->toArray();
-        $userPermissions = array_unique(array_merge($directPermissionIds, $rolePermissionIds));
+        $parentImpliedPermissionSlugs = $permissions
+            ->whereIn('id', array_unique(array_merge($directPermissionIds, $rolePermissionIds)))
+            ->flatMap(fn ($permission) => $user->getChildPermissions($permission->slug))
+            ->unique()
+            ->values()
+            ->all();
+        $parentImpliedPermissionIds = $permissions
+            ->whereIn('slug', $parentImpliedPermissionSlugs)
+            ->pluck('id')
+            ->toArray();
+        $revokedPermissionIds = $user->revokedPermissions->pluck('id')->toArray();
+        $userPermissions = array_values(array_diff(array_unique(array_merge($directPermissionIds, $rolePermissionIds, $parentImpliedPermissionIds)), $revokedPermissionIds));
 
         return view('users.edit', compact('user', 'roles', 'permissions', 'userRoles', 'userPermissions'));
     }
@@ -97,6 +108,10 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:8|confirmed',
+            'roles' => 'nullable|array',
+            'roles.*' => 'exists:roles,id',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:permissions,id',
         ]);
 
         $user->update([
@@ -106,48 +121,74 @@ class UserController extends Controller
         ]);
 
         if (auth()->user()->isSuperAdmin()) {
-            if ($request->has('roles')) {
-                $user->roles()->sync($request->roles ?? []);
-            }
+            $roleIds = collect($request->input('roles', []))->map(fn ($id) => (int) $id)->all();
+            $user->roles()->sync($roleIds);
 
             if ($request->has('permissions_submitted')) {
-                $permissionIds = $request->permissions ?? [];
+                $selectedPermissionIds = collect($request->input('permissions', []))
+                    ->map(fn ($id) => (int) $id)
+                    ->unique()
+                    ->values();
 
-                \Log::info('Updating direct permissions', [
+                $rolePermissionIds = Role::with('permissions')
+                    ->whereIn('id', $roleIds)
+                    ->get()
+                    ->flatMap(fn ($role) => $role->permissions->pluck('id'))
+                    ->map(fn ($id) => (int) $id)
+                    ->unique()
+                    ->values();
+
+                $parentImpliedPermissionIds = Permission::whereIn('id', $selectedPermissionIds->all())
+                    ->get()
+                    ->flatMap(fn ($permission) => $user->getChildPermissions($permission->slug))
+                    ->unique()
+                    ->pipe(fn ($slugs) => Permission::whereIn('slug', $slugs)->pluck('id'))
+                    ->map(fn ($id) => (int) $id)
+                    ->unique()
+                    ->values();
+
+                $inheritedPermissionIds = $rolePermissionIds
+                    ->merge($parentImpliedPermissionIds)
+                    ->unique()
+                    ->values();
+
+                $directPermissionIds = $selectedPermissionIds
+                    ->diff($inheritedPermissionIds)
+                    ->values()
+                    ->all();
+
+                $revokedPermissionIds = $inheritedPermissionIds
+                    ->diff($selectedPermissionIds)
+                    ->values()
+                    ->all();
+
+                \Log::info('Updating user permissions', [
                     'user_id' => $user->id,
                     'user_name' => $user->name,
-                    'permission_ids' => $permissionIds,
-                    'previous_permission_count' => $user->permissions()->count(),
-                ]);
-
-                $user->permissions()->sync($permissionIds);
-                $user->load('permissions');
-
-                \Log::info('Direct permissions updated', [
-                    'user_id' => $user->id,
-                    'new_permission_count' => $user->permissions()->count(),
-                    'permission_slugs' => $user->permissions->pluck('slug')->toArray(),
-                ]);
-            }
-
-            if ($request->has('revoked_permissions_submitted')) {
-                $revokedPermissionIds = $request->revoked_permissions ?? [];
-
-                \Log::info('Updating revoked permissions', [
-                    'user_id' => $user->id,
-                    'user_name' => $user->name,
+                    'selected_permission_ids' => $selectedPermissionIds->all(),
+                    'direct_permission_ids' => $directPermissionIds,
                     'revoked_permission_ids' => $revokedPermissionIds,
+                    'previous_permission_count' => $user->permissions()->count(),
                     'previous_revoked_count' => $user->revokedPermissions()->count(),
                 ]);
 
+                $user->permissions()->sync($directPermissionIds);
                 $user->revokedPermissions()->sync($revokedPermissionIds);
-                $user->load('revokedPermissions');
+                $user->load('permissions', 'revokedPermissions');
 
-                \Log::info('Revoked permissions updated', [
+                \Log::info('User permissions updated', [
                     'user_id' => $user->id,
-                    'new_revoked_count' => $user->revokedPermissions()->count(),
+                    'direct_permission_slugs' => $user->permissions->pluck('slug')->toArray(),
                     'revoked_permission_slugs' => $user->revokedPermissions->pluck('slug')->toArray(),
                 ]);
+            } elseif ($request->has('revoked_permissions_submitted')) {
+                $revokedPermissionIds = collect($request->input('revoked_permissions', []))
+                    ->map(fn ($id) => (int) $id)
+                    ->unique()
+                    ->values()
+                    ->all();
+
+                $user->revokedPermissions()->sync($revokedPermissionIds);
             }
         }
 

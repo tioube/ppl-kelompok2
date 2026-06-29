@@ -13,8 +13,10 @@
         <!-- User Header Card -->
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center space-x-4">
-                <div class="h-16 w-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xl">
-                    {{ strtoupper(substr($user->name, 0, 2)) }}
+                <div class="h-16 w-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 1114 0H5z" clip-rule="evenodd" />
+                    </svg>
                 </div>
                 <div class="flex-1">
                     <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $user->name }}</h1>
@@ -169,11 +171,13 @@
                         'Schedule Management' => ['manage-jadwal-pelajaran', 'view-jadwal-pelajaran', 'create-jadwal-pelajaran', 'edit-jadwal-pelajaran', 'delete-jadwal-pelajaran', 'manage-schedules', 'view-schedules', 'create-schedules', 'generate-schedules', 'swap-schedules', 'move-schedules'],
                         'Assessment & Grading' => ['manage-grades', 'view-grades', 'view-own-grades'],
                         'Attendance Management' => ['manage-attendance', 'view-attendance'],
+                        'Jurnal Mengajar Management' => ['manage-jurnal-mengajar', 'view-jurnal-mengajar', 'create-jurnal-mengajar', 'edit-jurnal-mengajar', 'delete-jurnal-mengajar'],
+                        'Kenaikan Kelas Management' => ['manage-kenaikan-kelas', 'view-kenaikan-kelas', 'process-kenaikan-kelas', 'manage-kelulusan'],
+                        'Mata Pelajaran Tahun Ajaran Mapping' => ['manage-mapel-tahun-ajaran', 'view-mapel-tahun-ajaran'],
                     ];
-                    $userRevokedPermissions = $user->revokedPermissions->pluck('id')->toArray();
                 @endphp
 
-                <!-- User Permissions Tab (merged: Roles + Direct Permissions + Revoked Access) -->
+                <!-- User Permissions Tab (Roles + Effective Permissions) -->
                 <div id="content-user-permissions" class="tab-content hidden">
 
                     <!-- ── Section 1: Roles ──────────────────────────────────────── -->
@@ -236,7 +240,7 @@
                         </div>
                     </div>
 
-                    <!-- ── Section 2: Direct Permissions ──────────────────────────── -->
+                    <!-- ── Section 2: Effective Permissions ──────────────────────────── -->
                     <div class="border-b border-gray-200 dark:border-gray-700 last:border-b-0 bg-white dark:bg-gray-800">
                         <button type="button" onclick="toggleMainBox('box-direct')" class="w-full flex items-center justify-between p-6 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors text-left focus:outline-none">
                             <div class="flex items-center gap-3">
@@ -246,8 +250,8 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 class="text-base font-semibold text-gray-900 dark:text-white">Direct Permissions</h3>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Grant specific permissions on top of role-based access.</p>
+                                    <h3 class="text-base font-semibold text-gray-900 dark:text-white">Effective Permissions</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Choose the final access this user should have after roles and overrides.</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">
@@ -324,101 +328,11 @@
                             <svg class="h-4 w-4 mt-0.5 flex-shrink-0 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                             </svg>
-                            Direct permissions override role-based permissions and will take priority. Use carefully to avoid security issues.
+                            Unchecked role permissions are saved as explicit revokes, so they stay disabled while the role remains assigned.
                         </div>
                     </div>
 
-                    <!-- ── Section 3: Revoked Access ───────────────────────────────── -->
-                    <div class="border-b border-gray-200 dark:border-gray-700 last:border-b-0 bg-white dark:bg-gray-800">
-                        <button type="button" onclick="toggleMainBox('box-revoked')" class="w-full flex items-center justify-between p-6 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors text-left focus:outline-none">
-                            <div class="flex items-center gap-3">
-                                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/40">
-                                    <svg class="h-4 w-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636"/>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-semibold text-gray-900 dark:text-white">Revoked Access</h3>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Block specific permissions even if granted via a role.</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <span id="revoked-counter-badge" class="inline-flex items-center rounded-full bg-red-100 dark:bg-red-900/40 px-2.5 py-0.5 text-xs font-medium text-red-700 dark:text-red-400">0 revoked</span>
-                                <svg id="box-revoked-icon" class="h-5 w-5 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                                </svg>
-                            </div>
-                        </button>
-
-                        <div id="box-revoked" class="hidden px-6 pb-6 pt-2 space-y-1.5">
-                            @foreach($permissionCategories as $category => $slugs)
-                                @php
-                                    $categoryPermissions = $permissions->whereIn('slug', $slugs);
-                                    $catSlug = Str::slug($category);
-                                    $revokedCount = $categoryPermissions->filter(fn($p) => in_array($p->id, $userRevokedPermissions))->count();
-                                @endphp
-
-                                @if($categoryPermissions->count() > 0)
-                                    <div class="rounded-lg border border-red-200 dark:border-red-800/60 overflow-hidden bg-gray-50/30 dark:bg-gray-800" data-category-revoked="{{ $catSlug }}">
-                                        <!-- Collapsible Header -->
-                                        <button type="button"
-                                            onclick="toggleAccordion('revoked-{{ $catSlug }}')"
-                                            class="w-full flex items-center justify-between bg-red-50/60 dark:bg-red-900/20 px-4 py-2.5 text-left hover:bg-red-100/60 dark:hover:bg-red-900/30 transition-colors">
-                                            <div class="flex items-center gap-2">
-                                                <svg id="revoked-{{ $catSlug }}-icon" class="h-3.5 w-3.5 text-red-400 transition-transform duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                                                </svg>
-                                                <span class="text-xs font-semibold uppercase tracking-wide text-red-700 dark:text-red-400">{{ $category }}</span>
-                                            </div>
-                                            <div class="flex items-center gap-2 flex-shrink-0">
-                                                <span class="revoked-cat-badge-{{ $catSlug }} hidden inline-flex items-center rounded-full bg-red-100 dark:bg-red-900/40 px-2.5 py-0.5 text-xs font-medium text-red-700 dark:text-red-400">0 off</span>
-                                                <span class="text-xs text-red-400">{{ $categoryPermissions->count() }}</span>
-                                            </div>
-                                        </button>
-                                        <!-- Collapsible Body -->
-                                        <div id="revoked-{{ $catSlug }}" class="hidden border-t border-red-100 dark:border-red-800/40 bg-white dark:bg-gray-800">
-                                            <div class="px-4 pt-2 pb-1 flex gap-3 text-xs border-b border-red-50 dark:border-red-900/20">
-                                                <button type="button" onclick="selectAllRevoked('{{ $catSlug }}')" class="text-red-600 hover:text-red-700 dark:text-red-400 font-medium py-1">Revoke All</button>
-                                                <span class="text-red-300 dark:text-red-700">|</span>
-                                                <button type="button" onclick="selectNoneRevoked('{{ $catSlug }}')" class="text-red-500 hover:text-red-600 dark:text-red-400 font-medium py-1">Restore All</button>
-                                            </div>
-                                            <div class="p-3 flex flex-wrap gap-2">
-                                                @foreach($categoryPermissions as $permission)
-                                                    <div class="relative">
-                                                        <input
-                                                            type="checkbox"
-                                                            name="revoked_permissions[]"
-                                                            value="{{ $permission->id }}"
-                                                            id="revoked_permission_{{ $permission->id }}"
-                                                            {{ in_array($permission->id, $userRevokedPermissions) ? 'checked' : '' }}
-                                                            class="sr-only peer revoked-checkbox"
-                                                            data-slug="{{ $permission->slug }}"
-                                                            data-category="{{ $catSlug }}"
-                                                        >
-                                                        <label for="revoked_permission_{{ $permission->id }}"
-                                                            class="flex cursor-pointer items-center gap-1.5 rounded-full border border-red-200 dark:border-red-700/60 px-3 py-1 text-xs font-medium text-red-700 dark:text-red-300
-                                                                   hover:border-red-400 dark:hover:border-red-500
-                                                                   peer-checked:border-red-500 peer-checked:bg-red-500 peer-checked:text-white
-                                                                   dark:peer-checked:bg-red-600 dark:peer-checked:border-green-600
-                                                                   transition-all select-none whitespace-nowrap">
-                                                            {{ $permission->name }}
-                                                        </label>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                            @endforeach
-                        </div>
-
-                        <div class="mt-4 flex items-start gap-2 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 px-4 py-3 text-sm text-red-700 dark:text-red-400">
-                            <svg class="h-4 w-4 mt-0.5 flex-shrink-0 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                            </svg>
-                            Revoked permissions deny access even if the user has the permission through their role. This overrides all other grants and will hide related menus.
-                        </div>
-                    </div>
+                    
                 </div>
                 @endsuperadmin
 

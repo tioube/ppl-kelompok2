@@ -178,21 +178,21 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Kenaikan Kelas Routes
-    Route::middleware('permission:manage-kenaikan-kelas,view-kenaikan-kelas')->group(function () {
-        Route::get('/kenaikan-kelas', [KenaikanKelasController::class, 'index'])->name('kenaikan-kelas.index');
-        Route::post('/kenaikan-kelas/preview', [KenaikanKelasController::class, 'preview'])
-            ->middleware('permission:manage-kenaikan-kelas,process-kenaikan-kelas')
-            ->name('kenaikan-kelas.preview');
-        Route::post('/kenaikan-kelas/process', [KenaikanKelasController::class, 'process'])
-            ->middleware('permission:manage-kenaikan-kelas,process-kenaikan-kelas')
-            ->name('kenaikan-kelas.process');
-        Route::post('/kenaikan-kelas/preview-luluskan', [KenaikanKelasController::class, 'previewLuluskan'])
-            ->middleware('permission:manage-kenaikan-kelas,manage-kelulusan')
-            ->name('kenaikan-kelas.preview-luluskan');
-        Route::post('/kenaikan-kelas/luluskan', [KenaikanKelasController::class, 'luluskan'])
-            ->middleware('permission:manage-kenaikan-kelas,manage-kelulusan')
-            ->name('kenaikan-kelas.luluskan');
-    });
+    Route::get('/kenaikan-kelas', [KenaikanKelasController::class, 'index'])
+        ->middleware('permission:manage-kenaikan-kelas,view-kenaikan-kelas,process-kenaikan-kelas,manage-kelulusan')
+        ->name('kenaikan-kelas.index');
+    Route::post('/kenaikan-kelas/preview', [KenaikanKelasController::class, 'preview'])
+        ->middleware('permission:manage-kenaikan-kelas,process-kenaikan-kelas')
+        ->name('kenaikan-kelas.preview');
+    Route::post('/kenaikan-kelas/process', [KenaikanKelasController::class, 'process'])
+        ->middleware('permission:manage-kenaikan-kelas,process-kenaikan-kelas')
+        ->name('kenaikan-kelas.process');
+    Route::post('/kenaikan-kelas/preview-luluskan', [KenaikanKelasController::class, 'previewLuluskan'])
+        ->middleware('permission:manage-kenaikan-kelas,manage-kelulusan')
+        ->name('kenaikan-kelas.preview-luluskan');
+    Route::post('/kenaikan-kelas/luluskan', [KenaikanKelasController::class, 'luluskan'])
+        ->middleware('permission:manage-kenaikan-kelas,manage-kelulusan')
+        ->name('kenaikan-kelas.luluskan');
 
     // Mata Pelajaran Tahun Ajaran Mapping Routes
     Route::middleware('permission:manage-mapel-tahun-ajaran,view-mapel-tahun-ajaran')->group(function () {
