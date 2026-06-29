@@ -112,7 +112,7 @@
 
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div class="md:col-span-2">
-                        <label for="photo_profile" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+                        <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                             Foto Profil
                         </label>
                         @if($siswa->photo_profile)
@@ -120,8 +120,16 @@
                                 <img src="{{ Storage::url($siswa->photo_profile) }}" alt="{{ $siswa->name }}" class="h-24 w-24 rounded-full object-cover">
                             </div>
                         @endif
-                        <input type="file" name="photo_profile" id="photo_profile" accept="image/*"
-                            class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-700 dark:bg-gray-800 dark:text-white @error('photo_profile') border-red-500 @enderror">
+                        <label for="photo_profile"
+                            class="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 focus-within:ring-4 focus-within:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus-within:ring-blue-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12V4m0 0L8 8m4-4l4 4" />
+                            </svg>
+                            Pilih Foto
+                            <input type="file" name="photo_profile" id="photo_profile" accept="image/*" class="sr-only">
+                        </label>
+                        <span id="photo_filename" class="ml-3 text-sm text-gray-500 dark:text-gray-400">Belum ada file dipilih</span>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: JPG, JPEG, PNG. Maksimal 2MB. Kosongkan jika tidak ingin mengubah foto.</p>
                         @error('photo_profile')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                         @enderror
@@ -162,12 +170,25 @@
 
                     <div>
                         <label for="password" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-                            Password
+                            Password Baru
                         </label>
                         <input type="password" name="password" id="password"
                             placeholder="Kosongkan jika tidak ingin mengubah"
                             class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-700 dark:bg-gray-800 dark:text-white @error('password') border-red-500 @enderror">
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Kosongkan jika tidak ingin mengubah password</p>
                         @error('password')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="password_confirmation" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+                            Konfirmasi Password Baru
+                        </label>
+                        <input type="password" name="password_confirmation" id="password_confirmation"
+                            placeholder="Ulangi password baru"
+                            class="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 focus:border-primary focus:ring-primary dark:border-gray-700 dark:bg-gray-800 dark:text-white @error('password_confirmation') border-red-500 @enderror">
+                        @error('password_confirmation')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                         @enderror
                     </div>
@@ -323,4 +344,11 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.getElementById('photo_profile').addEventListener('change', function () {
+            const filename = this.files.length > 0 ? this.files[0].name : 'Belum ada file dipilih';
+            document.getElementById('photo_filename').textContent = filename;
+        });
+    </script>
 @endsection

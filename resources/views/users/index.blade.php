@@ -55,8 +55,10 @@
                             <tr class="border-b border-gray-100 dark:border-gray-800">
                                 <td class="px-5 py-4 sm:px-6">
                                     <div class="flex items-center gap-3">
-                                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-                                            <span class="font-medium text-gray-700 dark:text-gray-300">{{ $user->initials() }}</span>
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 1114 0H5z" clip-rule="evenodd" />
+                                            </svg>
                                         </div>
                                         <p class="font-medium text-gray-900 dark:text-white">{{ $user->name }}</p>
                                     </div>

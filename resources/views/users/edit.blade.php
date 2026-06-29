@@ -13,8 +13,10 @@
         <!-- User Header Card -->
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center space-x-4">
-                <div class="h-16 w-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xl">
-                    {{ strtoupper(substr($user->name, 0, 2)) }}
+                <div class="h-16 w-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 1114 0H5z" clip-rule="evenodd" />
+                    </svg>
                 </div>
                 <div class="flex-1">
                     <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $user->name }}</h1>

@@ -123,6 +123,26 @@ class MataPelajaranController extends Controller
             'preferred_block' => 'required|integer|min:1|max:3',
             'max_per_day' => 'required|integer|min:1|max:5',
             'deskripsi' => 'nullable|string',
+        ], [
+            'kode.required' => 'Kode mata pelajaran wajib diisi.',
+            'kode.max' => 'Kode tidak boleh lebih dari 20 karakter.',
+            'kode.unique' => 'Kode mata pelajaran sudah terdaftar, gunakan kode lain.',
+            'nama.required' => 'Nama mata pelajaran wajib diisi.',
+            'nama.max' => 'Nama tidak boleh lebih dari 255 karakter.',
+            'kategori.required' => 'Kategori wajib dipilih.',
+            'kategori.in' => 'Kategori harus berupa Wajib, Peminatan, atau Lintas Minat.',
+            'jam_pelajaran.required' => 'Jam pelajaran wajib diisi.',
+            'jam_pelajaran.integer' => 'Jam pelajaran harus berupa angka.',
+            'jam_pelajaran.min' => 'Jam pelajaran minimal 1 jam.',
+            'jam_pelajaran.max' => 'Jam pelajaran maksimal 20 jam.',
+            'preferred_block.required' => 'Blok preferensi wajib diisi.',
+            'preferred_block.integer' => 'Blok preferensi harus berupa angka.',
+            'preferred_block.min' => 'Blok preferensi minimal 1.',
+            'preferred_block.max' => 'Blok preferensi maksimal 3.',
+            'max_per_day.required' => 'Maksimal per hari wajib diisi.',
+            'max_per_day.integer' => 'Maksimal per hari harus berupa angka.',
+            'max_per_day.min' => 'Maksimal per hari minimal 1.',
+            'max_per_day.max' => 'Maksimal per hari tidak boleh lebih dari 5.',
         ]);
 
         MataPelajaran::create($validated);
@@ -149,6 +169,26 @@ class MataPelajaranController extends Controller
             'preferred_block' => 'required|integer|min:1|max:3',
             'max_per_day' => 'required|integer|min:1|max:5',
             'deskripsi' => 'nullable|string',
+        ], [
+            'kode.required' => 'Kode mata pelajaran wajib diisi.',
+            'kode.max' => 'Kode tidak boleh lebih dari 20 karakter.',
+            'kode.unique' => 'Kode mata pelajaran sudah terdaftar, gunakan kode lain.',
+            'nama.required' => 'Nama mata pelajaran wajib diisi.',
+            'nama.max' => 'Nama tidak boleh lebih dari 255 karakter.',
+            'kategori.required' => 'Kategori wajib dipilih.',
+            'kategori.in' => 'Kategori harus berupa Wajib, Peminatan, atau Lintas Minat.',
+            'jam_pelajaran.required' => 'Jam pelajaran wajib diisi.',
+            'jam_pelajaran.integer' => 'Jam pelajaran harus berupa angka.',
+            'jam_pelajaran.min' => 'Jam pelajaran minimal 1 jam.',
+            'jam_pelajaran.max' => 'Jam pelajaran maksimal 20 jam.',
+            'preferred_block.required' => 'Blok preferensi wajib diisi.',
+            'preferred_block.integer' => 'Blok preferensi harus berupa angka.',
+            'preferred_block.min' => 'Blok preferensi minimal 1.',
+            'preferred_block.max' => 'Blok preferensi maksimal 3.',
+            'max_per_day.required' => 'Maksimal per hari wajib diisi.',
+            'max_per_day.integer' => 'Maksimal per hari harus berupa angka.',
+            'max_per_day.min' => 'Maksimal per hari minimal 1.',
+            'max_per_day.max' => 'Maksimal per hari tidak boleh lebih dari 5.',
         ]);
 
         $mataPelajaran->update($validated);

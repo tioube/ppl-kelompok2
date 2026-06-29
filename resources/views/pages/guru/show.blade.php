@@ -21,11 +21,19 @@
             <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
                 <div class="text-center">
                     @if($guru->photo_profile)
-                        <img src="{{ Storage::url($guru->photo_profile) }}" alt="{{ $guru->name }}"
-                             class="mx-auto h-32 w-32 rounded-full object-cover">
+                        <img src="{{ Storage::url($guru->photo_profile) }}" alt="Foto {{ $guru->name }}"
+                             class="mx-auto h-32 w-32 rounded-full object-cover"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="hidden mx-auto h-32 w-32 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                                <path fill-rule="evenodd" d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 1114 0H5z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
                     @else
-                        <div class="mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-                            <span class="text-4xl font-medium text-green-800 dark:text-green-400">{{ substr($guru->name, 0, 1) }}</span>
+                        <div class="mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                                <path fill-rule="evenodd" d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 1114 0H5z" clip-rule="evenodd" />
+                            </svg>
                         </div>
                     @endif
 

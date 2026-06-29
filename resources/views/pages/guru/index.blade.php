@@ -58,10 +58,19 @@
                                 <td class="px-5 py-4 sm:px-6">
                                     <div class="flex items-center gap-3">
                                         @if($guru->photo_profile)
-                                            <img src="{{ Storage::url($guru->photo_profile) }}" alt="{{ $guru->name }}" class="h-10 w-10 rounded-full object-cover">
+                                            <img src="{{ Storage::url($guru->photo_profile) }}" alt="Foto {{ $guru->name }}"
+                                                class="h-10 w-10 rounded-full object-cover flex-shrink-0"
+                                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            <div class="hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 1114 0H5z" clip-rule="evenodd" />
+                                                </svg>
+                                            </div>
                                         @else
-                                            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-                                                <span class="font-medium text-green-800 dark:text-green-400">{{ substr($guru->name, 0, 1) }}</span>
+                                            <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 1114 0H5z" clip-rule="evenodd" />
+                                                </svg>
                                             </div>
                                         @endif
                                         <div>
