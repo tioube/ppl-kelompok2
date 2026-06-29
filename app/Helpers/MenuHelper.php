@@ -81,44 +81,47 @@ class MenuHelper
     protected static function canAccessAcademicManagement($user): bool
     {
         return $user->hasPermission('view-mata-pelajaran') ||
-               $user->hasPermission('manage-mata-pelajaran') ||
-               $user->hasPermission('view-silabus') ||
-               $user->hasPermission('manage-silabus') ||
-               $user->hasPermission('create-silabus') ||
-               $user->hasPermission('edit-silabus') ||
-               $user->hasPermission('approve-silabus') ||
-               $user->hasPermission('view-siswa') ||
-               $user->hasPermission('manage-siswa') ||
-               $user->hasPermission('view-guru') ||
-               $user->hasPermission('manage-guru') ||
-               $user->hasPermission('view-tahun-ajaran') ||
-               $user->hasPermission('manage-tahun-ajaran') ||
-               $user->hasPermission('view-jurusan') ||
-               $user->hasPermission('manage-jurusan') ||
-               $user->hasPermission('view-kelas') ||
-               $user->hasPermission('manage-kelas') ||
-               $user->hasPermission('view-classes') ||
-               $user->hasPermission('manage-classes') ||
-               $user->hasPermission('view-guru-mapel-kelas') ||
-               $user->hasPermission('manage-guru-mapel-kelas') ||
-               $user->hasPermission('view-schedules') ||
-               $user->hasPermission('manage-schedules') ||
-               $user->hasPermission('view-jurnal-mengajar') ||
-               $user->hasPermission('manage-jurnal-mengajar') ||
-               $user->hasPermission('create-jurnal-mengajar') ||
-               $user->hasPermission('view-kenaikan-kelas') ||
-               $user->hasPermission('manage-kenaikan-kelas') ||
-               $user->hasPermission('process-kenaikan-kelas') ||
-               $user->hasPermission('manage-kelulusan') ||
-               $user->hasPermission('view-mapel-tahun-ajaran') ||
-               $user->hasPermission('manage-mapel-tahun-ajaran');
+            $user->hasPermission('manage-mata-pelajaran') ||
+            $user->hasPermission('view-silabus') ||
+            $user->hasPermission('manage-silabus') ||
+            $user->hasPermission('create-silabus') ||
+            $user->hasPermission('edit-silabus') ||
+            $user->hasPermission('approve-silabus') ||
+            $user->hasPermission('view-siswa') ||
+            $user->hasPermission('manage-siswa') ||
+            $user->hasPermission('view-guru') ||
+            $user->hasPermission('manage-guru') ||
+            $user->hasPermission('view-tahun-ajaran') ||
+            $user->hasPermission('manage-tahun-ajaran') ||
+            $user->hasPermission('view-jurusan') ||
+            $user->hasPermission('manage-jurusan') ||
+            $user->hasPermission('view-kelas') ||
+            $user->hasPermission('manage-kelas') ||
+            $user->hasPermission('view-classes') ||
+            $user->hasPermission('manage-classes') ||
+            $user->hasPermission('view-guru-mapel-kelas') ||
+            $user->hasPermission('manage-guru-mapel-kelas') ||
+            $user->hasPermission('view-schedules') ||
+            $user->hasPermission('manage-schedules') ||
+            $user->hasPermission('view-jurnal-mengajar') ||
+            $user->hasPermission('manage-jurnal-mengajar') ||
+            $user->hasPermission('create-jurnal-mengajar') ||
+            $user->hasPermission('view-kenaikan-kelas') ||
+            $user->hasPermission('manage-kenaikan-kelas') ||
+            $user->hasPermission('process-kenaikan-kelas') ||
+            $user->hasPermission('manage-kelulusan') ||
+            $user->hasPermission('view-mapel-tahun-ajaran') ||
+            $user->hasPermission('manage-mapel-tahun-ajaran') ||
+            $user->hasPermission('view-nilai') ||
+            $user->hasPermission('manage-nilai') ||
+            $user->hasPermission('view-own-nilai');
     }
 
     protected static function canAccessAdministration($user): bool
     {
         return $user->hasPermission('view-users') ||
-               $user->hasPermission('manage-users') ||
-               $user->hasPermission('view-audit-logs');
+            $user->hasPermission('manage-users') ||
+            $user->hasPermission('view-audit-logs');
     }
 
     public static function getAcademicManagementItems($user): array
@@ -218,6 +221,27 @@ class MenuHelper
             $academicSubItems[] = [
                 'name' => 'Jurnal Mengajar',
                 'path' => route('jurnal-mengajar.index', absolute: false),
+            ];
+        }
+
+        if ($user->hasPermission('view-nilai') || $user->hasPermission('manage-nilai')) {
+            $academicSubItems[] = [
+                'name' => 'Input Nilai',
+                'path' => route('nilai.create', absolute: false),
+            ];
+        }
+
+        if ($user->hasPermission('view-nilai')) {
+            $academicSubItems[] = [
+                'name' => 'Daftar Nilai Siswa',
+                'path' => route('nilai.index', absolute: false),
+            ];
+        }
+
+        if ($user->hasPermission('view-own-nilai')) {
+            $academicSubItems[] = [
+                'name' => 'Daftar Nilai',
+                'path' => route('nilai.siswa', absolute: false),
             ];
         }
 

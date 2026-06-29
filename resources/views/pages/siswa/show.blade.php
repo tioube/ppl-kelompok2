@@ -251,6 +251,90 @@
                     </div>
                 </div>
                 @endif
+
+                <!-- Mini Raport Tahunan (Ringkasan Hasil Belajar) -->
+                @if(isset($raportByYear) && count($raportByYear) > 0)
+                <div class="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50/20 dark:bg-gray-800/10">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Ringkasan Hasil Belajar (Mini Rapor)</h3>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Ringkasan nilai per tahun ajaran</p>
+                    </div>
+
+                    <div class="p-6 space-y-6">
+                        @foreach($riwayatAkademik as $riwayat)
+                            @php
+                                $yearId = $riwayat->tahun_ajaran_id;
+                                $yearRaport = $raportByYear[$yearId] ?? null;
+                            @endphp
+
+                            @if($yearRaport)
+                            <div class="border border-gray-200 dark:border-gray-800 rounded-xl p-4 space-y-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-gray-100 dark:border-gray-800 pb-3">
+                                    <div>
+                                        <h4 class="text-sm font-bold text-gray-900 dark:text-white">
+                                            Tahun Ajaran: {{ $riwayat->tahunAjaran->tahun }} 
+                                            <span class="text-gray-400 font-normal">| Kelas {{ $riwayat->kelas->nama ?? '-' }}</span>
+                                        </h4>
+                                    </div>
+                                    @if($yearRaport['overall_average'] !== null)
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs font-semibold text-gray-500">Rata-rata Umum:</span>
+                                        <span class="inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">
+                                            {{ $yearRaport['overall_average'] }}
+                                        </span>
+                                    </div>
+                                    @endif
+                                </div>
+
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-xs text-left">
+                                        <thead>
+                                            <tr class="border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">
+                                                <th class="py-2 w-12">No</th>
+                                                <th class="py-2">Mata Pelajaran</th>
+                                                <th class="py-2 text-center w-32">Rerata Formatif</th>
+                                                <th class="py-2 text-center w-32">Rerata Sumatif</th>
+                                                <th class="py-2 text-center w-28">Nilai Akhir</th>
+                                                <th class="py-2 text-center w-32">Ketuntasan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-100 dark:divide-gray-800/50">
+                                            @foreach($yearRaport['subjects'] as $index => $subject)
+                                            <tr class="hover:bg-gray-50/30 dark:hover:bg-gray-800/10">
+                                                <td class="py-2.5 font-medium text-gray-500">{{ $index + 1 }}</td>
+                                                <td class="py-2.5 font-semibold text-gray-900 dark:text-white">{{ $subject['name'] }}</td>
+                                                <td class="py-2.5 text-center font-medium text-gray-700 dark:text-gray-300">
+                                                    {{ $subject['avg_formatif'] ?? '-' }}
+                                                </td>
+                                                <td class="py-2.5 text-center font-medium text-gray-700 dark:text-gray-300">
+                                                    {{ $subject['avg_sumatif'] ?? '-' }}
+                                                </td>
+                                                <td class="py-2.5 text-center font-bold">
+                                                    <span class="{{ $subject['final_score'] !== null ? ($subject['final_score'] >= 75 ? 'text-green-600 dark:text-green-400' : 'text-rose-600 dark:text-rose-400') : 'text-gray-400' }}">
+                                                        {{ $subject['final_score'] ?? '-' }}
+                                                    </span>
+                                                </td>
+                                                <td class="py-2.5 text-center">
+                                                    @if($subject['final_score'] !== null)
+                                                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold
+                                                            {{ $subject['final_score'] >= 75 ? 'bg-green-50 text-green-700 dark:bg-green-950/20 dark:text-green-400' : 'bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400' }}">
+                                                            {{ $subject['final_score'] >= 75 ? 'TUNTAS' : 'REMEDIAL' }}
+                                                        </span>
+                                                    @else
+                                                        <span class="text-gray-400">-</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
     </div>

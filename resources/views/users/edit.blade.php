@@ -169,7 +169,7 @@
                         'Teacher Management' => ['manage-guru', 'view-guru', 'create-guru', 'edit-guru', 'delete-guru'],
                         'Teacher-Subject-Class Management' => ['manage-guru-mapel-kelas', 'view-guru-mapel-kelas', 'create-guru-mapel-kelas', 'edit-guru-mapel-kelas', 'delete-guru-mapel-kelas', 'generate-guru-mapel-kelas', 'clear-guru-mapel-kelas'],
                         'Schedule Management' => ['manage-jadwal-pelajaran', 'view-jadwal-pelajaran', 'create-jadwal-pelajaran', 'edit-jadwal-pelajaran', 'delete-jadwal-pelajaran', 'manage-schedules', 'view-schedules', 'create-schedules', 'generate-schedules', 'swap-schedules', 'move-schedules'],
-                        'Assessment & Grading' => ['manage-grades', 'view-grades', 'view-own-grades'],
+                        'Assessment & Grading' => ['manage-nilai', 'view-nilai', 'view-own-nilai'],
                         'Attendance Management' => ['manage-attendance', 'view-attendance'],
                         'Jurnal Mengajar Management' => ['manage-jurnal-mengajar', 'view-jurnal-mengajar', 'create-jurnal-mengajar', 'edit-jurnal-mengajar', 'delete-jurnal-mengajar'],
                         'Kenaikan Kelas Management' => ['manage-kenaikan-kelas', 'view-kenaikan-kelas', 'process-kenaikan-kelas', 'manage-kelulusan'],

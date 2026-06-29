@@ -186,6 +186,8 @@ class User extends Authenticatable
 
             'view-grades' => ['manage-grades'],
             'view-own-grades' => ['view-grades', 'manage-grades'],
+            'view-nilai' => ['manage-nilai'],
+            'view-own-nilai' => ['view-nilai', 'manage-nilai'],
 
             'view-attendance' => ['manage-attendance'],
 
@@ -267,6 +269,9 @@ class User extends Authenticatable
             'move-schedules',
             'view-grades',
             'view-own-grades',
+            'view-nilai',
+            'view-own-nilai',
+            'manage-nilai',
             'view-attendance',
             'view-jurnal-mengajar',
             'create-jurnal-mengajar',
