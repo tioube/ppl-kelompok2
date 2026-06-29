@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Dashboard\AdminDashboardController;
 use App\Http\Controllers\Dashboard\AkademikDashboardController;
 use App\Http\Controllers\Dashboard\GuruDashboardController;
@@ -291,6 +292,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware('permission:manage-users,delete-users')->group(function () {
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    });
+
+    // Audit Logs Routes
+    Route::middleware('permission:view-audit-logs')->group(function () {
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
     });
 
     // Silabus Routes with Granular Permissions

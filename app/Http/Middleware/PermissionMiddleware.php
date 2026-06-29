@@ -26,6 +26,6 @@ class PermissionMiddleware
             }
         }
 
-        abort(403, 'You do not have the required permission to access this resource.');
+        abort(403, 'Anda tidak memiliki Akses ke Halaman ini ! ');
     }
 }
