@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Event;
+use App\Models\AuditLog;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
-use App\Models\AuditLog;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
                 'activity' => 'login',
                 'description' => "Pengguna '{$user->name}' berhasil masuk (login) ke sistem.",
                 'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent()
+                'user_agent' => request()->userAgent(),
             ]);
         });
 
@@ -51,7 +51,7 @@ class AppServiceProvider extends ServiceProvider
                     'activity' => 'logout',
                     'description' => "Pengguna '{$user->name}' keluar (logout) dari sistem.",
                     'ip_address' => request()->ip(),
-                    'user_agent' => request()->userAgent()
+                    'user_agent' => request()->userAgent(),
                 ]);
             }
         });

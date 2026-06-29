@@ -37,7 +37,7 @@ class MenuHelper
             ];
         }
 
-        if (!empty($subItems)) {
+        if (! empty($subItems)) {
             $items[] = [
                 'icon' => 'charts',
                 'name' => 'User Management',
