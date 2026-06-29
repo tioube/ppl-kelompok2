@@ -144,6 +144,15 @@ class GuruMapelKelasController extends Controller
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
             'kelas_id' => 'required|exists:kelas,id',
             'tahun_ajaran_id' => 'required|exists:tahun_ajaran,id',
+        ], [
+            'guru_id.required' => 'Guru wajib dipilih.',
+            'guru_id.exists' => 'Guru yang dipilih tidak valid.',
+            'mata_pelajaran_id.required' => 'Mata pelajaran wajib dipilih.',
+            'mata_pelajaran_id.exists' => 'Mata pelajaran yang dipilih tidak valid.',
+            'kelas_id.required' => 'Kelas wajib dipilih.',
+            'kelas_id.exists' => 'Kelas yang dipilih tidak valid.',
+            'tahun_ajaran_id.required' => 'Tahun ajaran wajib dipilih.',
+            'tahun_ajaran_id.exists' => 'Tahun ajaran yang dipilih tidak valid.',
         ]);
 
         $exists = GuruMapelKelas::where('guru_id', $validated['guru_id'])
@@ -190,6 +199,15 @@ class GuruMapelKelasController extends Controller
             'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
             'kelas_id' => 'required|exists:kelas,id',
             'tahun_ajaran_id' => 'required|exists:tahun_ajaran,id',
+        ], [
+            'guru_id.required' => 'Guru wajib dipilih.',
+            'guru_id.exists' => 'Guru yang dipilih tidak valid.',
+            'mata_pelajaran_id.required' => 'Mata pelajaran wajib dipilih.',
+            'mata_pelajaran_id.exists' => 'Mata pelajaran yang dipilih tidak valid.',
+            'kelas_id.required' => 'Kelas wajib dipilih.',
+            'kelas_id.exists' => 'Kelas yang dipilih tidak valid.',
+            'tahun_ajaran_id.required' => 'Tahun ajaran wajib dipilih.',
+            'tahun_ajaran_id.exists' => 'Tahun ajaran yang dipilih tidak valid.',
         ]);
 
         $exists = GuruMapelKelas::where('guru_id', $validated['guru_id'])

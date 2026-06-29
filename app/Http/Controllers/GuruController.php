@@ -49,13 +49,30 @@ class GuruController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:8|confirmed',
             'nip' => 'nullable|string|unique:users,nip',
             'gender' => 'nullable|in:Laki-laki,Perempuan',
             'birth_date' => 'nullable|date',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'photo_profile' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'name.max' => 'Nama lengkap tidak boleh lebih dari 255 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah terdaftar, gunakan email lain.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak sesuai.',
+            'nip.unique' => 'NIP sudah terdaftar, gunakan NIP lain.',
+            'gender.in' => 'Jenis kelamin tidak valid.',
+            'birth_date.date' => 'Format tanggal lahir tidak valid.',
+            'phone.max' => 'Nomor telepon tidak boleh lebih dari 20 karakter.',
+            'photo_profile.uploaded' => 'Foto gagal diunggah. Ukuran file melebihi batas maksimal yang diizinkan server.',
+            'photo_profile.image' => 'File harus berupa gambar.',
+            'photo_profile.mimes' => 'Format foto harus JPG, JPEG, atau PNG.',
+            'photo_profile.max' => 'Ukuran foto tidak boleh lebih dari 2MB.',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -110,13 +127,29 @@ class GuruController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$guru->id,
-            'password' => 'nullable|string|min:8',
+            'password' => 'nullable|string|min:8|confirmed',
             'nip' => 'nullable|string|unique:users,nip,'.$guru->id,
             'gender' => 'nullable|in:Laki-laki,Perempuan',
             'birth_date' => 'nullable|date',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'photo_profile' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'name.max' => 'Nama lengkap tidak boleh lebih dari 255 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah terdaftar, gunakan email lain.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak sesuai.',
+            'nip.unique' => 'NIP sudah terdaftar, gunakan NIP lain.',
+            'gender.in' => 'Jenis kelamin tidak valid.',
+            'birth_date.date' => 'Format tanggal lahir tidak valid.',
+            'phone.max' => 'Nomor telepon tidak boleh lebih dari 20 karakter.',
+            'photo_profile.uploaded' => 'Foto gagal diunggah. Ukuran file melebihi batas maksimal yang diizinkan server.',
+            'photo_profile.image' => 'File harus berupa gambar.',
+            'photo_profile.mimes' => 'Format foto harus JPG, JPEG, atau PNG.',
+            'photo_profile.max' => 'Ukuran foto tidak boleh lebih dari 2MB.',
         ]);
 
         if (! empty($validated['password'])) {

@@ -27,6 +27,10 @@ class KelasController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'jurusan_id' => 'nullable|exists:jurusan,id',
+        ], [
+            'nama.required' => 'Nama kelas wajib diisi.',
+            'nama.max' => 'Nama kelas tidak boleh lebih dari 255 karakter.',
+            'jurusan_id.exists' => 'Jurusan yang dipilih tidak valid.',
         ]);
 
         Kelas::create($validated);
@@ -47,6 +51,10 @@ class KelasController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'jurusan_id' => 'nullable|exists:jurusan,id',
+        ], [
+            'nama.required' => 'Nama kelas wajib diisi.',
+            'nama.max' => 'Nama kelas tidak boleh lebih dari 255 karakter.',
+            'jurusan_id.exists' => 'Jurusan yang dipilih tidak valid.',
         ]);
 
         $kela->update($validated);

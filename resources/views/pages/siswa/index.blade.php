@@ -79,29 +79,29 @@
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Kelola data siswa</p>
             </div>
 
-            <div class="max-w-full overflow-x-auto custom-scrollbar">
-                <table class="w-full min-w-[1200px]">
+            <div class="w-full">
+                <table class="w-full table-fixed">
                     <thead>
                         <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <th class="px-5 py-3 text-left sm:px-6">
+                            <th class="w-[30%] px-4 py-3 text-left">
                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Siswa</p>
                             </th>
-                            <th class="px-5 py-3 text-left sm:px-6">
+                            <th class="w-[13%] px-4 py-3 text-left">
                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">NISN</p>
                             </th>
-                            <th class="px-5 py-3 text-left sm:px-6">
+                            <th class="w-[10%] px-4 py-3 text-left">
                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Kelas</p>
                             </th>
-                            <th class="px-5 py-3 text-left sm:px-6">
+                            <th class="w-[15%] px-4 py-3 text-left">
                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Jurusan</p>
                             </th>
-                            <th class="px-5 py-3 text-left sm:px-6">
+                            <th class="w-[12%] px-4 py-3 text-left">
                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Tahun Ajaran</p>
                             </th>
-                            <th class="px-5 py-3 text-left sm:px-6">
+                            <th class="w-[10%] px-4 py-3 text-left">
                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Status</p>
                             </th>
-                            <th class="px-5 py-3 text-left sm:px-6">
+                            <th class="w-[10%] px-4 py-3 text-left">
                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Aksi</p>
                             </th>
                         </tr>
@@ -110,25 +110,34 @@
                         @forelse ($siswas as $siswaTahunAjaran)
                             @php $siswa = $siswaTahunAjaran->siswa; @endphp
                             <tr class="border-b border-gray-100 dark:border-gray-800">
-                                <td class="px-5 py-4 sm:px-6">
-                                    <div class="flex items-center gap-3">
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center gap-2">
                                         @if($siswa->photo_profile)
-                                            <img src="{{ Storage::url($siswa->photo_profile) }}" alt="{{ $siswa->name }}" class="h-10 w-10 rounded-full object-cover">
+                                            <img src="{{ Storage::url($siswa->photo_profile) }}" alt="Foto {{ $siswa->name }}"
+                                                class="h-9 w-9 rounded-full object-cover flex-shrink-0"
+                                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            <div class="hidden h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 1114 0H5z" clip-rule="evenodd" />
+                                                </svg>
+                                            </div>
                                         @else
-                                            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
-                                                <span class="font-medium text-blue-800 dark:text-blue-400">{{ $siswa->initials() }}</span>
+                                            <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 1114 0H5z" clip-rule="evenodd" />
+                                                </svg>
                                             </div>
                                         @endif
-                                        <div>
-                                            <p class="font-medium text-gray-900 dark:text-white">{{ $siswa->name }}</p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $siswa->email }}</p>
+                                        <div class="min-w-0">
+                                            <p class="truncate text-sm font-medium text-gray-900 dark:text-white">{{ $siswa->name }}</p>
+                                            <p class="truncate text-xs text-gray-500 dark:text-gray-400">{{ $siswa->email }}</p>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-5 py-4 sm:px-6">
+                                <td class="px-4 py-4">
                                     <p class="text-gray-900 dark:text-white">{{ $siswa->nisn ?? '-' }}</p>
                                 </td>
-                                <td class="px-5 py-4 sm:px-6">
+                                <td class="px-4 py-4">
                                     @if($siswaTahunAjaran->kelas)
                                         <span class="inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                                             {{ $siswaTahunAjaran->kelas->nama }}
@@ -137,21 +146,21 @@
                                         <span class="text-sm text-gray-400 dark:text-gray-500">-</span>
                                     @endif
                                 </td>
-                                <td class="px-5 py-4 sm:px-6">
+                                <td class="px-4 py-4">
                                     @if($siswaTahunAjaran->jurusan)
                                         <p class="text-gray-900 dark:text-white text-sm">{{ $siswaTahunAjaran->jurusan->nama }}</p>
                                     @else
                                         <span class="text-sm text-gray-400 dark:text-gray-500">-</span>
                                     @endif
                                 </td>
-                                <td class="px-5 py-4 sm:px-6">
+                                <td class="px-4 py-4">
                                     @if($siswaTahunAjaran->tahunAjaran)
                                         <p class="text-gray-900 dark:text-white text-sm">{{ $siswaTahunAjaran->tahunAjaran->tahun }}</p>
                                     @else
                                         <span class="text-sm text-gray-400 dark:text-gray-500">-</span>
                                     @endif
                                 </td>
-                                <td class="px-5 py-4 sm:px-6">
+                                <td class="px-4 py-4">
                                     @php
                                         $statusColors = [
                                             'aktif' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
@@ -166,7 +175,7 @@
                                         {{ ucfirst(str_replace('_', ' ', $siswaTahunAjaran->status)) }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-4 sm:px-6">
+                                <td class="px-4 py-4">
                                     <div class="flex items-center gap-2">
                                         @if (auth()->user()->hasPermission('view-siswa') || auth()->user()->hasPermission('manage-siswa'))
                                         <a href="{{ route('siswa.show', $siswa) }}"

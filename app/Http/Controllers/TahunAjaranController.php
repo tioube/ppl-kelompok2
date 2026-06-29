@@ -29,6 +29,10 @@ class TahunAjaranController extends Controller
         $validated = $request->validate([
             'tahun' => 'required|string|max:255|unique:tahun_ajaran,tahun',
             'is_active' => 'boolean',
+        ], [
+            'tahun.required' => 'Tahun ajaran wajib diisi.',
+            'tahun.max' => 'Tahun ajaran tidak boleh lebih dari 255 karakter.',
+            'tahun.unique' => 'Tahun ajaran ini sudah terdaftar.',
         ]);
 
         if (! empty($validated['is_active'])) {
@@ -51,6 +55,10 @@ class TahunAjaranController extends Controller
         $validated = $request->validate([
             'tahun' => 'required|string|max:255|unique:tahun_ajaran,tahun,'.$tahunAjaran->id,
             'is_active' => 'boolean',
+        ], [
+            'tahun.required' => 'Tahun ajaran wajib diisi.',
+            'tahun.max' => 'Tahun ajaran tidak boleh lebih dari 255 karakter.',
+            'tahun.unique' => 'Tahun ajaran ini sudah terdaftar.',
         ]);
 
         if (! empty($validated['is_active'])) {
