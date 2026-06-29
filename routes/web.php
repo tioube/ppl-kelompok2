@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Dashboard\AdminDashboardController;
 use App\Http\Controllers\Dashboard\AkademikDashboardController;
 use App\Http\Controllers\Dashboard\GuruDashboardController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\KelasController;
 use App\Http\Controllers\KenaikanKelasController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\MataPelajaranTahunAjaranController;
+use App\Http\Controllers\NilaiController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SilabusController;
 use App\Http\Controllers\SiswaController;
@@ -293,6 +295,11 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 
+    // Audit Logs Routes
+    Route::middleware('permission:view-audit-logs')->group(function () {
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+    });
+
     // Silabus Routes with Granular Permissions
     Route::middleware('permission:manage-silabus,view-silabus')->group(function () {
         Route::get('/silabus', [SilabusController::class, 'index'])->name('silabus.index');
@@ -353,6 +360,24 @@ Route::middleware(['auth'])->group(function () {
     // API routes for Jurnal Mengajar dynamic form
     Route::get('/api/guru-mapel-kelas/{id}/silabus', [JurnalMengajarController::class, 'getSilabusByGuruMapelKelas'])->name('api.guru-mapel-kelas.silabus');
     Route::get('/api/guru-mapel-kelas/{id}/siswa', [JurnalMengajarController::class, 'getSiswaByGuruMapelKelas'])->name('api.guru-mapel-kelas.siswa');
+
+    // Nilai Routes
+    Route::middleware('permission:manage-nilai')->group(function () {
+        Route::get('/nilai/create', [NilaiController::class, 'create'])->name('nilai.create');
+        Route::post('/nilai', [NilaiController::class, 'store'])->name('nilai.store');
+        Route::get('/api/kelas/{kelasId}/siswa', [NilaiController::class, 'getSiswaByKelas'])->name('api.kelas.siswa');
+        Route::get('/api/mata-pelajaran/{mapelId}/silabus', [NilaiController::class, 'getSilabusByMapel'])->name('api.mapel.silabus');
+        Route::get('/api/nilai/get-existing', [NilaiController::class, 'getExistingNilai'])->name('api.nilai.existing');
+    });
+
+    Route::middleware('role:siswa')->group(function () {
+        Route::get('/nilai/siswa', [NilaiController::class, 'siswaIndex'])->name('nilai.siswa');
+    });
+
+    Route::middleware('permission:view-nilai')->group(function () {
+        Route::get('/nilai', [NilaiController::class, 'index'])->name('nilai.index');
+        Route::get('/api/nilai/report', [NilaiController::class, 'getReportData'])->name('api.nilai.report');
+    });
 });
 
 require __DIR__.'/auth.php';

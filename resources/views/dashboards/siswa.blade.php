@@ -68,7 +68,7 @@
     <div class="rounded-lg border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
         <h3 class="mb-4 text-xl font-semibold text-black dark:text-white">Student Portal</h3>
         <div class="space-y-3">
-            <a href="#" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4">
+            <a href="{{ route('nilai.siswa') }}" class="flex items-center gap-3 rounded-lg border border-stroke p-4 transition hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
                     <svg class="fill-white" width="18" height="18" viewBox="0 0 22 22" fill="none">
                         <path d="M11 0C4.92487 0 0 4.92487 0 11C0 17.0751 4.92487 22 11 22C17.0751 22 22 17.0751 22 11C22 4.92487 17.0751 0 11 0Z" fill=""/>
